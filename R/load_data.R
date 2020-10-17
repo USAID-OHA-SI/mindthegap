@@ -1,0 +1,35 @@
+
+#' Load data for viz
+#'
+#' @param usaid_email USAID email to store file on GDrive
+#'
+#' @export
+#' @importFrom googlesheets4 as_sheets_id
+#'
+#' @examples
+#' \dontrun{
+#'    load_data("twhitmore@usaid.gov")}
+
+load_data <- function(usaid_email){
+
+  #authenticate
+  if(!googlesheets4::gs4_has_token())
+    googlesheets4::gs4_auth(usaid_email)
+
+  #read impatt into global environment
+  df_impatt <<-
+    suppressMessages(
+      googlesheets4::read_sheet(as_sheets_id(gs_id), "ARTshare") %>%
+        dplyr::arrange(desc(ageasentered)) %>%
+        dplyr::mutate(ageasentered = forcats::as_factor(ageasentered))
+    )
+
+  #read unaids into global environment
+  df_unaids <<-
+    suppressMessages(
+      googlesheets4::read_sheet(as_sheets_id(gs_id), "UNAIDS") %>%
+        dplyr::mutate(year = as.integer(year))
+    )
+
+}
+

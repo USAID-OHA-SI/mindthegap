@@ -15,4 +15,22 @@ RoxygenNote: 7.1.1
 URL: https://github.com/USAID-OHA-SI/mindthegap
 BugReports: https://github.com/USAID-OHA-SI/mindthegap/issues
 Imports: 
-    magrittr
+    magrittr,
+    dplyr,
+    tidyr,
+    glue,
+    googlesheets4,
+    usethis,
+    readr,
+    forcats,
+    scales,
+    vroom,
+    ggplot2,
+    extrafont,
+    extrafontdb,
+    gridExtra
+Suggests:
+    googledrive,
+    devtools
+Remotes: 
+    ICPI/ICPIutilities
