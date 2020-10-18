@@ -12,6 +12,14 @@ package_check <- function(pkg){
 }
 
 
+#' Start up
+#'
 .onAttach <- function(libname, pkgname) {
-  extrafont::loadfonts(device = "win", quiet = TRUE)
+  # extrafont::loadfonts(device = "win", quiet = TRUE)
+
 }
+
+
+
+
+
