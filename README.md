@@ -6,7 +6,7 @@
 <!-- badges: end -->
 
 
-mindthegap was developed in 2019 in preparation for agency self assessments and COP. It has been turned into a package in advance of this year's cycle for ease of access.
+mindthegap was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package in advance of this year's cycle for ease of access.
 
 ### Installing mindthegap
 
