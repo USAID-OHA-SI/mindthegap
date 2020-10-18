@@ -28,7 +28,8 @@ Imports:
     ggplot2,
     extrafont,
     extrafontdb,
-    gridExtra
+    gridExtra,
+    stringr
 Suggests:
     googledrive,
     devtools
