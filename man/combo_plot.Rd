@@ -9,7 +9,7 @@ combo_plot(ctry_sel, folderpath_output = NULL)
 \arguments{
 \item{ctry_sel}{country to visualize}
 
-\item{folderpath_output}{}
+\item{folderpath_output}{folderpath where outputs will be stored, if NULL (default) no outputsaved}
 }
 \value{
 combined plots of 90-90-90 trends and ART gap by age/sex

@@ -1,7 +1,7 @@
 #' Combo Plot
 #'
 #' @param ctry_sel country to visualize
-#' @param folderpath_output
+#' @param folderpath_output folderpath where outputs will be stored, if NULL (default) no outputsaved
 #'
 #' @return combined plots of 90-90-90 trends and ART gap by age/sex
 #' @export
