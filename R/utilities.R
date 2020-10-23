@@ -14,38 +14,7 @@ package_check <- function(pkg){
 
 .onAttach <- function(libname, pkgname) {
 
-  check_fonts()
+  usethis::ui_info("loading mindthegap ...")
 
 
 }
-
-
-
-#' Check for Imported Fonts
-#'
-#' @export
-#' @importFrom utils stack
-#' @importFrom grDevices windowsFonts
-
-check_fonts <- function(){
-
-  #list of all fonts available
-  localfonts <- stack(grDevices::windowsFonts())
-
-  #load fonts
-  if(nrow(localfonts) < 4)
-     extrafont::loadfonts(device = "win", quiet = TRUE)
-
-  #check if fonts are loaded
-  localfonts <- stack(grDevices::windowsFonts())
-  if(nrow(localfonts) < 4) {
-    usethis::ui_warn("Before proceeding, need to import local fonts (only happens once). This may take a few minutes")
-    extrafont::font_import(prompt = TRUE)
-    extrafont::loadfonts(device = "win", quiet = TRUE)
-  }
-
-}
-
-
-
-
