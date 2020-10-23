@@ -33,14 +33,15 @@ library(mindthegap)
 #load the data from Google Drive
   load_data()
 
-#plot gaps for Kenya
-  combo_plot("Kenya")
+#plot gaps for South Africa
+  combo_plot("South Africa")
   
-#save plot gaps for Kenya
-  combo_plot("Kenya", "Images")
+#save plot gaps for South Africa
+  combo_plot("South Africa", "Images")
 
 ```
 
+![Cascade_ZAF](https://user-images.githubusercontent.com/8933069/97037419-43cfab80-1537-11eb-9957-1c5072b465dd.png)
 
 ## Data Sources
 
