@@ -46,21 +46,23 @@ viz_unaids <- function(ctry_sel){
   if(exists("df_unaids") == FALSE)
     stop("No data. Run load_data()")
 
-  df_viz <- dplyr::filter(df_unaids, country == ctry_sel)
+  df_viz <- df_unaids %>%
+    dplyr::filter(country == ctry_sel) %>%
+    dplyr::mutate(label = dplyr::case_when(year %in% c(2015, 2019) ~ label))
 
   df_viz %>%
     ggplot(aes(year, value, group = indicator, color = indicator)) +
-    geom_hline(yintercept = .9, color = "gray30") +
+    geom_hline(yintercept = .9, color = "gray50") +
     geom_hline(yintercept = 0, color = "gray30") +
     geom_line(size = 1, na.rm = TRUE) +
-    geom_point(size = 5, na.rm = TRUE) +
+    geom_point(size = 4, na.rm = TRUE) +
     geom_text(aes(label = label),
-              size = 3.5, family = "GillSans",
+              size = 2.5, family = "GillSans",
               vjust = -1.7,  na.rm = TRUE) +
     scale_y_continuous(labels = scales::percent_format(1), position = "right") +
     scale_x_continuous(breaks =seq(2015, 2019, 2)) +
     scale_color_manual(values = c("#26456a", "#335B8E", "#739bcc")) +
-    expand_limits(y = c(0, 1.2)) +
+    expand_limits(y = c(0, 1.2), x = c(2014.5, 2019.5)) +
     labs(x = NULL, y = NULL,
          title = toupper(ctry_sel),
          subtitle = "Treatment Cascade (15+)",
@@ -73,10 +75,9 @@ viz_unaids <- function(ctry_sel){
           panel.background = element_blank(),
           strip.background = element_blank(),
           strip.text = element_text(face = "bold", size = 11, color = "#595959"),
-          panel.grid = element_line(color = "#ebebeb"),
           plot.title = element_text(size = 15, face = "bold", color = "black"),
           plot.subtitle =element_text(size = 15, color = "#595959"),
-          plot.caption = element_text(size = 9,  color = "#595959"))
+          plot.caption = element_text(size = 8,  color = "#595959"))
 }
 
 
@@ -123,9 +124,9 @@ viz_impatt <- function(ctry_sel){
           panel.background = element_blank(),
           strip.background = element_blank(),
           strip.text = element_text(face = "bold", size = 11, color = "#595959"),
-          panel.grid = element_line(color = "#ebebeb"),
+          panel.grid.major.x = element_line(color = "#ebebeb"),
           plot.title = element_text(size = 15, face = "bold", color = "black"),
           plot.subtitle =element_text(size = 15, color = "#595959"),
-          plot.caption = element_text(size = 9,  color = "#595959"))
+          plot.caption = element_text(size = 8,  color = "#909090"))
 
 }
