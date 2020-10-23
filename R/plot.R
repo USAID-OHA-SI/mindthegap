@@ -68,16 +68,8 @@ viz_unaids <- function(ctry_sel){
          subtitle = "Treatment Cascade (15+)",
          caption = "Source: UNAIDS, Progress towards 90-90-90 targets") +
     facet_grid(sex ~ indicator, switch = "y") +
-    theme(text = element_text(family = "GillSans", color = base_gray, size = 12),
-          axis.ticks = element_blank(),
-          axis.text.y = element_blank(),
-          legend.position = "none",
-          panel.background = element_blank(),
-          strip.background = element_blank(),
-          strip.text = element_text(face = "bold", size = 11, color = base_gray),
-          plot.title = element_text(size = 15, face = "bold", color = "black"),
-          plot.subtitle =element_text(size = 15, color = base_gray),
-          plot.caption = element_text(size = 8,  color = caption_gray))
+    mtg_theme() +
+    theme(axis.text.y = element_blank())
 }
 
 
@@ -118,15 +110,7 @@ viz_impatt <- function(ctry_sel){
          title = " ",
          subtitle =  "PLHIV and Share on Treatment",
          caption = "Source: FY20Q3c NAT_SUBNAT dataset") +
-    theme(text = element_text(family = "GillSans", color = base_gray, size = 12),
-          axis.ticks = element_blank(),
-          legend.position = "none",
-          panel.background = element_blank(),
-          strip.background = element_blank(),
-          strip.text = element_text(face = "bold", size = 11, color = base_gray),
-          panel.grid.major.x = element_line(color = grid_gray),
-          plot.title = element_text(size = 15, face = "bold", color = "black"),
-          plot.subtitle =element_text(size = 15, color = base_gray),
-          plot.caption = element_text(size = 8,  color = caption_gray))
+    mtg_theme() +
+    theme(panel.grid.major.x = element_line(color = grid_gray))
 
 }
