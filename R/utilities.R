@@ -14,7 +14,7 @@ package_check <- function(pkg){
 
 .onAttach <- function(libname, pkgname) {
 
-  usethis::ui_info("loading mindthegap ...")
-
+  if (.Platform$OS.type == "windows")
+    grDevices::windowsFonts(GillSans = grDevices::windowsFont("Gill Sans MT"))
 
 }

@@ -55,7 +55,7 @@ viz_unaids <- function(ctry_sel){
     geom_line(size = 1, na.rm = TRUE) +
     geom_point(size = 5, na.rm = TRUE) +
     geom_text(aes(label = label),
-              size = 3.5, family = "Gill Sans MT",
+              size = 3.5, family = "GillSans",
               vjust = -1.7,  na.rm = TRUE) +
     scale_y_continuous(labels = scales::percent_format(1), position = "right") +
     scale_x_continuous(breaks =seq(2015, 2019, 2)) +
@@ -66,7 +66,7 @@ viz_unaids <- function(ctry_sel){
          subtitle = "Treatment Cascade (15+)",
          caption = "Source: UNAIDS, Progress towards 90-90-90 targets") +
     facet_grid(sex ~ indicator, switch = "y") +
-    theme(text = element_text(family = "Gill Sans MT", color = "#595959", size = 12),
+    theme(text = element_text(family = "GillSans", color = "#595959", size = 12),
           axis.ticks = element_blank(),
           axis.text.y = element_blank(),
           legend.position = "none",
@@ -106,7 +106,7 @@ viz_impatt <- function(ctry_sel){
     geom_col(aes(y = TX_CURR_SUBNAT ), width = .75, na.rm = TRUE) +
     geom_hline(yintercept = 0) +
     geom_text(aes(y = PLHIV, label = scales::percent(share_on_ART, 1)),
-              size = 3.5, family = "Gill Sans MT",
+              size = 3.5, family = "GillSans",
               hjust = -.5, na.rm = TRUE) +
     scale_y_continuous(labels = scales::comma, expand = c(0.005, 0.005)) +
     scale_fill_manual(values = c("#26456a", "#335B8E")) +
@@ -117,7 +117,7 @@ viz_impatt <- function(ctry_sel){
          title = " ",
          subtitle =  "PLHIV and Share on Treatment",
          caption = "Source: FY20Q3c NAT_SUBNAT dataset") +
-    theme(text = element_text(family = "Gill Sans MT", color = "#595959", size = 12),
+    theme(text = element_text(family = "GillSans", color = "#595959", size = 12),
           axis.ticks = element_blank(),
           legend.position = "none",
           panel.background = element_blank(),
