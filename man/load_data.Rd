@@ -4,7 +4,7 @@
 \alias{load_data}
 \title{Load data for viz}
 \usage{
-load_data(usaid_email)
+load_data(usaid_email = NULL)
 }
 \arguments{
 \item{usaid_email}{USAID email to store file on GDrive}

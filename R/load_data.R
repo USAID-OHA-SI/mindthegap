@@ -10,11 +10,13 @@
 #' \dontrun{
 #'    load_data("twhitmore@usaid.gov")}
 
-load_data <- function(usaid_email){
+load_data <- function(usaid_email = NULL){
 
-  #authenticate
-  if(!googlesheets4::gs4_has_token())
+  #if not already authenticated, use email or prompt user
+  if(!googlesheets4::gs4_has_token() & !is.null(usaid_email))
     googlesheets4::gs4_auth(usaid_email)
+  if(!googlesheets4::gs4_has_token() & is.null(usaid_email))
+    googlesheets4::gs4_auth()
 
   #read impatt into global environment
   df_impatt <<-
