@@ -61,23 +61,23 @@ viz_unaids <- function(ctry_sel){
               vjust = -1.7,  na.rm = TRUE) +
     scale_y_continuous(labels = scales::percent_format(1), position = "right") +
     scale_x_continuous(breaks =seq(2015, 2019, 2)) +
-    scale_color_manual(values = c("#26456a", "#335B8E", "#739bcc")) +
+    scale_color_manual(values = blue_palette) +
     expand_limits(y = c(0, 1.2), x = c(2014.5, 2019.5)) +
     labs(x = NULL, y = NULL,
          title = toupper(ctry_sel),
          subtitle = "Treatment Cascade (15+)",
          caption = "Source: UNAIDS, Progress towards 90-90-90 targets") +
     facet_grid(sex ~ indicator, switch = "y") +
-    theme(text = element_text(family = "GillSans", color = "#595959", size = 12),
+    theme(text = element_text(family = "GillSans", color = base_gray, size = 12),
           axis.ticks = element_blank(),
           axis.text.y = element_blank(),
           legend.position = "none",
           panel.background = element_blank(),
           strip.background = element_blank(),
-          strip.text = element_text(face = "bold", size = 11, color = "#595959"),
+          strip.text = element_text(face = "bold", size = 11, color = base_gray),
           plot.title = element_text(size = 15, face = "bold", color = "black"),
-          plot.subtitle =element_text(size = 15, color = "#595959"),
-          plot.caption = element_text(size = 8,  color = "#595959"))
+          plot.subtitle =element_text(size = 15, color = base_gray),
+          plot.caption = element_text(size = 8,  color = caption_gray))
 }
 
 
@@ -110,23 +110,23 @@ viz_impatt <- function(ctry_sel){
               size = 3.5, family = "GillSans",
               hjust = -.5, na.rm = TRUE) +
     scale_y_continuous(labels = scales::comma, expand = c(0.005, 0.005)) +
-    scale_fill_manual(values = c("#26456a", "#335B8E")) +
-    scale_color_manual(values = c("#26456a", "#335B8E")) +
+    scale_fill_manual(values = blue_palette) +
+    scale_color_manual(values = blue_palette) +
     coord_flip() +
     facet_grid(sex ~ .) +
     labs(x = NULL, y = NULL,
          title = " ",
          subtitle =  "PLHIV and Share on Treatment",
          caption = "Source: FY20Q3c NAT_SUBNAT dataset") +
-    theme(text = element_text(family = "GillSans", color = "#595959", size = 12),
+    theme(text = element_text(family = "GillSans", color = base_gray, size = 12),
           axis.ticks = element_blank(),
           legend.position = "none",
           panel.background = element_blank(),
           strip.background = element_blank(),
-          strip.text = element_text(face = "bold", size = 11, color = "#595959"),
-          panel.grid.major.x = element_line(color = "#ebebeb"),
+          strip.text = element_text(face = "bold", size = 11, color = base_gray),
+          panel.grid.major.x = element_line(color = grid_gray),
           plot.title = element_text(size = 15, face = "bold", color = "black"),
-          plot.subtitle =element_text(size = 15, color = "#595959"),
-          plot.caption = element_text(size = 8,  color = "#909090"))
+          plot.subtitle =element_text(size = 15, color = base_gray),
+          plot.caption = element_text(size = 8,  color = caption_gray))
 
 }
