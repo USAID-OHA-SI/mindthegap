@@ -54,8 +54,8 @@ update_unaids <- function(filepaths, usaid_email){
       googlesheets4::gs4_auth(usaid_email)
 
   #update sheet
-    googlesheets4::sheet_delete(as_sheets_id(gs), "UNAIDS")
-    googlesheets4::sheet_write(df, as_sheets_id(gs), "UNAIDS")
+    googlesheets4::sheet_delete(as_sheets_id(gs_id), "UNAIDS")
+    googlesheets4::sheet_write(df, as_sheets_id(gs_id), "UNAIDS")
 
   #return
     invisible(df)

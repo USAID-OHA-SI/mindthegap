@@ -50,8 +50,8 @@ update_impatt <- function(filepath, usaid_email){
       googlesheets4::gs4_auth(usaid_email)
 
   #update sheet
-    googlesheets4::sheet_delete(as_sheets_id(gs), "ARTshare")
-    googlesheets4::sheet_write(df_impatt, as_sheets_id(gs), "ARTshare")
+    googlesheets4::sheet_delete(as_sheets_id(gs_id), "ARTshare")
+    googlesheets4::sheet_write(df_impatt, as_sheets_id(gs_id), "ARTshare")
 
   #return
     invisible(df_impatt)

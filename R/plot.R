@@ -70,6 +70,7 @@ viz_unaids <- function(ctry_sel){
     facet_grid(sex ~ indicator, switch = "y") +
     mtg_theme() +
     theme(axis.text.y = element_blank())
+
 }
 
 
@@ -109,7 +110,7 @@ viz_impatt <- function(ctry_sel){
     labs(x = NULL, y = NULL,
          title = " ",
          subtitle =  "PLHIV and Share on Treatment",
-         caption = "Source: FY20Q3c NAT_SUBNAT dataset") +
+         caption = "Source: FY20Q4 NAT_SUBNAT dataset") +
     mtg_theme() +
     theme(panel.grid.major.x = element_line(color = grid_gray))
 
