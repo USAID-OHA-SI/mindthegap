@@ -69,9 +69,9 @@ update_unaids <- function(filepaths, usaid_email){
 unaids_hdrs <- function(){
 
   #create headers (due to repeated headers over two lines)
-  years <- c(2015:2019)
+  years <- c(2015:2020)
   indicator <- forcats::as_factor(c("known_status", "on_art", "vl_suppression"))
-  type <- forcats::as_factor(c("value", "lower", "upper"))
+  type <- forcats::as_factor(c("value", "lower", "upper", "footnote"))
 
   headers <- tidyr::crossing(years, indicator, type) %>%
     tidyr::unite(headrs, sep = ".") %>%
