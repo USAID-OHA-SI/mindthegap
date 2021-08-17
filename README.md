@@ -1,10 +1,8 @@
-
-# Mind The Gap Package
-
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/USAID-OHA-SI/mindthegap.svg?branch=master)](https://travis-ci.com/USAID-OHA-SI/mindthegap)
 <!-- badges: end -->
 
+# mindthegap <img src='man/figures/logo.png' align="right" height="120" />
 
 mindthegap was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package in advance of this year's cycle for ease of access.
 
