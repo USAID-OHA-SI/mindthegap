@@ -1,11 +1,15 @@
 Package: mindthegap
 Title: Mind the Gap: 90-90-90 Trends and ART Coverage Gaps
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person(given = "Aaron",
            family = "Chafetz",
            role = c("aut", "cre"),
-           email = "achafetz@usaid.ogv")
+           email = "achafetz@usaid.ogv"),
+    person(given = "Karishma",
+         family = "Srikanth",
+         role = c("aut"),
+         email = "ksrikanth@usaid.gov"))
 Description: Package to plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -31,9 +35,13 @@ Imports:
     gridExtra,
     stringr,
     grDevices,
-    utils
+    utils,
+    purrr,
+    rlang,
+    tidyselect
 Suggests:
     googledrive,
     devtools
 Remotes: 
-    ICPI/ICPIutilities
+    ICPI/ICPIutilities,
+    USAID-OHA-SI/glamr

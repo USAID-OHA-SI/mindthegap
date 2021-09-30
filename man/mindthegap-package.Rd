@@ -21,5 +21,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Aaron Chafetz \email{achafetz@usaid.ogv}
 
+Authors:
+\itemize{
+  \item Karishma Srikanth \email{ksrikanth@usaid.gov}
+}
+
 }
 \keyword{internal}
