@@ -4,14 +4,10 @@
 \alias{munge_unaids}
 \title{Cleaning UNAIDS Data}
 \usage{
-munge_unaids(sheet_id, tab, skipnum)
+munge_unaids(return_type)
 }
 \arguments{
-\item{sheet_id}{Google sheet ID with UN aids data}
-
-\item{tab}{Tab number corresponding to a set of indicators}
-
-\item{skipnum}{Number of lines to skip before reading}
+\item{return_type}{type of Data to return}
 }
 \value{
 
