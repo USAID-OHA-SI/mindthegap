@@ -16,8 +16,7 @@ munge_unaids <- function(return_type) {
   missing <- c("...", " ")
 
   # Get valid pepfar list
-  pepfar_cntry <- glamr::get_outable() %>%
-    dplyr::pull(countryname)
+  pepfar_cntry <- glamr::pepfar_country_list$countryname
 
   # Google Sheet ID to original
   sheet_id <- googledrive::as_id("1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs")
