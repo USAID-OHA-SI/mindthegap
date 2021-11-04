@@ -10,12 +10,12 @@ Authors@R: c(
          family = "Srikanth",
          role = c("aut"),
          email = "ksrikanth@usaid.gov"))
-Description: Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country
+Description: Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 URL: https://github.com/USAID-OHA-SI/mindthegap
 BugReports: https://github.com/USAID-OHA-SI/mindthegap/issues
 Imports: 

@@ -1,7 +1,7 @@
 #' @title Cleaning UNAIDS Data
 #'
 #' @description This function cleans and fetches UNAIDS Estimates/Test and Treat Data
-#' @param return_type returns either HIV Estimates or Test & Treat Data
+#' @param return_type Returns either 'HIV Estimates' or 'Test & Treat' Data
 #' @return
 #' @export
 #'

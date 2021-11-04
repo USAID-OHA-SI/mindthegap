@@ -7,7 +7,7 @@
 munge_unaids(return_type)
 }
 \arguments{
-\item{return_type}{type of Data to return}
+\item{return_type}{Returns either 'HIV Estimates' or 'Test & Treat' Data}
 }
 \value{
 

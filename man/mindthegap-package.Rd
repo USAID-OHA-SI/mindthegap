@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-Package to plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country
+Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country.
 }
 \seealso{
 Useful links:
