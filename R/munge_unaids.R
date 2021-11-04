@@ -2,6 +2,8 @@
 #'
 #' @description This function cleans and fetches UNAIDS Estimates/Test and Treat Data
 #' @param return_type Returns either 'HIV Estimates' or 'Test & Treat' Data
+#' @param indicator_type Returns either 'Integer' or 'Percent' indicator values
+
 #' @return
 #' @export
 #'
@@ -10,7 +12,7 @@
 #'    munge_unaids(sheet_id = googledrive::as_id('1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs'), tab = 3, skipnum = 4)
 #' }
 #'
-munge_unaids <- function(return_type) {
+munge_unaids <- function(return_type, indicator_type) {
 
   #to specify NA's when reading in data
   missing <- c("...", " ")
@@ -164,17 +166,14 @@ munge_unaids <- function(return_type) {
            pepfar = ifelse(country %in% pepfar_cntry, "PEPFAR", "Non-PEPFAR"))
 
   # To fix the formatting, let's return a list of tibbles w/ percentages in one and integers in the other
-  hiv_est <- suppressWarnings(
+  final_df <- suppressWarnings(
     gdrive_df_clean %>%
-      dplyr::group_split(indic_type) %>%
-      rlang::set_names(dplyr::group_keys(gdrive_df_clean %>% dplyr::group_by(indic_type)) %>%
-                         unlist() %>%
-                         stringr::str_remove(., "_indics") %>%
-                         stringr::str_c(" indicators") %>%
-                         stringr::str_to_title()) %>%
-      purrr::map(., ~.x %>% dplyr::mutate(value = as.numeric(value)))
+      dplyr::mutate(value = as.numeric(value),
+                    indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title()) %>%
+      dplyr::filter(indic_type == indicator_type)
+
   )
 
-  return(hiv_est)
+  return(final_df)
 
 }

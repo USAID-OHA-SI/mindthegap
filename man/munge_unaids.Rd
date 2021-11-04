@@ -4,10 +4,12 @@
 \alias{munge_unaids}
 \title{Cleaning UNAIDS Data}
 \usage{
-munge_unaids(return_type)
+munge_unaids(return_type, indicator_type)
 }
 \arguments{
 \item{return_type}{Returns either 'HIV Estimates' or 'Test & Treat' Data}
+
+\item{indicator_type}{Returns either 'Integer' or 'Percent' indicator values}
 }
 \value{
 
