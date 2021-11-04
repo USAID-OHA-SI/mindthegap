@@ -19,29 +19,29 @@ munge_unaids <- function(return_type) {
   pepfar_cntry <- glamr::pepfar_country_list$countryname
 
   # Google Sheet ID to original
-  sheet_id <- googledrive::as_id("1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs")
+  #sheet_id <- googledrive::as_id("1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs")
 
-  sheet_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
+  #sheet_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
 
   #HIV estimates tab - specific
   if (return_type == "HIV Estimates") {
 
     gdrive_df <- suppressMessages(
-      googlesheets4::read_sheet(sheet_id, sheet = 1, skip = 5, na = missing) %>%
+      googlesheets4::read_sheet(gs_id_unaids, sheet = 1, skip = 5, na = missing) %>%
         dplyr::rename(year = !!names(.[1]),
                       iso =  !!names(.[2]),
                       country =  !!names(.[3]))
     )
 
     hiv_est_names <- suppressMessages(
-      googlesheets4::read_sheet(sheet_id, range = "HIV estimates - by Year!A5:AY5") %>%
+      googlesheets4::read_sheet(gs_id_unaids, range = "HIV estimates - by Year!A5:AY5") %>%
         dplyr::rename(year = !!names(.[1]),
                       iso =  !!names(.[2]),
                       country =  !!names(.[3]))
     )
 
     names_cw <- suppressMessages(
-      googlesheets4::read_sheet(sheet_id_names) %>%
+      googlesheets4::read_sheet(gs_id_names) %>%
         dplyr::filter(sheet == "HIV estimates - by Year") %>%
         dplyr::select(-sheet) %>%
         tidyr::pivot_wider(names_from = names,
@@ -59,21 +59,21 @@ munge_unaids <- function(return_type) {
   if (return_type == "Test & Treat") {
 
     gdrive_df <- suppressMessages(
-      googlesheets4::read_sheet(sheet_id, sheet = 3, skip = 4, na = missing) %>%
+      googlesheets4::read_sheet(gs_id_unaids, sheet = 3, skip = 4, na = missing) %>%
         dplyr::rename(year = !!names(.[1]),
                       iso =  !!names(.[2]),
                       country =  !!names(.[3]))
     )
 
     hiv_tt_names <- suppressMessages(
-      googlesheets4::read_sheet(sheet_id, sheet = 3, range = "HIV Test & Treat - by Year !A5:DF5") %>%
+      googlesheets4::read_sheet(gs_id_unaids, sheet = 3, range = "HIV Test & Treat - by Year !A5:DF5") %>%
         dplyr::rename(year = !!names(.[1]),
                       iso =  !!names(.[2]),
                       country =  !!names(.[3]))
     )
 
     names_cw_tt <- suppressMessages(
-      googlesheets4::read_sheet(sheet_id_names, sheet = 2) %>%
+      googlesheets4::read_sheet(gs_id_names, sheet = 2) %>%
         dplyr::filter(sheet == "HIV Test & Treat") %>%
         dplyr::select(-sheet) %>%
         tidyr::pivot_wider(names_from = names,
