@@ -9,7 +9,7 @@
 #'
 #' @examples
 #'  \dontrun{
-#'    munge_unaids(sheet_id = googledrive::as_id('1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs'), tab = 3, skipnum = 4)
+#'    munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
 #' }
 #'
 munge_unaids <- function(return_type, indicator_type) {
