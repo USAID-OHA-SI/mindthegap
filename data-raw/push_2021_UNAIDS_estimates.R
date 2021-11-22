@@ -40,7 +40,7 @@ list_pepfar <- lapply(lst, function(x) filter(x, pepfar == "PEPFAR"))
 gs_id_pepfar <- drive_create(name = "PEPFAR Only - UNAIDS 2021 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
 
 #specify sheet names
-tab_names <- c("HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Test - Percent")
+tab_names <- c("HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent")
 
 #sheet names
 purrr::walk(.x = tab_names, .f = ~sheet_add(as_sheets_id(gs_id_pepfar), sheet = .x))
