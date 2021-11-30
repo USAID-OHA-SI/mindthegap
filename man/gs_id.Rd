@@ -3,7 +3,7 @@
 \docType{data}
 \name{gs_id}
 \alias{gs_id}
-\title{IMPATT Google Sheet ID}
+\title{UNAIDS Google Sheet ID}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -14,6 +14,6 @@ gs_id
 google sheet id
 }
 \description{
-IMPATT Google Sheet ID
+UNAIDS Google Sheet ID
 }
-\keyword{datasets}
+\keyword{internal}
