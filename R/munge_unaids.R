@@ -17,9 +17,6 @@ munge_unaids <- function(return_type, indicator_type) {
   #to specify NA's when reading in data
   missing <- c("...", " ")
 
-  # Get valid pepfar list
-  pepfar_cntry <- glamr::pepfar_country_list$countryname
-
   # Google Sheet ID to original
   #sheet_id <- googledrive::as_id("1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs")
 
@@ -158,12 +155,12 @@ munge_unaids <- function(return_type, indicator_type) {
   }
 
   #adjust country names and add flag for PEPFAR countries
-  gdrive_df_clean <- gdrive_df_clean %>%
-    dplyr::mutate(country = dplyr::case_when(country == "Cote dIvoire" ~ "Cote d'Ivoire",
-                               country == "United Republic of Tanzania" ~ "Tanzania",
-                               country == "Viet Nam" ~ "Vietnam",
-                               TRUE ~ country),
-           pepfar = ifelse(country %in% pepfar_cntry, "PEPFAR", "Non-PEPFAR"))
+  gdrive_df_clean <- glamr::pepfar_country_list %>%
+    dplyr::select(countryname, iso = countryname_iso) %>%
+    dplyr::left_join(gdrive_df_clean, ., by = "iso") %>%
+    dplyr::mutate(country = ifelse(is.na(countryname), country, countryname),
+                  pepfar = ifelse(is.na(countryname), "Non-PEPFAR", "PEPFAR")) %>%
+    dplyr::select(-countryname)
 
   # To fix the formatting, let's return a list of tibbles w/ percentages in one and integers in the other
   final_df <- suppressWarnings(

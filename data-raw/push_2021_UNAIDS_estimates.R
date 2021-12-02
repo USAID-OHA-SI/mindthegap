@@ -7,6 +7,7 @@ googlesheets4::gs4_auth()
 #load packages
 library(mindthegap)
 library(tidyverse)
+library(purrr)
 
 data_type <- c("HIV Estimates", "HIV Estimates", "Test & Treat", "Test & Treat")
 ind_type <- c("Integer", "Percent", "Integer", "Percent")
