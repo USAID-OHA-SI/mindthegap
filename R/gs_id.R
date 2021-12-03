@@ -16,5 +16,8 @@ gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
 gs_clean_id <- "1Vt54N2W51WEWY0XlOr6vP4pa3F-7AwpXxyRx9Y9Hcq4"
 #Clean UNAIDS estimates data on google drive
 
+pepfar_clean_id <- "14GBwcmAuGHETKknbJjeN1JkWSunpHcT4DvM3q4TlRIM"
+#PEPFAR only Clean UNAIDS data on google drive
+
 drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
 #UNAIDS drive folder

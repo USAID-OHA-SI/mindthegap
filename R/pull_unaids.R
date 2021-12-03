@@ -1,37 +1,31 @@
-#' @title Pull clean UNAIDS 2021 Estimates for PEPFAR countries
+#' @title Pull clean UNAIDS 2021 Estimates
 #'
-#' @description Pull clean UNAIDS 2021 (1990-2020) estimates for PEPFAR countries from Google Sheet
+#' @description Pull clean UNAIDS 2021 (1990-2020) estimates
 #'
 #' @param sheetname returns the tab name from the Google Sheet
 #' eg "HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent"
+#' @param pepfar_only return dataset of only PEPFAR countries if TRUE
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #'  \dontrun{
-#'    pull_unaids(sheetname = "HIV Estimates - Integer")
+#'    pull_unaids(sheetname = "HIV Estimates - Integer", pepfar_only = TRUE)
 #' }
 #'
 
-pull_unaids <- function(sheetname) {
+pull_unaids <- function(sheetname, pepfar_only = FALSE) {
 
-  #run this to get PEPFAR UNAIDS Clean data instead of the all
-  file <- googledrive::drive_ls(drive_id, "PEPFAR Only - UNAIDS 2021 Clean Estimates")
-
-  filepath <- list.files(tempdir(), "PEPFAR Only - UNAIDS 2021 Clean Estimates", full.names = TRUE)
-
-  if(length(filepath) == 0){
-    filepath <- file.path(tempdir(), "PEPFAR Only - UNAIDS 2021 Clean Estimates.xlsx")
-    googledrive::drive_download(googledrive::as_id(file$id),
-                                path = filepath,
-                                overwrite = TRUE)
+  if(pepfar_only == TRUE) {
+    google_id = pepfar_clean_id
   }
 
-   #sheetname <- readxl::excel_sheets(filepath) #get a list of sheetnames
+  else {
+    google_id = gs_clean_id
+  }
 
-  df <- readxl::read_excel(filepath, sheet = sheetname)
-
+  df <- googlesheets4::range_speedread(google_id, sheetname)
   return(df)
 
 }
