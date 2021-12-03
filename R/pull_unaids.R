@@ -4,7 +4,7 @@
 #'
 #' @param sheetname returns the tab name from the Google Sheet
 #' eg "HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent"
-#' @param pepfar_only return dataset of only PEPFAR countries if TRUE
+#' @param pepfar_only return dataset of only PEPFAR countries if TRUE (defualt = FALSE)
 #'
 #' @return
 #' @export
