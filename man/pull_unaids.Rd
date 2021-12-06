@@ -10,7 +10,7 @@ pull_unaids(sheetname, pepfar_only = FALSE)
 \item{sheetname}{returns the tab name from the Google Sheet
 eg "HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent"}
 
-\item{pepfar_only}{return dataset of only PEPFAR countries if TRUE}
+\item{pepfar_only}{return dataset of only PEPFAR countries if TRUE (defualt = FALSE)}
 }
 \value{
 

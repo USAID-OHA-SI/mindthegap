@@ -88,8 +88,7 @@ munge_unaids <- function(return_type, indicator_type) {
     gdrive_df <-  suppressWarnings(
       gdrive_df %>%
         dplyr::mutate(across(tidyselect:::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
-        dplyr::slice(-c(1,2)) %>%
-        dplyr::mutate_at(dplyr::vars(4:110), as.numeric)
+        dplyr::slice(-c(1,2))
     )
 
   }
