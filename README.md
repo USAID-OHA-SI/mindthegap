@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/USAID-OHA-SI/mindthegap.svg?branch=master)](https://travis-ci.com/USAID-OHA-SI/mindthegap)
+[![R-CMD-check](https://github.com/USAID-OHA-SI/mindthegap/workflows/R-CMD-check/badge.svg)](https://github.com/USAID-OHA-SI/mindthegap/actions)
 <!-- badges: end -->
 
 # mindthegap <img src='man/figures/logo.png' align="right" height="120" />
