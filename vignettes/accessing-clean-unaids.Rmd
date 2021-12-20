@@ -1,0 +1,25 @@
+---
+title: "Accesing Clean UNAIDS Data"
+output: rmarkdown::html_vignette
+description: |
+  This vignette addresses how to pull the clean 2020 UNAIDS Estimates from Google Drive to R.
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mindthegap)
+```
+
+### Introduction
+
+This vignette covers how to pull the clean 2020 UNAIDS Estimates from Google Drive to R. The MindTheGap package uses a cleaning function (`munge_unaids`) to process, munge, and tidy the UNAIDS HIV Estimates and `pull_unaids` to pull the cleaned data from Google Drive.
