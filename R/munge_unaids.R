@@ -1,7 +1,7 @@
 #' @title Cleaning UNAIDS Data
 #'
-#' @description This function cleans and fetches UNAIDS Estimates/Test and Treat Data
-#' @param return_type Returns either 'HIV Estimates' or 'Test & Treat' Data
+#' @description This function fetches and cleans UNAIDS Estimates/Test and Treat Data
+#' @param return_type Returns either 'HIV Estimates' or 'HIV Test & Treat' Data
 #' @param indicator_type Returns either 'Integer' or 'Percent' indicator values
 
 #' @return
@@ -9,7 +9,7 @@
 #'
 #' @examples
 #'  \dontrun{
-#'    munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
+#'    munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
 #' }
 #'
 munge_unaids <- function(return_type, indicator_type) {
