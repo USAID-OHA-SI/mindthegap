@@ -8,8 +8,10 @@ googlesheets4::gs4_auth()
 library(mindthegap)
 library(tidyverse)
 library(purrr)
+library(googledrive)
+library(googlesheets4)
 
-data_type <- c("HIV Estimates", "HIV Estimates", "Test & Treat", "Test & Treat")
+data_type <- c("HIV Estimates", "HIV Estimates", "HIV Test & Treat", "HIV Test & Treat")
 ind_type <- c("Integer", "Percent", "Integer", "Percent")
 
 #make a list of the 4 dataframes
@@ -17,6 +19,10 @@ lst <- purrr::map2( .x = data_type,
                     .y = ind_type,
                     .f = ~munge_unaids(.x, .y)
 )
+
+unaids_list <- map(1:4, ~map2(lst[.x], flag_list, ~left_join(.x, .y, by = c("country", "iso"))))
+
+unaids_list <- flatten(unaids_list)
 
 #FULL DATASET -----------------------------
 
@@ -30,12 +36,12 @@ tab_names <- c("HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Tre
 purrr::walk(.x = tab_names, .f = ~sheet_add(as_sheets_id(gs_id_new), sheet = .x))
 
 #read the data in!
-purrr::walk2(.x = lst, .y = tab_names, .f = ~sheet_write(data = .x, ss = gs_id_new, sheet = .y))
+purrr::walk2(.x = unaids_list, .y = tab_names, .f = ~sheet_write(data = .x, ss = gs_id_new, sheet = .y))
 
 #JUST PEPFAR DATASET -----------------------------
 
 #make a separate list filtering to just PEPFAR
-list_pepfar <- lapply(lst, function(x) filter(x, pepfar == "PEPFAR"))
+list_pepfar <- lapply(unaids_list, function(x) filter(x, pepfar == "PEPFAR"))
 
 #add file to drive
 gs_id_pepfar <- drive_create(name = "PEPFAR Only - UNAIDS 2021 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
