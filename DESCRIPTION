@@ -45,3 +45,5 @@ Suggests:
 Remotes: 
     ICPI/ICPIutilities,
     USAID-OHA-SI/glamr
+Depends: 
+    R (>= 2.10)
