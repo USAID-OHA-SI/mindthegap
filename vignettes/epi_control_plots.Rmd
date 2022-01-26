@@ -1,8 +1,8 @@
 ---
-title: "my-vignette"
+title: "epi_control_plots"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{epi_control_plots}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

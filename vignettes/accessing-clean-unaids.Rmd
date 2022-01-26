@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
-This vignette covers how to access the clean and tidy annual UNAIDS Estimates from Google Drive to R. The MindTheGap package uses a cleaning function (`munge_unaids`) to process, munge, and tidy the UNAIDS HIV Estimates from AIDSInfo and `pull_unaids` to pull the cleaned data from Google Drive.
+This vignette covers how to access the clean and tidy annual UNAIDS Estimates from Google Drive in R. The MindTheGap package uses a cleaning function (`munge_unaids`) to process, munge, and tidy the UNAIDS HIV Estimates from AIDSInfo and `pull_unaids` to pull the cleaned data from Google Drive.
 
 Let's start by loading the MindTheGap package.
 
@@ -35,9 +35,7 @@ The UNAIDS data reports on HIV estimates with uncertainty bounds from 1990 to 20
     - HIV/AIDS Estimates
     - HIV Testing and Treatment Cascade Data
     
-The data structure itself is not tidy and requires some munging and reshaping before it can be used for analytics and visualizations. As such, the `munge_unaids` function reads in the original dataset from Google Drive, munges and reshapes the data into a tidy format, and exports the data as a dataframe.
-
-The structure of the data from AIDSInfo itself is not tidy and requires some munging and reshaping before it can be utilized for analytics and visualizations. As such, the `munge_unaids` function reads in the original dataset from Google Drive, munges and reshapes the data in a tidy format, and exports the data as a dataframe.
+The structure of the data from AIDSInfo itself is not tidy and requires some munging and reshaping before it can be utilized for analytics and visualizations. As such, the `munge_unaids` function reads in the original dataset from Google Drive, munges and reshapes the data in a tidy format, and exports the data as a dataframe that we then push back to Google Drive.
 
 To use `munge_unaids`, there are 2 important parameters:
 1. the `return_type`: which group of data you want to use (HIV Estimates or Test & Treat Cascade)
@@ -53,10 +51,17 @@ knitr::kable(head(df), format = "html")
 With `munge_unaids`, we are left with a clean and tidy dataset that includes a flag to denote whether a country is a PEPFAR country or not. In order to make this data accessible outside of R and cut down on the processing time, we uploaded the clean UNAIDS data to Google Drive and wrote the function `pull_unaids` to easily access this data.
 
 To use `pull_unaids`, there are 2 parameters:
-1. `sheetname`: This parameter corresponds to the earlier parameter in munge_unaids that denotes the return_type and indicator_type. For this parameter, use “HIV Estimates - Integer”, “HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent". 
+
+1. `sheetname`: This parameter corresponds to the earlier parameter in `munge_unaids` that denotes the `return_type` and `indicator_type`.
+- For this parameter, use one or more of the following depending on your analytic question:
+     - “HIV Estimates - Integer”
+     - “HIV Estimates - Percent"
+     - "Test & Treat - Integer"
+     - "Test & Treat - Percent" 
+
 2. `pepfar_only`: if TRUE, this parameter will return a dataset of only PEPFAR countries 
 
-In order to access the data from Google drive, be sure to load your USAID credentials. You can achieve this by using the `glamr::load_secrets()` in the `glamr` package or authenticate through the `googlesheets` package using `googlesheets::gs_auth()`.
+In order to access the data from Google drive, be sure to load your USAID credentials. You can achieve this by using the `glamr::load_secrets()` function in the `glamr` package or authenticate through the `googlesheets` package using `googlesheets::gs_auth()`.
 
 ```{r, message = FALSE}
 library(glamr)
