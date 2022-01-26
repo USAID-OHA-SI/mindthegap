@@ -7,7 +7,7 @@
 munge_unaids(return_type, indicator_type)
 }
 \arguments{
-\item{return_type}{Returns either 'HIV Estimates' or 'Test & Treat' Data}
+\item{return_type}{Returns either 'HIV Estimates' or 'HIV Test & Treat' Data}
 
 \item{indicator_type}{Returns either 'Integer' or 'Percent' indicator values}
 }
@@ -15,11 +15,11 @@ munge_unaids(return_type, indicator_type)
 
 }
 \description{
-This function cleans and fetches UNAIDS Estimates/Test and Treat Data
+This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 }
 \examples{
  \dontrun{
-   munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
+   munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
 }
 
 }

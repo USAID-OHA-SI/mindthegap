@@ -18,3 +18,53 @@ package_check <- function(pkg){
     grDevices::windowsFonts(GillSans = grDevices::windowsFont("Gill Sans MT"))
 
 }
+
+read_rename <- function(return_type) {
+
+  #to specify NA's when reading in data
+  missing <- c("...", " ")
+
+  sheetname = ifelse(return_type == "HIV Estimates", "HIV estimates - by Year", "HIV Test & Treat - by Year ")
+  skip_n = ifelse(sheetname == "HIV estimates - by Year", 5, 4)
+
+  gdrive_df <- suppressMessages(
+    googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing) %>%
+    dplyr::rename(year = !!names(.[1]),
+                  iso =  !!names(.[2]),
+                  country =  !!names(.[3]))
+  )
+
+  gdrive_df <- validate_cols(gdrive_df, return_type)
+
+  if (return_type == "HIV Test & Treat") {
+    gdrive_df <-  suppressWarnings(
+      gdrive_df %>%
+        dplyr::mutate(across(tidyselect:::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
+        dplyr::slice(-c(1,2))
+    )
+  }
+
+  return(gdrive_df)
+}
+
+
+validate_cols <- function(df, return_type) {
+
+  sheetname <- ifelse(return_type == "HIV Estimates", "HIV estimates - by Year", "HIV Test & Treat - by Year ")
+
+  names_cw <- suppressMessages(
+    googlesheets4::read_sheet(gs_id_names, sheet = sheetname) %>%
+    #dplyr::filter(sheet == "HIV Test & Treat - by Year ") %>%
+    dplyr::select(-sheet) %>%
+    tidyr::pivot_wider(names_from = names,
+                       values_from = names_original) %>%
+    dplyr::select(-value)
+  )
+
+  #change column names - stop if length of names is not the same as length of df
+  stopifnot(ncol(names_cw) == ncol(df))
+  names(df) <- names(names_cw)
+
+  return(df)
+
+}
