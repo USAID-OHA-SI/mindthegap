@@ -48,6 +48,7 @@ Suggests:
 Remotes: 
     ICPI/ICPIutilities,
     USAID-OHA-SI/glamr
+    USAID-OHA-SI/glitr
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

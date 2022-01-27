@@ -1,6 +1,6 @@
 #' Epidemic Control Plot
-#' @description This function creates epidemic control curves for selected OU
-#' @param sel_cntry country to visualize
+#' @description This function creates epidemic control curves for selected OU or "ALL PEPFAR"
+#' @param sel_cntry country to visualize (OU name or "ALL PEPFAR")
 #'
 #' @return epidemic control plot showing trends in new infections and AIDS-related deaths
 #' @export
@@ -8,6 +8,7 @@
 #' @examples
 #'  \dontrun{
 #'    epi_plot(sel_cntry = "Lesotho")
+#'    epi_plot(sel_cntry = "ALL PEPFAR")
 #' }
 #'
 
@@ -40,7 +41,7 @@ epi_plot <- function(sel_cntry) {
     tidyr::pivot_longer(c(infections, deaths), names_to = "indicator") %>%
     dplyr::arrange(country, indicator, year) %>%
     dplyr::mutate(value_mod = ifelse(indicator == "deaths", -value, value),
-           fill_color = ifelse(indicator == "deaths", old_rose, denim))
+           fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim))
 
   if (sel_cntry == "ALL PEPFAR") {
 
@@ -49,16 +50,16 @@ epi_plot <- function(sel_cntry) {
       dplyr::mutate(country = "All PEPFAR") %>%
       dplyr::group_by(country, year, indicator, fill_color) %>%
       dplyr::summarise(across(c(value, value_mod), sum, na.rm = TRUE), .groups = "drop") %>%
-      dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ number(value, 1, scale = 1e-3, suffix = "k")),
+      dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ scales::number(value, 1, scale = 1e-3, suffix = "k")),
              max_plot_pt = max(value),
              lab_pt = dplyr::case_when(year == max(year) ~ value_mod))
 
-    df_viz_pepfar %>%
+   viz <- df_viz_pepfar %>%
       ggplot(aes(year, value_mod, group = indicator, fill = fill_color, color = fill_color)) +
       # geom_blank(aes(y = ymax)) +
       #  geom_blank(aes(y = -ymax)) +
       geom_area(alpha = .25) +
-      geom_hline(yintercept = 0, color = grey80k) +
+      geom_hline(yintercept = 0, color = glitr::grey80k) +
       geom_line() +
       geom_point(aes(y = lab_pt), na.rm = TRUE,
                  shape = 21, color = "white", size = 3) +
@@ -66,13 +67,15 @@ epi_plot <- function(sel_cntry) {
                 hjust = -0.3,
                 family = "Source Sans Pro Light") +
       facet_wrap(~country) +
-      scale_y_continuous(labels = ~ label_number_si()(abs(.))) +
+      scale_y_continuous(labels = ~ scales::label_number_si()(abs(.))) +
       scale_x_continuous(breaks = seq(1990, 2025, 5)) +
       scale_fill_identity(aesthetics = c("fill", "color")) +
       labs(x = NULL, y = NULL) +
       coord_cartesian(expand = T, clip = "off") +
       glitr::si_style_ygrid() +
       theme(axis.text.y = ggtext::element_markdown())
+
+   suppressWarnings(print(viz))
   }
 
   else{
@@ -80,18 +83,18 @@ epi_plot <- function(sel_cntry) {
     #COUNTRY
     df_viz_cntry <- df_epi_pepfar %>%
       dplyr::filter(country %in% sel_cntry) %>%
-      dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ number(value, 1, scale = 1e-3, suffix = "k")),
+      dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ scales::number(value, 1, scale = 1e-3, suffix = "k")),
              max_plot_pt = max(value),
              lab_pt = dplyr::case_when(year == max(year) ~ value_mod),
              country = factor(country, sel_cntry))
 
     #VIZ
-    df_viz_cntry %>%
+    viz <- df_viz_cntry %>%
       ggplot(aes(year, value_mod, group = indicator, fill = fill_color, color = fill_color)) +
       #geom_blank(aes(y = ymax)) +
       # geom_blank(aes(y = -ymax)) +
       geom_area(alpha = .25) +
-      geom_hline(yintercept = 0, color = grey80k) +
+      geom_hline(yintercept = 0, color = glitr::grey80k) +
       geom_line() +
       geom_point(aes(y = lab_pt), na.rm = TRUE,
                  shape = 21, color = "white", size = 3) +
@@ -99,7 +102,7 @@ epi_plot <- function(sel_cntry) {
                 hjust = -0.3,
                 family = "Source Sans Pro Light") +
       facet_wrap(~country, ncol = 2, scales = "free_y") +
-      scale_y_continuous(labels = ~ label_number_si()(abs(.))) +
+      scale_y_continuous(labels = ~ scales::label_number_si()(abs(.))) +
       scale_x_continuous(breaks = seq(1990, 2025, 10)) +
       scale_fill_identity(aesthetics = c("fill", "color")) +
       labs(x = NULL, y = NULL) +
@@ -108,6 +111,8 @@ epi_plot <- function(sel_cntry) {
       theme(axis.text.y = ggtext::element_markdown(),
             panel.spacing.x = unit(20, "pt"),
             panel.spacing.y = unit(0, "pt"))
+
+    suppressWarnings(print(viz))
   }
 
 }

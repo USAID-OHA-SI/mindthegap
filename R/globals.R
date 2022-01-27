@@ -7,5 +7,5 @@ utils::globalVariables(c("where", "operatingunit",
                          "PLHIV", "ind", "type", "lower", "upper", "df_impatt",
                          "share_on_ART", "df_unaids", "label", "desc", "across",
                          "age", "deaths", "infections", "declining_deaths",
-                         "infections_below_deaths", "old_rose", "denim", "fill_color",
-                         "value_mod", "grey80k", "lab_pt", "val_lab"))
+                         "infections_below_deaths", "fill_color",
+                         "value_mod", "lab_pt", "val_lab"))

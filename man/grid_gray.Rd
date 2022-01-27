@@ -13,4 +13,4 @@ grid_gray
 \description{
 color used for plot grid
 }
-\keyword{datasets}
+\keyword{internal}

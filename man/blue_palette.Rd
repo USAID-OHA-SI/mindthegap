@@ -13,4 +13,4 @@ blue_palette
 \description{
 color used for dots/lines/bars
 }
-\keyword{datasets}
+\keyword{internal}

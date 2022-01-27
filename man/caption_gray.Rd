@@ -13,4 +13,4 @@ caption_gray
 \description{
 color used for plot caption
 }
-\keyword{datasets}
+\keyword{internal}

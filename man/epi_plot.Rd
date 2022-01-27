@@ -7,17 +7,18 @@
 epi_plot(sel_cntry)
 }
 \arguments{
-\item{sel_cntry}{country to visualize}
+\item{sel_cntry}{country to visualize (OU name or "ALL PEPFAR")}
 }
 \value{
 epidemic control plot showing trends in new infections and AIDS-related deaths
 }
 \description{
-This function creates epidemic control curves for selected OU
+This function creates epidemic control curves for selected OU or "ALL PEPFAR"
 }
 \examples{
  \dontrun{
    epi_plot(sel_cntry = "Lesotho")
+   epi_plot(sel_cntry = "ALL PEPFAR")
 }
 
 }

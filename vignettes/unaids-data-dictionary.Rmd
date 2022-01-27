@@ -114,7 +114,8 @@ kable(
     - **`New HIV Infections`**
     - **`AIDS Related Deaths`**
 
-For more information on how to create these plots, see _______.
+For more information on how to create these plots, see the article `Epidemic Control Plots.`
+
 
 ### Use Case #2: Incidence/Prevalence Curves
 
@@ -143,8 +144,6 @@ kable(
 - To create the incidence/prevalence curves, you will need 2 indicators from the `HIV Estimates - Percent` tab: 
     - **`Prevalence`**
     - **`Incidence`**
-
-For more information on how to create these plots, see _______.
 
 ## Test & Treat Indicators & Use Cases
 
@@ -223,6 +222,6 @@ As you may notice, there are multiple test & treat percent indicators for the cl
     - **`PLHIV_ON_ART`**: Among PLHVIV, percent on ART
     - **`VLS`**: Among PLHIV, percent virally suppressed
     
-For more information about the distinction between relative/PLHIV base and how to assess 90-90-90 progress, see `90-90-90 Target Progress: Relative Base vs. PLHIV Base`.
+For more information about the distinction between relative/PLHIV base and how to assess 90-90-90 progress, see the article `90-90-90 Target Progress: Relative Base vs. PLHIV Base`.
 
     
