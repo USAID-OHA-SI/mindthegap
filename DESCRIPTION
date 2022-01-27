@@ -47,7 +47,7 @@ Suggests:
     rmarkdown
 Remotes: 
     ICPI/ICPIutilities,
-    USAID-OHA-SI/glamr
+    USAID-OHA-SI/glamr,
     USAID-OHA-SI/glitr
 VignetteBuilder: knitr
 Depends: 
