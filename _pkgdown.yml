@@ -1,7 +1,6 @@
-url: https://usaid-oha-si.github.io/mindthegap
+url: https://usaid-oha-si.github.io/mindthegap/
 template:
   bootstrap: 5
-
 navbar:
   structure:
     left:
@@ -12,34 +11,17 @@ navbar:
     - tutorials
     - news
     right: github
-
-
-
 reference:
-
 - title: Accessing Clean UNAIDS Estimates
-  contents:
-  - pull_unaids
-
+  contents: pull_unaids
 - title: Mindthegap Plotting
-  contents:
-  - epi_plot
-
+  contents: epi_plot
 - title: UNAIDS Cleaning Function
-  contents:
-  - munge_unaids
-
+  contents: munge_unaids
 - title: Global variables
   contents:
   - regions
   - source_note
-
 - title: Package checks
-  contents:
-  - package_check
-
-
-
-
-
+  contents: package_check
 
