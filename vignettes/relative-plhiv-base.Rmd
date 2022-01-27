@@ -1,0 +1,129 @@
+---
+title: "90-90-90 Target Progress: Relative Base vs. PLHIV Base"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{03_relative-plhiv-base}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE, message = FALSE}
+library(mindthegap)
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(glamr)
+load_secrets()
+```
+
+## Introduction
+
+In 2014, UNAIDS proposed the 90-90-90 targets which were set to be achieved by 2020, where 90% of PLHIV know their status, 90% of those who know their status are accessing treatment, and 90% of those who are accessing treatment are virally suppressed.
+
+Importantly, there are two types of metrics to measure 90-90-90 target progress by: **the PLHIV base** and the **relative/conditional denominator** base. This vignette will outline the key differences between the two metrics, which UNAIDS indicators to use for each, and how to interpret the different parameters.
+
+### What's the difference between the relative base and the PLHIV base? 
+
+The **relative base or conditional denominator** (based on the targets) is important for countries and programs to know where to focus their response. This metric provides values on a sliding scale, where 90% of PLHIV know their status, 90% of those who know their status are accessing treatment, and 90% of those who are accessing treatment are virally suppressed.
+
+The **PLHIV base/denominator** (testing and treatment cascade) is best used for comparing countries and for knowing country-specific progress towards curbing their HIV epidemic. With PLHIV as the base for the 3 90's, the targets become 90% of PLHIV known their status, 81% of PLHIV are accessing treatment, and 73% of PLHIV are virally suppressed.
+
+Both are useful, but for different purposes (see visual below).
+
+```{r, echo = FALSE, fig.align="center"}
+knitr::include_graphics("unaids-90s.png", dpi = 150)
+```
+
+### How to use UNAIDS Data to Assess 90's Progress
+
+To assess progress to 90-90-90 targets, we will use the `"Test & Treat - Percent"` data:
+
+```{r, message = FALSE}
+df_tt <- pull_unaids(sheetname = "Test & Treat - Percent", pepfar_only = TRUE)
+```
+
+- If you are using the **relative base** to track 90-90-90 progress, use the following indicators from the `"Test & Treat - Percent"` data tab.
+    - **`KNOWN_STATUS`**: Percent of PLHIV who known their HIV status
+    - **`KNOWN_STATUS_ON_ART`**: Among those who know their status, percent on ART
+    - **`ON_ART_VLS`**: Among those who are on ART, percent virally suppressed
+    
+- If you are using the **PLHIV base**, use the following indicators from the "Test & Treat - Percent" data tab.
+    - **`KNOWN_STATUS`**: Percent of PLHIV who known their HIV status
+    - **`PLHIV_ON_ART`**: Among PLHVIV, percent on ART
+    - **`VLS`**: Among PLHIV, percent virally suppressed
+    
+Let's take a deep dive into Kenya's progress to the 90's using the PLHIV base.    
+```{r, message = FALSE}
+goal <- 90
+
+ #limit Test and Treat data
+  df_tt_plhiv <- df_tt %>% 
+    filter(year == max(year),
+           country == "Kenya",
+           indicator %in% c("KNOWN_STATUS", "PLHIV_ON_ART", "VLS"), #Using the PLHIV base indicators
+           age == "all",
+           sex == "all",
+           stat == "est") %>% 
+    mutate(set = recode(indicator, "KNOWN_STATUS" = 1, 
+                        "PLHIV_ON_ART" = 2,
+                        "VLS" = 3),
+           goal_rate = round((goal/100)^set*100), 
+           achieved = value >= goal_rate) %>% #sets the moving goal rate for each 90 for PLHIV base
+    select(year, country, indicator, value, goal_rate, achieved)
+
+knitr::kable(df_tt_plhiv,
+             format = "html",
+             caption = "Kenya's 90-90-90 Progress using PLHIV Base") %>% 
+    kable_styling(bootstrap_options = c("hover"))
+
+```  
+
+As we can see, using the PLHIV base, Kenya reached all 3 90's - 96% of PLHIV know their status, 86% of PLHIV are accessing treatment, and 81% of PLHIV are virally suppressed.
+
+What happens if we use the relative base?
+
+```{r, message = FALSE}
+goal <- 90
+
+ #limit Test and Treat data
+  df_tt_rel <- df_tt %>% 
+    filter(year == max(year),
+           country == "Kenya",
+           indicator %in% c("KNOWN_STATUS", "KNOWN_STATUS_ON_ART", "ON_ART_VLS"), #using relative base indicators
+           age == "all",
+           sex == "all",
+           stat == "est") %>%
+    mutate(goal_rate = goal, #use 90 as the goal metric for each indicator
+           achieved = value >= goal_rate) %>% 
+    select(year, country, indicator, value, goal_rate, achieved)
+
+knitr::kable(df_tt_rel,
+             format = "html",
+             caption = "Kenya's 90-90-90 Progress using the Relative Base") %>% 
+    kable_styling(bootstrap_options = c("hover"))
+
+```
+
+Using the relative base, we can see that 96% of PLHIV in Kenya know their status, 89% of the 96% who know their status are on treatment, and 94% of the 89% who are on treatment are virally suppressed. As such, Kenya meets the 1st and 3rd 90 with the relative base, but does not reach the 2nd 90.  
+
+As a result of these differences between the 2 metrics, the number of PEPFAR countries that have reached all of the 90s varies depending on the denominator.
+
+With the relative base, 6 countries have reached all 3 90's: **Eswatini, Rwanda, Malawi, Botswana, Uganda, and Namibia**.
+
+```{r, echo = FALSE}
+knitr::include_graphics("6-countries-relative-base.png", dpi = 150)
+```
+
+With the PLHIV base, the list of countries expands from 6 to 9 countries that have reached all 3 90's, adding **Kenya, Zimbabwe, and Lesotho**.
+
+```{r, echo = FALSE}
+knitr::include_graphics("9-countries-PLHIV-base.png", dpi = 150)
+```
+

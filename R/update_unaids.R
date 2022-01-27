@@ -3,7 +3,7 @@
 #' @param filepaths filepaths to all 3 UNAIDS files - ALL, Female, Male
 #' @param usaid_email USAID email to store file on GDrive
 #'
-#' @export
+#' @keywords internal
 #' @importFrom googlesheets4 as_sheets_id
 #'
 #' @examples

@@ -4,7 +4,7 @@
 
 # mindthegap <img src='man/figures/logo.png' align="right" height="120" />
 
-mindthegap was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package in advance of this year's cycle for ease of access.
+mindthegap was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package to process, clean, and export tidy UNAIDS Estimates data for ease of access.
 
 ## Installing mindthegap
 
@@ -23,23 +23,14 @@ If you do not have the devtools package installed, you will have to run the `ins
 
 ## Example
 
-This is a basic example of how to load the data, plot it and export.
+This is a basic example of how to load the data from Google Drive using `pull_unaids`.
 
 ```{r}
 library(mindthegap)
 
-#load the data from Google Drive
-  load_data()
-
-#plot gaps for South Africa
-  combo_plot("South Africa")
-  
-#save plot gaps for South Africa
-  combo_plot("South Africa", "Images")
+df_est <- pull_unaids(sheetname = "HIV Estimates - Integer", pepfar_only = TRUE)
 
 ```
-
-![Cascade_ZAF](https://user-images.githubusercontent.com/8933069/97037419-43cfab80-1537-11eb-9957-1c5072b465dd.png)
 
 ## Data Sources
 

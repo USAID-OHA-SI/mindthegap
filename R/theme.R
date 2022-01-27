@@ -1,7 +1,7 @@
 #' Mind The Gap Plot Theme
 #'
 #' @return theme
-#' @export
+#' @keywords internal
 #'
 mtg_theme <- function(){
     ggplot2::theme(text = element_text(family = "GillSans", color = base_gray, size = 12),

@@ -14,6 +14,7 @@ Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals
 Useful links:
 \itemize{
   \item \url{https://github.com/USAID-OHA-SI/mindthegap}
+  \item \url{https://usaid-oha-si.github.io/mindthegap}
   \item Report bugs at \url{https://github.com/USAID-OHA-SI/mindthegap/issues}
 }
 

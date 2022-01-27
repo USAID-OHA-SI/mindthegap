@@ -13,4 +13,4 @@ base_gray
 \description{
 color used for plot elements
 }
-\keyword{datasets}
+\keyword{internal}
