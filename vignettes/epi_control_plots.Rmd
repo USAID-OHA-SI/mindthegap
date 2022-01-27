@@ -1,5 +1,5 @@
 ---
-title: "epi_control_plots"
+title: "Epidemic Control Plots"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{epi_control_plots}
@@ -14,6 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include = FALSE, message = FALSE}
 library(mindthegap)
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(glamr)
+load_secrets()
 ```
