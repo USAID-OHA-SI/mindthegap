@@ -4,7 +4,8 @@
 #' @param folderpath_output folderpath where outputs will be stored, if NULL (default) no outputsaved
 #'
 #' @return combined plots of 90-90-90 trends and ART gap by age/sex
-#' @export
+#'
+#' @keywords internal
 #'
 
 combo_plot <- function(ctry_sel, folderpath_output = NULL){
@@ -39,7 +40,7 @@ combo_plot <- function(ctry_sel, folderpath_output = NULL){
 #'
 #' @import ggplot2
 #'
-#' @export
+#' @keywords internal
 
 viz_unaids <- function(ctry_sel){
 
@@ -84,7 +85,7 @@ viz_unaids <- function(ctry_sel){
 #'
 #' @import ggplot2
 #'
-#' @export
+#' @keywords internal
 
 viz_impatt <- function(ctry_sel){
 

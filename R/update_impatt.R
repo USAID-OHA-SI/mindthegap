@@ -3,7 +3,7 @@
 #' @param filepath filepath to IMPATT data (from pepfar-panorama.org)
 #' @param usaid_email USAID email to store file on GDrive
 #'
-#' @export
+#' @keywords internal
 #' @importFrom googlesheets4 as_sheets_id
 #'
 #' @examples

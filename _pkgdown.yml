@@ -17,55 +17,27 @@ navbar:
 
 reference:
 
-
 - title: Accessing Clean UNAIDS Estimates
   contents:
   - pull_unaids
 
-
-
 - title: Mindthegap Plotting
   contents:
-  - combo_plot
-  - mtg_theme
-  - viz_impatt
-  - viz_unaids
-
-
-
-- title: Mindthegap Plot Colors
-  contents:
-  - base_gray
-  - blue_palette
-  - caption_gray
-  - grid_gray
-
-
+  - epi_plot
 
 - title: UNAIDS Cleaning Function
   contents:
   - munge_unaids
-
-
-
-- title: Package checks
-  contents:
-  - package_check
-
-
 
 - title: Global variables
   contents:
   - regions
   - source_note
 
-
-
-- title: Archived functions
+- title: Package checks
   contents:
-  - unaids_hdrs
-  - update_unaids
-  - update_impatt
+  - package_check
+
 
 
 
