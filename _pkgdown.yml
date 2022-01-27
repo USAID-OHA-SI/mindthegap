@@ -24,4 +24,9 @@ reference:
   - source_note
 - title: Package checks
   contents: package_check
+- title: Archived functions
+  contents:
+  - load_data
+  - unaids_hdrs
+
 
