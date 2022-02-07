@@ -32,16 +32,16 @@ epi_plot <- function(sel_cntry) {
     dplyr::mutate(declining_deaths = deaths - dplyr::lag(deaths, order_by = year) <= 0) %>% #create a value that if true indicates declining deaths
     dplyr::ungroup() %>%
     dplyr::mutate(infections_below_deaths = infections < deaths,
-           ratio = infections / deaths,
-           direction_streak = sequence(rle(declining_deaths)$lengths),
-           epi_control = declining_deaths == TRUE & infections_below_deaths == TRUE) #epi control definition
+                  ratio = infections / deaths,
+                  direction_streak = sequence(rle(declining_deaths)$lengths),
+                  epi_control = declining_deaths == TRUE & infections_below_deaths == TRUE) #epi control definition
 
   #Add colors to indicators and flip axis
   df_epi_pepfar <- df_epi_pepfar %>%
     tidyr::pivot_longer(c(infections, deaths), names_to = "indicator") %>%
     dplyr::arrange(country, indicator, year) %>%
     dplyr::mutate(value_mod = ifelse(indicator == "deaths", -value, value),
-           fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim))
+                  fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim))
 
   if (sel_cntry == "ALL PEPFAR") {
 
@@ -49,12 +49,16 @@ epi_plot <- function(sel_cntry) {
     df_viz_pepfar <- df_epi_pepfar %>%
       dplyr::mutate(country = "All PEPFAR") %>%
       dplyr::group_by(country, year, indicator, fill_color) %>%
-      dplyr::summarise(across(c(value, value_mod), sum, na.rm = TRUE), .groups = "drop") %>%
+      dplyr::summarise(dplyr::across(c(value, value_mod), sum, na.rm = TRUE), .groups = "drop") %>%
       dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ scales::number(value, 1, scale = 1e-3, suffix = "k")),
-             max_plot_pt = max(value),
-             lab_pt = dplyr::case_when(year == max(year) ~ value_mod))
+                    max_plot_pt = max(value),
+                    min_plot_pt = min(value_mod),
+                    lab_pt = dplyr::case_when(year == max(year) ~ value_mod),
+                    indicator = ifelse(indicator == "deaths", "AIDS Related Deaths", "New HIV Infections"),
+                    new_hiv_label = dplyr::case_when(value == max_plot_pt ~ indicator),
+                    aids_label = dplyr::case_when(value_mod == min_plot_pt ~ indicator))
 
-   viz <- df_viz_pepfar %>%
+    viz <- df_viz_pepfar %>%
       ggplot(aes(year, value_mod, group = indicator, fill = fill_color, color = fill_color)) +
       # geom_blank(aes(y = ymax)) +
       #  geom_blank(aes(y = -ymax)) +
@@ -66,16 +70,26 @@ epi_plot <- function(sel_cntry) {
       geom_text(aes(label = val_lab), na.rm = TRUE,
                 hjust = -0.3,
                 family = "Source Sans Pro Light") +
+      geom_text(aes(label = new_hiv_label, x = 2010, y = (max_plot_pt + 1000)), na.rm = TRUE,
+                hjust = -0.3,
+                family = "Source Sans Pro Light") +
+      geom_text(aes(label = aids_label, x = 2010, y = (min_plot_pt + 1000)), na.rm = TRUE,
+                hjust = -0.3,
+                family = "Source Sans Pro Light") +
       facet_wrap(~country) +
       scale_y_continuous(labels = ~ scales::label_number_si()(abs(.))) +
       scale_x_continuous(breaks = seq(1990, 2025, 5)) +
       scale_fill_identity(aesthetics = c("fill", "color")) +
+      # annotate(geom = "text", x = 1994, y = 2.8e6, label = c("New HIV Infections"), hjust = 0,
+      #          family = "Source Sans Pro Light", color =  glitr::denim) +
+      # annotate(geom = "text", x = 1994, y = -1.5e6, label = c("AIDS-related Deaths"), hjust = 0,
+      #          family = "Source Sans Pro Light", color =  glitr::old_rose) +
       labs(x = NULL, y = NULL) +
       coord_cartesian(expand = T, clip = "off") +
       glitr::si_style_ygrid() +
       theme(axis.text.y = ggtext::element_markdown())
 
-   suppressWarnings(print(viz))
+    suppressWarnings(print(viz))
   }
 
   else{
@@ -84,9 +98,14 @@ epi_plot <- function(sel_cntry) {
     df_viz_cntry <- df_epi_pepfar %>%
       dplyr::filter(country %in% sel_cntry) %>%
       dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ scales::number(value, 1, scale = 1e-3, suffix = "k")),
-             max_plot_pt = max(value),
-             lab_pt = dplyr::case_when(year == max(year) ~ value_mod),
-             country = factor(country, sel_cntry))
+                    max_plot_pt = max(value),
+                    min_plot_pt = min(value_mod),
+                    lab_pt = dplyr::case_when(year == max(year) ~ value_mod),
+                    country = factor(country, sel_cntry),
+                    indicator = ifelse(indicator == "deaths", "AIDS Related Deaths", "New HIV Infections"),
+                    #ind_lab = dplyr::case_when(value == max(value) ~ indicator),
+                    new_hiv_label = dplyr::case_when(value == max_plot_pt ~ indicator),
+                    aids_label = dplyr::case_when(value_mod == min_plot_pt ~ indicator))
 
     #VIZ
     viz <- df_viz_cntry %>%
@@ -101,16 +120,20 @@ epi_plot <- function(sel_cntry) {
       geom_text(aes(label = val_lab), na.rm = TRUE,
                 hjust = -0.3,
                 family = "Source Sans Pro Light") +
-      facet_wrap(~country, ncol = 2, scales = "free_y") +
+      geom_text(aes(label = new_hiv_label, x = 2010, y = (max_plot_pt + 1000)), na.rm = TRUE,
+                hjust = -0.3,
+                family = "Source Sans Pro Light") +
+      geom_text(aes(label = aids_label, x = 2010, y = (min_plot_pt + 1000)), na.rm = TRUE,
+                hjust = -0.3,
+                family = "Source Sans Pro Light") +
+      facet_wrap(~country) +
       scale_y_continuous(labels = ~ scales::label_number_si()(abs(.))) +
       scale_x_continuous(breaks = seq(1990, 2025, 10)) +
       scale_fill_identity(aesthetics = c("fill", "color")) +
       labs(x = NULL, y = NULL) +
       coord_cartesian(expand = T, clip = "off") +
       glitr::si_style_ygrid() +
-      theme(axis.text.y = ggtext::element_markdown(),
-            panel.spacing.x = unit(20, "pt"),
-            panel.spacing.y = unit(0, "pt"))
+      theme(axis.text.y = ggtext::element_markdown())
 
     suppressWarnings(print(viz))
   }

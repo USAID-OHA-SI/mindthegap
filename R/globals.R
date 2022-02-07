@@ -8,4 +8,5 @@ utils::globalVariables(c("where", "operatingunit",
                          "share_on_ART", "df_unaids", "label", "desc", "across",
                          "age", "deaths", "infections", "declining_deaths",
                          "infections_below_deaths", "fill_color",
-                         "value_mod", "lab_pt", "val_lab"))
+                         "value_mod", "lab_pt", "val_lab", "new_hiv_label",
+                         "max_plot_pt", "aids_label", "min_plot_pt", "countryname_iso"))
