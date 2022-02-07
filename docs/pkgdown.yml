@@ -1,0 +1,13 @@
+pandoc: 2.14.0.3
+pkgdown: 2.0.1.9000
+pkgdown_sha: 83ddb78f31dfeb6491ade584a720d5f101c54389
+articles:
+  accessing-clean-unaids: accessing-clean-unaids.html
+  epi_control_plots: epi_control_plots.html
+  relative-plhiv-base: relative-plhiv-base.html
+  unaids-data-dictionary: unaids-data-dictionary.html
+last_built: 2022-02-07T18:17Z
+urls:
+  reference: https://usaid-oha-si.github.io/mindthegap/reference
+  article: https://usaid-oha-si.github.io/mindthegap/articles
+
