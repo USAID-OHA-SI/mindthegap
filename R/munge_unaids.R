@@ -34,7 +34,7 @@ munge_unaids <- function(return_type, indicator_type) {
     tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
     pivot_wider(names_from = 'stat', values_from = "value")
 
-
+  #Add sheet and indicator type variable
   gdrive_df_clean <- gdrive_df_clean %>%
     dplyr::mutate(sheet = return_type,
                   sex = ifelse(indicator == "pmtct", "female", sex),
@@ -47,6 +47,7 @@ munge_unaids <- function(return_type, indicator_type) {
                   )
     )
 
+  #Recode indicators and rename columns
   gdrive_df_clean <- gdrive_df_clean %>%
     dplyr::mutate(indicator = dplyr::recode(indicator,
                                             "prev" = "Prevalence",
@@ -65,7 +66,10 @@ munge_unaids <- function(return_type, indicator_type) {
                                             "vlsNum" = "VLS",
                                             "pmtct" = "PMTCT", #what to call this
                                             "pmtctArt" = "PMTCT_ON_ART",
-                                            "pmtctArtPct" = "PMTCT_ON_ART"))
+                                            "pmtctArtPct" = "PMTCT_ON_ART")) %>%
+    rename(estimate = est,
+           lower_bound = low,
+           upper_bound = high)
 
   gdrive_df_clean <- glamr::pepfar_country_list %>%
     dplyr::select(countryname, iso = countryname_iso) %>%
