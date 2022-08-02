@@ -32,7 +32,7 @@ munge_unaids <- function(return_type, indicator_type) {
     tidyr::pivot_longer(-c(year, iso, country, regions),
                         names_to = c("indicator")) %>%
     tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
-    pivot_wider(names_from = 'stat', values_from = "value")
+    tidyr::pivot_wider(names_from = 'stat', values_from = "value")
 
   #Add sheet and indicator type variable
   gdrive_df_clean <- gdrive_df_clean %>%
@@ -67,7 +67,7 @@ munge_unaids <- function(return_type, indicator_type) {
                                             "pmtct" = "PMTCT", #what to call this
                                             "pmtctArt" = "PMTCT_ON_ART",
                                             "pmtctArtPct" = "PMTCT_ON_ART")) %>%
-    rename(estimate = est,
+    dplyr::rename(estimate = est,
            lower_bound = low,
            upper_bound = high)
 
@@ -83,7 +83,7 @@ munge_unaids <- function(return_type, indicator_type) {
 #Export final df
   final_df <- suppressWarnings(
     gdrive_df_clean %>%
-      dplyr::mutate(across(est:high, ~as.numeric(.x)),
+      dplyr::mutate(across(estimate:upper_bound, ~as.numeric(.x)),
                     indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title())
 
   )
