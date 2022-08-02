@@ -71,11 +71,13 @@ munge_unaids <- function(return_type, indicator_type) {
            lower_bound = low,
            upper_bound = high)
 
-  gdrive_df_clean <- glamr::pepfar_country_list %>%
-    dplyr::select(countryname, iso = countryname_iso) %>%
+  #add PEPFAR grouping category
+  gdrive_df_clean <-  glamr::pepfar_country_list %>%
+    dplyr::select(country, iso = country_iso) %>%
+    dplyr::rename(countryname = country) %>%
     dplyr::left_join(gdrive_df_clean, ., by = "iso") %>%
     dplyr::mutate(country = ifelse(is.na(countryname), country, countryname),
-                  pepfar = ifelse(is.na(countryname), "Non-PEPFAR", "PEPFAR")) %>%
+                  pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>%
     dplyr::select(-countryname)
 
 
