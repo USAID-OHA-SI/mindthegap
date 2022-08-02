@@ -19,8 +19,10 @@ munge_unaids <- function(return_type, indicator_type) {
 
   #sheet_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
 
+  #Read Data from googlesheet and validate columns
   gdrive_df <- read_rename(return_type)
 
+  #Munge
   gdrive_df_clean <-
     gdrive_df %>%
     dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
@@ -29,7 +31,9 @@ munge_unaids <- function(return_type, indicator_type) {
     tidyr::fill(regions) %>% #get regions column
     tidyr::pivot_longer(-c(year, iso, country, regions),
                         names_to = c("indicator")) %>%
-    tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat"))
+    tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
+    pivot_wider(names_from = 'stat', values_from = "value")
+
 
   gdrive_df_clean <- gdrive_df_clean %>%
     dplyr::mutate(sheet = return_type,
