@@ -80,12 +80,11 @@ munge_unaids <- function(return_type, indicator_type) {
                   pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>%
     dplyr::select(-countryname)
 
-
+#Export final df
   final_df <- suppressWarnings(
     gdrive_df_clean %>%
-      dplyr::mutate(value = as.numeric(value),
-                    indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title()) %>%
-      dplyr::filter(indic_type == indicator_type)
+      dplyr::mutate(across(est:high, ~as.numeric(.x)),
+                    indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title())
 
   )
 
