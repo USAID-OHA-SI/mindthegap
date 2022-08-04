@@ -27,9 +27,9 @@ munge_unaids <- function(return_type, indicator_type) {
     gdrive_df %>%
     dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
     #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
-    dplyr::mutate(regions = ifelse(country %in% regions, country, NA)) %>%
-    tidyr::fill(regions) %>% #get regions column
-    tidyr::pivot_longer(-c(year, iso, country, regions),
+    dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
+    tidyr::fill(region) %>% #get regions column
+    tidyr::pivot_longer(-c(year, iso, country, region),
                         names_to = c("indicator")) %>%
     tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
     tidyr::pivot_wider(names_from = 'stat', values_from = "value")
