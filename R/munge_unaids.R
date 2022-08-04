@@ -83,7 +83,7 @@ munge_unaids <- function(return_type, indicator_type) {
 #Export final df
   final_df <- suppressWarnings(
     gdrive_df_clean %>%
-      dplyr::mutate(across(estimate:upper_bound, ~as.numeric(.x)),
+      dplyr::mutate(across(estimate:upper_bound, ~as.integer(.x)),
                     indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title(),
                     across(age:sex, ~stringr::str_to_title(.x))) %>%
       dplyr::filter(indic_type == indicator_type)
