@@ -2,25 +2,25 @@
 % Please edit documentation in R/pull_unaids.R
 \name{pull_unaids}
 \alias{pull_unaids}
-\title{Pull clean UNAIDS 2021 Estimates}
+\title{Pull clean UNAIDS 2022 Estimates}
 \usage{
 pull_unaids(sheetname, pepfar_only = FALSE)
 }
 \arguments{
-\item{sheetname}{returns the tab name from the Google Sheet
-eg "HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent"}
+\item{pepfar_only}{return dataset of only PEPFAR countries if TRUE (default = FALSE)}
 
-\item{pepfar_only}{return dataset of only PEPFAR countries if TRUE (defualt = FALSE)}
+\item{data_type}{returns the data type requested
+eg "HIV Estimates", "Test & Treat"}
 }
 \value{
 
 }
 \description{
-Pull clean UNAIDS 2021 (1990-2020) estimates
+Pull clean UNAIDS 2022 (1990-2021) estimates
 }
 \examples{
  \dontrun{
-   pull_unaids(sheetname = "HIV Estimates - Integer", pepfar_only = TRUE)
+   pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
 }
 
 }

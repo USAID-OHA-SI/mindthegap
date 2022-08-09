@@ -1,17 +1,17 @@
-#' @title Pull clean UNAIDS 2021 Estimates
+#' @title Pull clean UNAIDS 2022 Estimates
 #'
-#' @description Pull clean UNAIDS 2021 (1990-2020) estimates
+#' @description Pull clean UNAIDS 2022 (1990-2021) estimates
 #'
-#' @param sheetname returns the tab name from the Google Sheet
-#' eg "HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent"
-#' @param pepfar_only return dataset of only PEPFAR countries if TRUE (defualt = FALSE)
+#' @param data_type returns the data type requested
+#' eg "HIV Estimates", "Test & Treat"
+#' @param pepfar_only return dataset of only PEPFAR countries if TRUE (default = FALSE)
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #'  \dontrun{
-#'    pull_unaids(sheetname = "HIV Estimates - Integer", pepfar_only = TRUE)
+#'    pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
 #' }
 #'
 
@@ -25,7 +25,8 @@ pull_unaids <- function(sheetname, pepfar_only = FALSE) {
     google_id = gs_clean_id
   }
 
-  df <- googlesheets4::range_speedread(google_id, sheetname)
+  df <- googlesheets4::range_speedread(google_id) %>%
+    filter(sheet == sheetname)
   return(df)
 
 }
