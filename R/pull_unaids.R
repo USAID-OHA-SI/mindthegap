@@ -26,7 +26,7 @@ pull_unaids <- function(sheetname, pepfar_only = FALSE) {
   }
 
   df <- googlesheets4::range_speedread(google_id) %>%
-    filter(sheet == sheetname)
+    dplyr::filter(sheet == sheetname)
   return(df)
 
 }
