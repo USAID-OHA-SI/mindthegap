@@ -15,7 +15,7 @@
 #' }
 #'
 
-pull_unaids <- function(sheetname, pepfar_only = FALSE) {
+pull_unaids <- function(sheetname, pepfar_only = TRUE) {
 
   if(pepfar_only == TRUE) {
     google_id = pepfar_clean_id
