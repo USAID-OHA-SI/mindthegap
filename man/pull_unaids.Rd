@@ -4,13 +4,13 @@
 \alias{pull_unaids}
 \title{Pull clean UNAIDS 2022 Estimates}
 \usage{
-pull_unaids(sheetname, pepfar_only = FALSE)
+pull_unaids(data_type, pepfar_only = TRUE)
 }
 \arguments{
-\item{pepfar_only}{return dataset of only PEPFAR countries if TRUE (default = FALSE)}
+\item{data_type}{returns one of the 2 datasets available
+eg "HIV Estimates", "HIV Test & Treat"}
 
-\item{data_type}{returns the data type requested
-eg "HIV Estimates", "Test & Treat"}
+\item{pepfar_only}{return dataset of only PEPFAR countries if TRUE (default = TRUE)}
 }
 \value{
 
