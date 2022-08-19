@@ -50,6 +50,7 @@ Remotes:
     ICPI/ICPIutilities,
     USAID-OHA-SI/glamr,
     USAID-OHA-SI/glitr
+    USAID-OHA-SI/gagglr
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
