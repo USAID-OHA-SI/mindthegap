@@ -10,14 +10,13 @@ mindthegap was developed in 2019 in preparation for agency self assessments and 
 
 mindthegap is not on CRAN, so you will have to install it directly from Github using devtools.
 
-If you do not have the devtools package installed, you will have to run the `install.packages("devtools")` line in the code below as well. It also relies on `ICPIutitlies` which will need to be installed the same way.
+If you do not have the devtools package installed, you will have to run the `install.packages("devtools")` line in the code below as well.
 
 ```{r}
 
   #install
     install.packages("devtools")
     devtools::install_github("USAID-OHA-SI/mindthegap")
-    devtools::install_github("ICPI/ICPIutilities")
     
 ```
 
