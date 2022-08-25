@@ -19,18 +19,22 @@ munge_unaids <- function(return_type, indicator_type) {
 
   #sheet_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
 
+  #Read Data from googlesheet and validate columns
   gdrive_df <- read_rename(return_type)
 
+  #Munge
   gdrive_df_clean <-
     gdrive_df %>%
     dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
     #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
-    dplyr::mutate(regions = ifelse(country %in% regions, country, NA)) %>%
-    tidyr::fill(regions) %>% #get regions column
-    tidyr::pivot_longer(-c(year, iso, country, regions),
+    dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
+    tidyr::fill(region) %>% #get regions column
+    tidyr::pivot_longer(-c(year, iso, country, region),
                         names_to = c("indicator")) %>%
-    tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat"))
+    tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
+    tidyr::pivot_wider(names_from = 'stat', values_from = "value")
 
+  #Add sheet and indicator type variable
   gdrive_df_clean <- gdrive_df_clean %>%
     dplyr::mutate(sheet = return_type,
                   sex = ifelse(indicator == "pmtct", "female", sex),
@@ -43,38 +47,47 @@ munge_unaids <- function(return_type, indicator_type) {
                   )
     )
 
+  #Recode indicators and rename columns
   gdrive_df_clean <- gdrive_df_clean %>%
     dplyr::mutate(indicator = dplyr::recode(indicator,
-                                            "prev" = "Prevalence",
-                                            "deaths" = "AIDS Related Deaths",
-                                            "plhiv" = "PLHIV",
-                                            "incidence" = "Incidence",
-                                            "pmtct" = "PMTCT",
-                                            "newhiv" = "New HIV Infections",
-                                            "knownstatus" = "KNOWN_STATUS", #T&T indicators
-                                            "plhivOnArt" = "PLHIV_ON_ART",
-                                            "knownstatusOnArt" = "KNOWN_STATUS_ON_ART",
-                                            "plhivVLS" = "VLS",
-                                            "onArtVLS" = "ON_ART_VLS",
-                                            "knownstatusNum" = "KNOWN_STATUS",
-                                            "onArtNum" = "PLHIV_ON_ART",
-                                            "vlsNum" = "VLS",
+                                            "prev" = "Percent Prevalence",
+                                            "deaths" = "Number AIDS Related Deaths",
+                                            "plhiv" = "Number PLHIV",
+                                            "incidence" = "Percent Incidence",
+                                            "pmtct" = "Number PMTCT Needing ART",
+                                            "newhiv" = "Number New HIV Infections",
+                                            "knownstatus" = "Percent Known Status of PLHIV", #T&T indicators
+                                            "plhivOnArt" = "Percent on ART of PLHIV",
+                                            "knownstatusOnArt" = "Percent on ART with Known Status",
+                                            "plhivVLS" = "Percent VLS of PLHIV",
+                                            "onArtVLS" = "Percent VLS on ART",
+                                            "knownstatusNum" = "Number Known Status of PLHIV",
+                                            "onArtNum" = "Number on ART of PLHIV",
+                                            "vlsNum" = "Number VLS of PLHIV",
                                             "pmtct" = "PMTCT", #what to call this
-                                            "pmtctArt" = "PMTCT_ON_ART",
-                                            "pmtctArtPct" = "PMTCT_ON_ART"))
+                                            "pmtctArt" = "Number PMTCT on ART",
+                                            "pmtctArtPct" = "Percent PMTCT on ART")) %>%
+    dplyr::rename(estimate = est,
+           lower_bound = low,
+           upper_bound = high)
 
-  gdrive_df_clean <- glamr::pepfar_country_list %>%
-    dplyr::select(countryname, iso = countryname_iso) %>%
+  #add PEPFAR grouping category
+  gdrive_df_clean <-  glamr::pepfar_country_list %>%
+    dplyr::select(country, iso = country_iso) %>%
+    dplyr::rename(countryname = country) %>%
     dplyr::left_join(gdrive_df_clean, ., by = "iso") %>%
     dplyr::mutate(country = ifelse(is.na(countryname), country, countryname),
-                  pepfar = ifelse(is.na(countryname), "Non-PEPFAR", "PEPFAR")) %>%
+                  pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>%
     dplyr::select(-countryname)
 
-
+#Export final df
   final_df <- suppressWarnings(
     gdrive_df_clean %>%
-      dplyr::mutate(value = as.numeric(value),
-                    indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title()) %>%
+      dplyr::mutate(across(estimate:upper_bound, ~as.numeric(.x)),
+                    indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title(),
+                    across(estimate:upper_bound, ~dplyr::case_when(indic_type == "Integer" ~ round(.x),
+                                                                   indic_type == "Percent" ~ .x)),
+                    across(age:sex, ~stringr::str_to_title(.x))) %>%
       dplyr::filter(indic_type == indicator_type)
 
   )

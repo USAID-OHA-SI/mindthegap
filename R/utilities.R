@@ -24,8 +24,8 @@ read_rename <- function(return_type) {
   #to specify NA's when reading in data
   missing <- c("...", " ")
 
-  sheetname = ifelse(return_type == "HIV Estimates", "HIV estimates - by Year", "HIV Test & Treat - by Year ")
-  skip_n = ifelse(sheetname == "HIV estimates - by Year", 5, 4)
+  sheetname = ifelse(return_type == "HIV Estimates", "HIV2022Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
+  skip_n = ifelse(sheetname == "HIV2022Estimates_ByYear", 4, 3)
 
   gdrive_df <- suppressMessages(
     googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing) %>%
