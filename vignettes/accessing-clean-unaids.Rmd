@@ -55,14 +55,9 @@ With `munge_unaids`, we are left with a clean and tidy dataset that includes a f
 
 To use `pull_unaids`, there are 2 parameters:
 
-1. `sheetname`: This parameter corresponds to the earlier parameter in `munge_unaids` that denotes the `return_type` and `indicator_type`.
-- For this parameter, use one or more of the following depending on your analytic question:
-     - “HIV Estimates - Integer”
-     - “HIV Estimates - Percent"
-     - "Test & Treat - Integer"
-     - "Test & Treat - Percent" 
+1. `data_type`: This parameter returns one of the 2 datasets: "HIV Estimates" or "HIV Test & Treat". Please note that if you want to filter to a specific indicator type (i.e. Percent or Integer), you will have to add that filter to your code `filter(indic_type == "Integer")`.
 
-2. `pepfar_only`: if TRUE, this parameter will return a dataset of only PEPFAR countries 
+2. `pepfar_only`: if TRUE, this parameter will return a dataset of only PEPFAR countries. If you do not specify this parameter, it will default to TRUE.
 
 In order to access the data from Google drive, be sure to load your USAID credentials. You can achieve this by using the `glamr::load_secrets()` function in the `glamr` package or authenticate through the `googlesheets` package using `googlesheets::gs_auth()`.
 
@@ -70,7 +65,7 @@ In order to access the data from Google drive, be sure to load your USAID creden
 library(glamr)
 load_secrets()
 
-df_est <- pull_unaids(sheetname = "HIV Estimates - Integer", pepfar_only = TRUE)
+df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
 knitr::kable(head(df_est), format = "html")
 ```
 
