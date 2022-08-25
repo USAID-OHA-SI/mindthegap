@@ -9,7 +9,7 @@ Authors@R: c(
     person(given = "Karishma",
          family = "Srikanth",
          role = c("aut"),
-         email = "ksrikanth@usaid.gov")),
+         email = "ksrikanth@usaid.gov"),
      person(given = "Tim",
          family = "Essam",
          role = c("aut"),
