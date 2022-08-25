@@ -9,7 +9,11 @@ Authors@R: c(
     person(given = "Karishma",
          family = "Srikanth",
          role = c("aut"),
-         email = "ksrikanth@usaid.gov"))
+         email = "ksrikanth@usaid.gov")),
+     person(given = "Tim",
+         family = "Essam",
+         role = c("aut"),
+         email = "tessam@usaid.gov"))     
 Description: Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country.
 License: MIT + file LICENSE
 Encoding: UTF-8
