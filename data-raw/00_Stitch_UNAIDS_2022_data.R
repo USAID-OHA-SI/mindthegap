@@ -19,7 +19,7 @@
     library(extrafont)
     library(tidytext)
     library(googlesheets4)
-library(googledrive)
+    library(googledrive)
 
     load_secrets()
 
@@ -273,5 +273,65 @@ library(googledrive)
 
   }
 
- # SPINDOWN ============================================================================
+# AD HOC ============================================================================
 
+  # Request to add infections averted by PMTCT and Number deaths averated by ART
+  # Most data only available for a given span of time -- Starts in 2004
+  df_averted <-
+    df_un_clean_sub %>%
+    select(-c(ind_desc, ind_type)) %>%
+    filter(str_detect(indicator, "averted by PMTCT|Averted by ART"),
+           pepfar == TRUE,
+           year > 2003) %>%
+    distinct() %>%
+    pivot_wider(names_from = model_est, values_from = value)
+
+  df_averted %>%
+    write_csv("../thathill/Dataout/unaids_averted_deaths.csv")
+
+
+# SUBNATIONAL DATA --------------------------------------------------------
+
+  df_subnat <- df_un_clean %>%
+    filter(geo_level == "Sub1", str_detect(country, "Moldova", negate = T))
+
+  df_subnat <-
+    df_subnat %>%
+    mutate(cascade_mkr = substr(ind_desc, 3, 8)) %>%
+    select(region, iso2, iso3, country, geo_level, ind_type, year, value,
+            indicator = `preferred name`, cascade_mkr,
+            model_est, sex, age, pepfar, countryname, dataset) %>%
+    filter(dataset == "cascade",
+           year >= max_yr-3) %>%
+    distinct() %>%
+    separate(country, into = c("country", "admin1"), sep = " - ") %>%
+    mutate(admin1 = str_replace(admin1, " \\s*\\([^\\)]+\\)", "") %>% trimws(),
+           country = str_replace(country, " States", "")) %>%
+    # For the cascade, we can grab the 3rd - 8th character in the ind_desc to create a cascade marker
+    # pivot so that est, upper, lower are columns
+    pivot_wider(names_from = model_est, values_from = value)
+
+  library(gisr)
+  library(sf)
+
+  eth <- get_admin1("Ethiopia")
+  zim <- get_admin1("Zimbabwe")
+  ind <- get_admin1("India")
+  ken <- get_admin1("Kenya")
+
+  # Need to have an identifier to join with the Admin 1 names
+  df_subnat %>%
+    distinct(country, admin1) %>%
+    arrange(country) %>%
+    write_sheet(., ss = "1UZWt3-Ywco_2K5v3jTaZ253QGv0u64W8JgGUveWx5CM", sheet = "unaids_subnat")
+
+  df_subnat %>%
+  write_csv(df_subnat, "../thathill/Dataout/unaids_cascade_subnat.csv")
+
+
+# KP ATLAS DATA -----------------------------------------------------------
+
+  df_kp <- read_sheet(ss = "1Jxj2PlJKSr_LrU2uNs-DBtl-6hwmzaha6Gg6wDQuAxw")
+
+  df_kp %>%
+    write_csv(., "../thathill/Dataout/UNAIDS_kp_atlas.csv")
