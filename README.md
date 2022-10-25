@@ -27,8 +27,8 @@ This is a basic example of how to load the data from Google Drive using `pull_un
 ```{r}
 library(mindthegap)
 
-df_est <- pull_unaids(sheetname = "HIV Estimates", pepfar_only = TRUE)
-df_tt <- pull_unaids(sheetname = "HIV Test & Treat", pepfar_only = TRUE)
+df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
+df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE)
 
 ```
 
