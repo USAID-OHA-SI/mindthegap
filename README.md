@@ -22,15 +22,33 @@ If you do not have the devtools package installed, you will have to run the `ins
 
 ## Example
 
+The UNAIDS data reports on HIV estimates with uncertainty bounds from 1990 to 2021, and includes both epidemic control indicators and indicators that show progress to the 95s. The data is sourced from the UNAIDS AIDSInfo database, making it publicly accessible data.
+
+To access the core set of UNAIDS Data, released in 2021, see the below example using `pull_unaids()`.
+
+
 This is a basic example of how to load the data from Google Drive using `pull_unaids`.
 
 ```{r}
 library(mindthegap)
 
-df_est <- pull_unaids(sheetname = "HIV Estimates", pepfar_only = TRUE)
-df_tt <- pull_unaids(sheetname = "HIV Test & Treat", pepfar_only = TRUE)
+df_est <- pull_unaids(orginal_unaids = TRUE, data_type = "HIV Estimates", pepfar_only = TRUE)
+df_tt <- pull_unaids(orginal_unaids = TRUE, data_type = "HIV Test & Treat", pepfar_only = TRUE)
 
 ```
+
+Our team also receives a secondary dataset from UNAIDS with indicators that are not found in the original dataset (i.e. total deaths of PLHIV, deaths averted due to ART, etc.) To access this dataset using `pull_unaids()`, see the example below. Note that the parameter `original_unaids = FALSE` is set to FALSE to access these data.
+
+```{r}
+library(mindthegap)
+
+df_epi <- pull_unaids(orginal_unaids = FALSE, data_type = "epicontrol", pepfar_only = TRUE)
+df_cascade <- pull_unaids(orginal_unaids = FALSE, data_type = "cascade", pepfar_only = TRUE)
+df_prev <- pull_unaids(orginal_unaids = FALSE, data_type = "prev", pepfar_only = TRUE)
+
+
+```
+
 
 ## Data Sources
 
