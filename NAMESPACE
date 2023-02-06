@@ -2,7 +2,7 @@
 
 export("%>%")
 export(epi_plot)
-export(gs_id)
+export(gs_id_unaids)
 export(load_data)
 export(munge_unaids)
 export(package_check)
