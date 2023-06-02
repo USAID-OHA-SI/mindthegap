@@ -256,7 +256,7 @@ epi_plot <- function (sel_cntry)
       dplyr::arrange(country,indicator, year) %>%
       dplyr::mutate(value_mod = ifelse(indicator =="total_deaths", -value, value),
                     fill_color = ifelse(indicator == "total_deaths", glitr::old_rose, glitr::denim)) #red for total_deaths, blue for new infections
-    if (sel_cntry == "ALL PEPFAR") {
+    if (any(sel_cntry == "ALL PEPFAR")) { #use if any condition for length > 1
         df_viz_pepfar <- df_epi_pepfar %>% dplyr::mutate(country = "All PEPFAR") %>% #epi_control curve 1: ALL PEPFAR
             dplyr::group_by(country, year, indicator, fill_color) %>%
             #dplyr::summarise(dplyr::across(c(value, value_mod),sum, na.rm = TRUE), .groups = "drop") %>% #deprecated
