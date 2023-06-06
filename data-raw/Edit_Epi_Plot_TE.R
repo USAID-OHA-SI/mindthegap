@@ -95,8 +95,8 @@
 
   # Probably should make this an object that is bundled with package
   # So it does not need to be called each time
-  pull_ou_list <- function(){
-    ou_list <- df_epi %>% dplyr::distinct(country) %>% pull()
+  pull_ou_list <- function(df = df_epi){
+    ou_list <- df %>% dplyr::distinct(country) %>% pull()
     return(ou_list)
   }
 
