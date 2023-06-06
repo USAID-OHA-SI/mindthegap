@@ -135,7 +135,7 @@
       ggplot2::facet_wrap(~country) + #small multiples of countries
       #scale_y_continuous(labels = ~(scales::label_number_si())(abs(.))) + #deprecated - use 'scale_cut'
       ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
-                                  expand = c(0, 0))+
+                                  expand = c(0, 0)) +
       ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) +
       ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
       ggplot2::labs(x = NULL, y = NULL) + coord_cartesian(expand = T, clip = "off") +
