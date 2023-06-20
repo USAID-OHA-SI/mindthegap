@@ -89,7 +89,7 @@ total_deaths <- df_deaths %>%
   janitor::clean_names() %>%
   rename(total_deaths = number_total_deaths_hiv_pop)
 
-view(total_deaths)
+View(total_deaths)
 
 
 #check merge compatible & names of countries in both datasets
@@ -216,7 +216,7 @@ map(.x = df_epi_pepfar$country, .f = epi_plot) #runs through each country on the
 map(.x = c("Kenya", "Ethiopia", "South Sudan"), #input specific names for the vector
         .f = ~ epi_plot(sel_cntry = .x)) #call the function with parameter set to country names - only produces 1st one
 
-map_chr(sel_cntry, .f = ~ epi_plot(df_epi_pepfar, country = .x))
+#map_chr(sel_cntry, .f = ~ epi_plot(df_epi_pepfar, country = .x))
 
 
 # FUNCTION ----------------------------------------------------------------
@@ -295,7 +295,6 @@ epi_plot <- function (sel_cntry)
         suppressWarnings(print(viz))
     }
        else {
-         #map(sel_cntry, ~ {
         df_viz_cntry <- df_epi_pepfar %>% #epi_control curve 2: country specific
           dplyr::filter(country %in% sel_cntry) %>% #change to listed countries
           dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~
@@ -337,9 +336,9 @@ epi_plot <- function (sel_cntry)
 }
 
 
-else if (length(sel_cntry) > 1){ #generate plots for multiple selected countries
-  map(sel_cntry, ~ epi_plot(.x)) #call the function for each country
-}
+#else if (length(sel_cntry) > 1){ #generate plots for multiple selected countries
+ # map(sel_cntry, ~ epi_plot(.x)) #call the function for each country
+#}
 
 #indicator = ifelse(indicator == "total_deaths", #"AIDS Related Deaths", #double check if labels needed
 #   "Number New HIV Infections"), new_hiv_label = dplyr::case_when(value ==

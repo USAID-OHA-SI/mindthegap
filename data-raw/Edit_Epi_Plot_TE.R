@@ -17,12 +17,13 @@
 
   library(magrittr)
   library(extrafont)
+  library(ggplot2)
   glamr::load_secrets()
 
 
 
 # FUNCTIONS ---------------------------------------------------------------
-
+epi_plot()
   # Help function to pull unaids data
   create_epi_df <- function(){
     df_epi <- mindthegap::pull_unaids( #pull_unaids grabs from July 2022 UNAIDS data by default
@@ -63,7 +64,7 @@
     # Perform necessary munging
     df_epi_ous <-
       df_epi %>%
-      dplyr::mutate(indicator = word(indicator, -1) %>% tolower) %>%
+      dplyr::mutate(indicator = stringr::word(indicator, -1) %>% tolower) %>%
       tidyr::pivot_wider(names_from = "indicator", values_from = "estimate") %>%
       dplyr::left_join(df_deaths, by = c("year", "country"))
 
@@ -96,7 +97,7 @@
   # Probably should make this an object that is bundled with package
   # So it does not need to be called each time
   pull_ou_list <- function(df = df_epi){
-    ou_list <- df %>% dplyr::distinct(country) %>% pull()
+    ou_list <- df %>% dplyr::distinct(country) %>% dplyr::pull()
     return(ou_list)
   }
 
@@ -119,7 +120,7 @@
                     min_plot_pt = min(value_mod),
                     lab_pt = dplyr::case_when(year == max(year) ~ value_mod)) %>%
       dplyr::mutate(cntry_order = max(value, na.rm = T), .by = country) %>%
-      dplyr::mutate(country = fct_reorder(country, cntry_order, .desc = T))
+      dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
 
     suppressWarnings(df_viz %>%
       ggplot2::ggplot(aes(year, value_mod, group = indicator, fill = fill_color, color = fill_color)) +
@@ -136,10 +137,11 @@
       #scale_y_continuous(labels = ~(scales::label_number_si())(abs(.))) + #deprecated - use 'scale_cut'
       ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
                                   expand = c(0, 0)) +
-      ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) +
+      ggplot2::scale_x_continuous(breaks = seq(min(df$year), max(df$year),5)) + #automatic x-axis min/max
+      #ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) + #manual x-axis breaks
       ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
       ggplot2::labs(x = NULL, y = NULL) + coord_cartesian(expand = T, clip = "off") +
-      glitr::si_style_ygrid(facet_space = 0.75) +
+      glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing with facet_space
       ggplot2::theme(axis.text.y = ggtext::element_markdown()) +
       ggplot2::labs(caption = "Source: UNAIDS Data 2022 Release"))
 
@@ -156,12 +158,16 @@
   ou_list <- pull_ou_list()
 
   # Test a few cases
-  epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Malawi", "Kenya"))
+  epi_plot() #default is "ALL PEPFAR"
+  epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Malawi", "Kenya")) #specify countries
 
   # Break it with NON-PEPFAR entries
   epi_plot(df_epi, sel_cntry = "USA")
 
   # Will it batch?
+    #countries with no plot: Mozambique, Panama
+    #countries without both new HIV infections + total deaths: India, Liberia, Nepal, T&T, Philippines
+    #countries that read at "0k" due to estimation: T&T, Tajikstan, Nicaragua, Laos, Kyrgyzstan, Kazakhstan, Guyana
   purrr::map(ou_list, ~epi_plot(df_epi, sel_cntry = .x))
 
 
