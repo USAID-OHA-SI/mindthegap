@@ -127,7 +127,6 @@
         dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
         #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
         #dplyr::mutate(dplyr::across(tidyselect::contains("_"), as.numeric(gsub("\\.|\\m","", .))* 1e6))%>% #replace unit values
-        dplyr::mutate(across())
         dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
         tidyr::fill(region) %>% #get regions column
         tidyr::pivot_longer(-c(year, iso, country, region),
