@@ -5,25 +5,36 @@
 #' @keywords internal
 #'
 
-gs_id_unaids <- googledrive::as_id("1J20strrRqwIpH65n9YLTuOd99lCip2Wb_I3SOnXzMgw")
-#original UNAIDS data - 2021 Estimates
+#2022 IDS --------------------------------------------
+
+gs_id_unaids <- "1ME4omrOy3ixg4H7f4Liu8ehZ-muALbq8HVQ25EPuGU4"
+#original UNAIDS data - 2022 estimates
 
 gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
-#UNAIDS crosswalk
+#UNAIDS crosswalk - updated with new tab
 
-gs_clean_id <- "1k5j169a_MtecrMdsu_n870Y0Y8tezLPopULn7AP3lQQ"
-#Clean UNAIDS estimates data on google drive
-
-pepfar_clean_id <- "1ZfxOScjuLnoGiXcsmfNnWn4EsqtxyFrvql8ERqdWSjk"
+pepfar_clean_id <-
 #PEPFAR only Clean UNAIDS data on google drive
+
 
 drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
 #UNAIDS drive folder
 
-#OLD IDS --------------------------------------------
+#2021 IDS --------------------------------------------
+
+gs_id_2021 <- googledrive::as_id("1J20strrRqwIpH65n9YLTuOd99lCip2Wb_I3SOnXzMgw")
+#original UNAIDS data - 2021 Estimates
+
+gs_clean_id_2021 <- "1k5j169a_MtecrMdsu_n870Y0Y8tezLPopULn7AP3lQQ"
+#Clean UNAIDS estimates data on google drive
+
+pepfar_clean_id_2021 <- "1ZfxOScjuLnoGiXcsmfNnWn4EsqtxyFrvql8ERqdWSjk"
+#PEPFAR only Clean UNAIDS data on google drive
 
 
-gs_id <- '1Ui1r5ynn9xYky86hHMO9kmdNZdWmANI5nAQ1N2b0wdM'
+#2020 IDS --------------------------------------------
+
+gs_id_2020 <- '1Ui1r5ynn9xYky86hHMO9kmdNZdWmANI5nAQ1N2b0wdM'
 #old mindthegap sheet
 
 pepfar_clean_id_2020 <- "14GBwcmAuGHETKknbJjeN1JkWSunpHcT4DvM3q4TlRIM"
