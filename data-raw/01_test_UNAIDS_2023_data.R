@@ -124,7 +124,6 @@
       #Munge
       gdrive_df_clean <-
         gdrive_df %>%
-        gg_df %>%
         dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
         #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
         #dplyr::mutate(dplyr::across(tidyselect::contains("_"), as.numeric(gsub("\\.|\\m","", .))* 1e6))%>% #replace unit values
