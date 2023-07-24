@@ -69,7 +69,7 @@
       skip_n = ifelse(sheetname == "HIV2023Estimates_ByYear", 5, 4) #update year and skips
 
       gdrive_df <- suppressMessages(
-        googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing) %>%
+        googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing, col_types = "c") %>% #reads in as column as character string
           dplyr::rename(year = !!names(.[1]),
                         iso =  !!names(.[2]),
                         country =  !!names(.[3]))
@@ -125,14 +125,15 @@
       gdrive_df_clean <-
         gdrive_df %>%
         dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
-        #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
-        #dplyr::mutate(dplyr::across(tidyselect::contains("_"), as.numeric(gsub("\\.|\\m","", .))* 1e6))%>% #replace unit values
+        dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("m","00000", .x)))%>% #replace unit values - matches uses regular expression
+        dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("\\.","",.x))) %>%
+        dplyr::mutate(dplyr::across(tidyselect::contains("_"),~ as.numeric(.x)))%>% #indicator columns into numeric
         dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
         tidyr::fill(region) %>% #get regions column
         tidyr::pivot_longer(-c(year, iso, country, region),
-                            names_to = c("indicator")) %>%
-        tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
-        tidyr::pivot_wider(names_from = 'stat', values_from = "value")
+                            names_to = c("indicator")) %>% #get indicator column
+        tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>% #separate merged data age/sex/stat
+        tidyr::pivot_wider(names_from = 'stat', values_from = "value") #get est/low/high columns
 
       #Add sheet and indicator type variable
       gdrive_df_clean <- gdrive_df_clean %>%
@@ -177,17 +178,17 @@
         dplyr::rename(countryname = country) %>%
         dplyr::left_join(gdrive_df_clean, ., by = "iso") %>%
         dplyr::mutate(country = ifelse(is.na(countryname), country, countryname),
-                      pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>%
+                      pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>% #flag to denote pepfar countries
         dplyr::select(-countryname)
 
       #Export final df
       final_df <- suppressWarnings(
         gdrive_df_clean %>%
           dplyr::mutate(across(estimate:upper_bound, ~as.numeric(.x)),
-                        indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title(),
+                        indic_type =stringr::str_remove(indic_type, "_indics") %>% stringr::str_to_title(), #capitalizes "Integer" in indic_type
                         across(estimate:upper_bound, ~dplyr::case_when(indic_type == "Integer" ~ round(.x), #rounds Integer values
                                                                        indic_type == "Percent" ~ .x)),
-                        across(age:sex, ~stringr::str_to_title(.x))) %>% #capitalizes "All"
+                        across(age:sex, ~stringr::str_to_title(.x))) %>% #capitalizes "All" in age/sex
           dplyr::filter(indic_type == indicator_type)
 
       )
@@ -196,24 +197,25 @@
 
     }
 
-
-
 # TEST IT ============================================================================
 
   #Test functions
     #read_rename
-    unclean_df <- read_rename("HIV Estimates")
-    View(unclean_df)
+    gdrive_df <- read_rename("HIV Estimates")
+    glimpse(gdrive_df)
+    View(gdrive_df)
 
     #validate_cols
-    un_clean_df <- validate_cols("HIV Estimates")
+    df <- validate_cols("HIV Estimates")
 
     #munge_unaids
-    integer_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
-    View(integer_df)
+    final_integer_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
+    glimpse(final_integer_df)
+    View(final_integer_df)
 
-    percent_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Percent")
-    View(percent_df)
+
+    final_percent_df <- munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
+    View(final_percent_df)
 
 
 
