@@ -1,6 +1,6 @@
-# Push clean UNAIDS 2021 estimates to gdrive and flag epi control
+# Push clean UNAIDS 2023 estimates to gdrive and flag epi control
 
-#date: 12/23/2021
+#date: 07/24/2023
 
 #load packages
 library(mindthegap)
@@ -20,8 +20,8 @@ library(googlesheets4)
 
 
 #read clean data from munge_unaids
-df_est <- munge_unaids("HIV Estimates", "Integer")
-df_tt <- munge_unaids("HIV Test & Treat", "Percent")
+df_est <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
+df_tt <- munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
 
 # EPI CONTROL FLAG: INFECTIONS + DEATHS
 
@@ -56,10 +56,10 @@ df_epi_cntry <- df_est_lim %>%
          !is.na(ratio)) %>%
   select(country, iso, epi_control)
 
-#90'S PROGRESS - PLHIV BASE
+#95'S PROGRESS - PLHIV BASE
 
-#UNAID GOAL - 90 or 95
-goal <- 90
+#UNAID GOAL - 95
+goal <- 95
 
 df_tt_lim <- df_tt %>%
   filter(year == max(year),
@@ -68,7 +68,7 @@ df_tt_lim <- df_tt %>%
          sex == "All") %>%
   select(year, country, iso, indicator, estimate)
 
-plhiv_base_90 <- df_tt_lim %>%
+plhiv_base_95 <- df_tt_lim %>%
   filter(!is.na(estimate)) %>%
   mutate(indicator = recode(indicator, "Percent Known Status of PLHIV" = "Known\nStatus",
                             "Percent on ART of PLHIV" = "On\nART",
@@ -79,11 +79,11 @@ plhiv_base_90 <- df_tt_lim %>%
          goal_rate = round((goal/100)^set*100),
          achv = estimate >= goal_rate) %>%
   count(country,iso, achv) %>%
-  mutate(plhiv_base_90s = ifelse(achv == TRUE & n == 3, TRUE, FALSE)) %>%
-  distinct(country, iso, plhiv_base_90s) %>%
-  rename(`Achieved 90s with PLHIV base in 2021` = plhiv_base_90s)
+  mutate(plhiv_base_95s = ifelse(achv == TRUE & n == 3, TRUE, FALSE)) %>%
+  distinct(country, iso, plhiv_base_95s) %>%
+  rename(`Achieved 95s with PLHIV base in 2022` = plhiv_base_95s)
 
-#90'S PROGRESS - RELATIVE CASCADE BASE
+#95'S PROGRESS - RELATIVE CASCADE BASE
 
 #Relative Base
 df_tt_rel_lim <- df_tt %>%
@@ -93,7 +93,7 @@ df_tt_rel_lim <- df_tt %>%
          sex == "All") %>%
   select(year, country, iso, indicator, estimate)
 
-rel_base_90 <- df_tt_rel_lim %>%
+rel_base_95 <- df_tt_rel_lim %>%
   filter(!is.na(estimate)) %>%
   mutate(indicator = recode(indicator, "Percent Known Status of PLHIV" = "Known\nStatus",
                             "Percent on ART with Known Status" = "On\nART",
@@ -105,14 +105,14 @@ rel_base_90 <- df_tt_rel_lim %>%
          achv = estimate >= goal) %>%
   group_by(country) %>%
   count(country, iso, achv) %>%
-  mutate(rel_base_90s = ifelse(achv == TRUE & n == 3, TRUE, FALSE)) %>%
+  mutate(rel_base_95s = ifelse(achv == TRUE & n == 3, TRUE, FALSE)) %>%
   # select(-c(achv, n)) %>%
-  distinct(country, iso, rel_base_90s) %>%
-rename(`Achieved 90s with relative base in 2021` = rel_base_90s)
+  distinct(country, iso, rel_base_95s) %>%
+rename(`Achieved 95s with relative base in 2022` = rel_base_95s)
 
 #COMBINE 3 FLAGS INTO ONE DF AND LIST
 
-flag_list <- full_join(plhiv_base_90, rel_base_90, by = c("country", "iso")) %>% list()
+flag_list <- full_join(plhiv_base_95, rel_base_95, by = c("country", "iso")) %>% list()
 #flag_list <- full_join(flag_list, df_epi_cntry, by = c("country", "iso")) %>% list()
 
 #PUSH TO DRIVE -----------------------------------------------------------------------
@@ -133,10 +133,11 @@ unaids_list <- flatten(unaids_list)
 #FULL DATASET -----------------------------
 
 #add file to drive
-gs_id_new <- drive_create(name = "UNAIDS 2022 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
+gs_id_new <- drive_create(name = "UNAIDS 2023 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
 
 #specify sheet names
 #tab_names <- c("HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent")
+tab_names <- c("2023 UNAIDS Estimates")
 
 #append 4 dfs to one df
 df_unaids <- do.call("rbind", unaids_list)
@@ -159,10 +160,10 @@ list_pepfar <- lapply(unaids_list, function(x) filter(x, pepfar == TRUE))
 df_pepfar <- do.call("rbind", list_pepfar)
 
 #add file to drive
-gs_id_pepfar <- drive_create(name = "PEPFAR Only - UNAIDS 2022 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
+gs_id_pepfar <- drive_create(name = "PEPFAR Only - UNAIDS 2023 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
 
 #specify sheet names
-tab_names <- c("2022 UNAIDS Estimates")
+tab_names <- c("2023 UNAIDS Estimates")
 
 #sheet names
 purrr::walk(.x = tab_names, .f = ~sheet_add(as_sheets_id(gs_id_pepfar), sheet = .x))
