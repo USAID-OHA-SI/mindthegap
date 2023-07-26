@@ -33,7 +33,7 @@ munge_unaids <- function(return_type, indicator_type) {
                         names_to = c("indicator")) %>%
     tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
     tidyr::pivot_wider(names_from = 'stat', values_from = "value") %>%
-    dplyr::mutate(estimate_flag = ifelse(str_detect(est, "<"), TRUE, FALSE)) %>% #estimate flag
+    dplyr::mutate(estimate_flag = ifelse(stringr::str_detect(est, "<"), TRUE, FALSE)) %>% #estimate flag
     dplyr::mutate(dplyr::across(c(est:high), ~gsub(" |<|>", "", .))) %>% #replace special characters
     dplyr::mutate(dplyr::across(c(est:high), ~ gsub("m","00000", .x))) %>% #replace unit values
     dplyr::mutate(dplyr::across(c(est:high), ~ ifelse(grepl("\\.\\d+00000$", .x), gsub("\\.", "", .x), .x)))
