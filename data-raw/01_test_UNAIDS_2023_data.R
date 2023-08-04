@@ -49,9 +49,11 @@
     gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
     #UNAIDS crosswalk (updated)
 
-    #Clean UNAIDS estimates data on google drive (TBD)
+    gs_clean_id <- "1CX_2e_XF2Vl1cBoJBTLsKyVNwJIMsoHppCe5NUdmR_w"
+    #Clean UNAIDS estimates data on google drive (new)
 
-    #PEPFAR only Clean UNAIDS data ongoogle drive (TBD)
+    pepfar_clean_id <- "1209UB0inKK7S6hvMQgHNvcNgEGrPEN0NZJJQB5_eyCw"
+    #PEPFAR only Clean UNAIDS data on google drive (new)
 
     drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
     #UNAIDS drive folder (same)
@@ -239,37 +241,25 @@
 
   #Check pull_unaids function---------------------------------------------------------------------
     #Clean up parameters - potentially remove `original_unaids` param to replace with more efficient workflow
+      #data_type: "HIVE Estimates" and "Test & Treat"
+      #pepfar_only: TRUE pulls from PEPFAR Only Clean Estimates, FALSE pulls from Clean Estimates
 
-    pull_unaids <- function(orginal_unaids = TRUE, data_type, pepfar_only = TRUE) {
+    pull_unaids <- function(data_type, pepfar_only = TRUE) {
 
-      temp_folder <- glamr::temp_folder()
-
-      if(orginal_unaids == FALSE) {
-        filename <- glue::glue("UNAIDS_{data_type}_2022.csv.gz")
-        version_tag <- "v2022.08.10"
-      } else {
-        filename <- glue::glue("UNAIDS_2022_Clean_Estimates.csv.gz")
-        version_tag <- "v2022.07.27"
+      if(pepfar_only == TRUE) {
+        google_id = pepfar_clean_id
       }
 
-      #download a specific file - test
-      piggyback::pb_download(file = filename,
-                             repo = "USAID-OHA-SI/mindthegap",
-                             tag = version_tag,
-                             dest = temp_folder)
-
-      df <- temp_folder %>%
-        glamr::return_latest() %>%
-        readr::read_csv() %>%
-        dplyr::filter(pepfar == pepfar_only)
-
-      if(orginal_unaids == TRUE) {
-        df <- df %>%
-          dplyr::filter(sheet == data_type)
+      else {
+        google_id = gs_clean_id
       }
+
+      df <- googlesheets4::range_speedread(google_id) %>%
+        dplyr::filter(sheet == data_type)
 
       return(df)
     }
+
 # TEST IT ============================================================================
 
   #Test functions
@@ -291,7 +281,7 @@
     View(final_percent_df)
 
     #pull_unaids
-    df <- pull_unaids(original_unaids = TRUE, "HIV Estimates", pepfar_only = TRUE)
+    df <- pull_unaids("HIV Estimates", pepfar_only = TRUE)
 
 
 # SPINDOWN ============================================================================
