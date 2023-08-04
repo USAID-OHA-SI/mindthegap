@@ -1,6 +1,7 @@
-# Push clean UNAIDS 2023 estimates to gdrive and flag epi control
+# Push clean UNAIDS estimates to gdrive and flag epi control
 
-#date: 07/24/2023
+#date:  12/23/2021
+#update: 07/24/2023
 
 #load packages
 library(mindthegap)
@@ -15,7 +16,7 @@ library(googlesheets4)
 
 # EPI CONTROL FLAGS --------------------------------------
 
-# Flagging epi control countries and 90's progress
+# Flagging epi control countries and 95's progress
 
 
 
@@ -23,10 +24,43 @@ library(googlesheets4)
 df_est <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
 df_tt <- munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
 
+#read national data from EDMS
+  #filter for "Total Deaths" indicator
+df_nat <- read_sheet("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98") %>%
+  filter(indicator == "Total Deaths")
+
+#rename columns & format to match clean data
+df_nat <- df_nat %>%
+  rename(iso = iso3,
+         #sheet = dataset,
+         lower_bound = `lower bound`,
+         upper_bound = `upper bound`) %>%
+  mutate(year = as.character(year)) %>%
+  mutate(across(age:sex, ~stringr::str_to_title(.x)))  #capitalizes "All" in age/sex
+
+#Add sheet and indicator type variable
+df_nat <- df_nat %>%
+  mutate(sheet = "HIV Estimates",
+         indic_type = "Integer") %>%
+  mutate(region = ifelse(country == "Global", "Global", region))%>% #fill in missing regions
+  mutate(region = ifelse(country == "Latin America", "Latin America", region))%>%
+  mutate(region = ifelse(country == "Caribbean", "Caribbean", region))%>%
+  mutate(estimate = round(estimate, digits = -2)) %>% #round estimate values
+  #distinct(country, iso, estimate)
+  select(year, iso, country, region, indicator, age, sex, estimate,
+       lower_bound, upper_bound,
+       sheet, indic_type, pepfar)
+
+#Bind together
+#df_est <- df_est %>%
+ # bind_rows(df_nat)
+
 # EPI CONTROL FLAG: INFECTIONS + DEATHS
 
 df_est_lim <- df_est %>%
-  filter(indicator %in% c("Number PLHIV", "Number AIDS Related Deaths", "Number New HIV Infections"),
+  filter(indicator %in% c("Number PLHIV",
+                          "Total Deaths", #substitute "Number AIDS Related Deaths" with "Total Deaths"
+                          "Number New HIV Infections"),
          age == "All",
          sex == "All") %>%
   select(year, country, iso, indicator, estimate)
@@ -115,6 +149,9 @@ rename(`Achieved 95s with relative base in 2022` = rel_base_95s)
 flag_list <- full_join(plhiv_base_95, rel_base_95, by = c("country", "iso")) %>% list()
 #flag_list <- full_join(flag_list, df_epi_cntry, by = c("country", "iso")) %>% list()
 
+#ADD CUSTOM PULL INTO DF
+
+
 #PUSH TO DRIVE -----------------------------------------------------------------------
 
 data_type <- c("HIV Estimates", "HIV Estimates", "HIV Test & Treat", "HIV Test & Treat")
@@ -140,9 +177,9 @@ gs_id_new <- drive_create(name = "UNAIDS 2023 Clean Estimates", path = "SI Folde
 tab_names <- c("2023 UNAIDS Estimates")
 
 #append 4 dfs to one df
-df_unaids <- do.call("rbind", unaids_list)
+df_unaids <- do.call("rbind", unaids_list) #executes rbind on list of 4 dataframes
 
-sheet_write(data = df_unaids, ss = gs_id_new, sheet = tab_names)
+sheet_write(data = df_unaids, ss = gs_id_new, sheet = tab_names) #writes df into worksheet inside sheet
 
 
 # #sheet names
