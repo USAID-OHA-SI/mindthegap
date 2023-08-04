@@ -56,6 +56,9 @@
     drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
     #UNAIDS drive folder (same)
 
+    nat_unaids <- "1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98"
+    #national data from EDMS - 2023 estimates (new)
+
 # FUNCTIONS ============================================================================
 
     #check utilities.R
@@ -200,7 +203,7 @@
 
       #read national data from EDMS
         #filter for "Total Deaths" indicator
-      df_nat <- read_sheet("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98") %>%
+      df_nat <- read_sheet(nat_unaids) %>%
         filter(indicator == "Total Deaths")
 
       #rename columns & format to match clean data
