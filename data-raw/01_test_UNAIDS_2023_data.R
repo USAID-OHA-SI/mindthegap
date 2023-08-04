@@ -124,16 +124,21 @@
       #Munge
       gdrive_df_clean <-
         gdrive_df %>%
-        dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
-        dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("m","00000", .x)))%>% #replace unit values - matches uses regular expression
-        dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("\\.","",.x))) %>%
-        dplyr::mutate(dplyr::across(tidyselect::contains("_"),~ as.numeric(.x)))%>% #indicator columns into numeric
+        #dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
+        #dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("m","00000", .x)))%>% #replace unit values - matches uses regular expression
+        #dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("\\.","",.x))) %>%
+        #dplyr::mutate(dplyr::across(tidyselect::contains("_"),~ as.numeric(.x)))%>% #indicator columns into numeric
         dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
         tidyr::fill(region) %>% #get regions column
         tidyr::pivot_longer(-c(year, iso, country, region),
                             names_to = c("indicator")) %>% #get indicator column
         tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>% #separate merged data age/sex/stat
-        tidyr::pivot_wider(names_from = 'stat', values_from = "value") #get est/low/high columns
+        tidyr::pivot_wider(names_from = 'stat', values_from = "value") %>% #get est/low/high columns
+        #dplyr::mutate(estimate_flag = ifelse(str_detect(est, "<"), TRUE, FALSE)) %>% #estimate flag
+        dplyr::mutate(dplyr::across(c(est:high), ~gsub(" |<|>", "", .))) %>% #replace special characters
+        dplyr::mutate(dplyr::across(c(est:high), ~ gsub("m","00000", .x))) %>% #replace unit values
+        dplyr::mutate(dplyr::across(c(est:high), ~ ifelse(grepl("\\.\\d+00000$", .x), gsub("\\.", "", .x), .x)))
+        #dplyr::mutate(dplyr::across(c(est:high), ~ as.numeric(.x)))
 
       #Add sheet and indicator type variable
       gdrive_df_clean <- gdrive_df_clean %>%
@@ -193,10 +198,75 @@
 
       )
 
+      #read national data from EDMS
+        #filter for "Total Deaths" indicator
+      df_nat <- read_sheet("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98") %>%
+        filter(indicator == "Total Deaths")
+
+      #rename columns & format to match clean data
+      df_nat <- df_nat %>%
+        rename(iso = iso3,
+               #sheet = dataset,
+               lower_bound = `lower bound`,
+               upper_bound = `upper bound`) %>%
+        mutate(year = as.character(year)) %>%
+        mutate(across(age:sex, ~stringr::str_to_title(.x)))  #capitalizes "All" in age/sex
+
+      #Add sheet and indicator type variable
+      df_nat <- df_nat %>%
+        mutate(sheet = "HIV Estimates",
+               indic_type = "Integer") %>%
+        mutate(region = ifelse(country == "Global", "Global", region))%>% #fill in missing regions
+        mutate(region = ifelse(country == "Latin America", "Latin America", region))%>%
+        mutate(region = ifelse(country == "Caribbean", "Caribbean", region))%>%
+        mutate(estimate = round(estimate, digits = -2)) %>% #round estimate values
+        #distinct(country, iso, estimate)
+        select(year, iso, country, region, indicator, age, sex, estimate,
+               lower_bound, upper_bound,
+               sheet, indic_type, pepfar)
+
+      #Bind together
+      final_df <- final_df %>%
+        bind_rows(df_nat)
+
       return(final_df)
 
     }
 
+
+  #Check pull_unaids function---------------------------------------------------------------------
+    #Clean up parameters - potentially remove `original_unaids` param to replace with more efficient workflow
+
+    pull_unaids <- function(orginal_unaids = TRUE, data_type, pepfar_only = TRUE) {
+
+      temp_folder <- glamr::temp_folder()
+
+      if(orginal_unaids == FALSE) {
+        filename <- glue::glue("UNAIDS_{data_type}_2022.csv.gz")
+        version_tag <- "v2022.08.10"
+      } else {
+        filename <- glue::glue("UNAIDS_2022_Clean_Estimates.csv.gz")
+        version_tag <- "v2022.07.27"
+      }
+
+      #download a specific file - test
+      piggyback::pb_download(file = filename,
+                             repo = "USAID-OHA-SI/mindthegap",
+                             tag = version_tag,
+                             dest = temp_folder)
+
+      df <- temp_folder %>%
+        glamr::return_latest() %>%
+        readr::read_csv() %>%
+        dplyr::filter(pepfar == pepfar_only)
+
+      if(orginal_unaids == TRUE) {
+        df <- df %>%
+          dplyr::filter(sheet == data_type)
+      }
+
+      return(df)
+    }
 # TEST IT ============================================================================
 
   #Test functions
@@ -209,14 +279,16 @@
     df <- validate_cols("HIV Estimates")
 
     #munge_unaids
-    final_integer_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
-    glimpse(final_integer_df)
-    View(final_integer_df)
+    final_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
+    glimpse(final_df)
+    View(final_df)
 
 
     final_percent_df <- munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
     View(final_percent_df)
 
+    #pull_unaids
+    df <- pull_unaids(original_unaids = TRUE, "HIV Estimates", pepfar_only = TRUE)
 
 
 # SPINDOWN ============================================================================
