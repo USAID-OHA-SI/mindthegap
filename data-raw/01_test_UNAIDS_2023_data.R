@@ -240,7 +240,7 @@
 
 
   #Check pull_unaids function---------------------------------------------------------------------
-    #Clean up parameters - potentially remove `original_unaids` param to replace with more efficient workflow
+    #Clean up parameters - remove `original_unaids` param to replace with more efficient workflow
       #data_type: "HIVE Estimates" and "Test & Treat"
       #pepfar_only: TRUE pulls from PEPFAR Only Clean Estimates, FALSE pulls from Clean Estimates
 
