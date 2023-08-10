@@ -27,7 +27,7 @@ df_tt <- munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percen
 #read national data from EDMS
   #filter for "Total Deaths" indicator
 df_nat <- read_sheet("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98") %>%
-  filter(indicator == "Total Deaths")
+  filter(indicator == "Total deaths to HIV Population")
 
 #rename columns & format to match clean data
 df_nat <- df_nat %>%
@@ -42,14 +42,30 @@ df_nat <- df_nat %>%
 df_nat <- df_nat %>%
   mutate(sheet = "HIV Estimates",
          indic_type = "Integer") %>%
-  mutate(region = ifelse(country == "Global", "Global", region))%>% #fill in missing regions
-  mutate(region = ifelse(country == "Latin America", "Latin America", region))%>%
-  mutate(region = ifelse(country == "Caribbean", "Caribbean", region))%>%
-  mutate(estimate = round(estimate, digits = -2)) %>% #round estimate values
+  #mutate(region = ifelse(country == "Global", "Global", region))%>% #fill in missing regions
+  #mutate(region = ifelse(country == "Latin America", "Latin America", region))%>%
+  #mutate(region = ifelse(country == "Caribbean", "Caribbean", region))%>%
+  mutate(across(estimate:upper_bound, ~dplyr::case_when(indic_type == "Integer" ~ round(.x)))) %>% #round estimate values
   #distinct(country, iso, estimate)
   select(year, iso, country, region, indicator, age, sex, estimate,
        lower_bound, upper_bound,
        sheet, indic_type, pepfar)
+
+#Compare
+check <- pepfar_country_list
+
+setequal(df_nat$country, df_est$country)
+intersect(df_nat$country, df_est$country) #check overlap
+setdiff(df_nat$country, df_est$country)#check difference
+#"Sub-Saharan Africa", "Latin America and the Caribbean", "Africa","PEPFAR Country Programs", "PEPFAR Regional Programs" only in nat data
+setdiff(df_est$country, df_nat$country)
+setdiff(check$country, df_nat$country)
+#Of PEPFAR countries, nat data is missing "India", Nigeria", "Kazakhstan", "Ukraine"
+setequal(df_nat$region, df_est$region)
+intersect(df_nat$region, df_est$region)
+setdiff(df_nat$region, df_est$region)
+setdiff(df_est$region, df_nat$region)
+
 
 #Bind together
 #df_est <- df_est %>%
