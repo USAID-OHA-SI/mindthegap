@@ -49,17 +49,17 @@
     gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
     #UNAIDS crosswalk (updated)
 
-    gs_clean_id <- "1CX_2e_XF2Vl1cBoJBTLsKyVNwJIMsoHppCe5NUdmR_w"
+    #gs_clean_id <- "1CX_2e_XF2Vl1cBoJBTLsKyVNwJIMsoHppCe5NUdmR_w"
     #Clean UNAIDS estimates data on google drive (new)
 
-    pepfar_clean_id <- "1209UB0inKK7S6hvMQgHNvcNgEGrPEN0NZJJQB5_eyCw"
+    #pepfar_clean_id <- "1209UB0inKK7S6hvMQgHNvcNgEGrPEN0NZJJQB5_eyCw"
     #PEPFAR only Clean UNAIDS data on google drive (new)
 
     drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
     #UNAIDS drive folder (same)
 
     nat_unaids <- "1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98"
-    #national data from EDMS - 2023 estimates (new)
+    #national data from EDMS - 2023 estimates (updated)
 
 # FUNCTIONS ============================================================================
 
@@ -203,11 +203,6 @@
 
       )
 
-      #read national data from EDMS
-        #filter for "Total Deaths" indicator
-      df_nat <- read_sheet(nat_unaids) %>%
-        filter(indicator == "Total Deaths")
-
       #rename columns & format to match clean data
       df_nat <- df_nat %>%
         rename(iso = iso3,
@@ -221,10 +216,10 @@
       df_nat <- df_nat %>%
         mutate(sheet = "HIV Estimates",
                indic_type = "Integer") %>%
-        mutate(region = ifelse(country == "Global", "Global", region))%>% #fill in missing regions
-        mutate(region = ifelse(country == "Latin America", "Latin America", region))%>%
-        mutate(region = ifelse(country == "Caribbean", "Caribbean", region))%>%
-        mutate(estimate = round(estimate, digits = -2)) %>% #round estimate values
+        #mutate(region = ifelse(country == "Global", "Global", region))%>% #fill in missing regions
+        #mutate(region = ifelse(country == "Latin America", "Latin America", region))%>%
+        #mutate(region = ifelse(country == "Caribbean", "Caribbean", region))%>%
+        mutate(across(estimate:upper_bound, ~dplyr::case_when(indic_type == "Integer" ~ round(.x)))) %>% #round estimate values
         #distinct(country, iso, estimate)
         select(year, iso, country, region, indicator, age, sex, estimate,
                lower_bound, upper_bound,
@@ -400,7 +395,7 @@
     View(gdrive_df)
 
     #validate_cols
-    df <- validate_cols("HIV Estimates")
+    df <- validate_cols(gs_id_names, "HIV Estimates")
 
     #munge_unaids
     final_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
