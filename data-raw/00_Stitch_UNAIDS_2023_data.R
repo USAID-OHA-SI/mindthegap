@@ -3,7 +3,7 @@
 # AUTHOR: Tim Essam & Jessica Hoehner | SI
 # REF ID:   7c702333
 # LICENSE: MIT
-# DATE: 2023-07-27
+# DATE: 2023-08-09
 # NOTES: Tim Essam & Jessica Hoehner | SI
 
 # LOCALS & SETUP ===============================================================
@@ -27,7 +27,7 @@
 
   # Comes from UNAIDS/2023 Custom Pull/input
   # very large file, could take several minutes to load, includes NAT and SUBNAT
-   unaids_custom <- read_sheet("157aaDjrHv1wQOP55ycxDXfADWOZddONmuu0kRMVcN9g")
+   unaids_custom <- read_sheet("1wTkZidqlhA3shQKFMtsQ9ardw3ZYqqIBrr1FyEkAVhs")
 
   # KP Atlas data
    df_kp <- read_sheet(ss = "1q-UO51IrxhEVU-53qwA8QC6JCye897dlezXj6t0nHfQ")
@@ -89,7 +89,7 @@
          # if the string has 0 length, replace with all
          nchar(age) == 0 ~ "all",
          TRUE ~ age),
-      dataset = if_else(stringr::str_detect(indicator, "Total"), "total_deaths",
+      dataset = if_else(stringr::str_detect(indicator, "Total"), "total_deaths_hiv_pop",
       "infections_deaths_averted")) %>%
        select(region, iso2, iso3, country,
               geo_level, year, indicator,
@@ -131,6 +131,7 @@
            country = str_replace(country, " States", ""))
 
 # EXPORT =======================================================================
+# Nat and subnat in 2023 custom pull/output
 
    # National data
    df_un_pepfar %>%
@@ -144,7 +145,6 @@
                  sheet = "unaids_subnat")
 
    # KP Atlas data
-
    df_kp %>%
      write_sheet("1gR680KtLWu3JqkOyGuJpqjhBujSP3C4N7MWFAt4DGd8",
                  sheet = "unaids_kp_atlas")
