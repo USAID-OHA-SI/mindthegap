@@ -203,6 +203,11 @@
 
       )
 
+      #read national data from EDMS
+      #filter for "Total Deaths" indicator
+      df_nat <- read_sheet("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98") %>%
+        filter(indicator == "Total deaths to HIV Population")
+
       #rename columns & format to match clean data
       df_nat <- df_nat %>%
         rename(iso = iso3,
@@ -256,136 +261,6 @@
     }
 
 
-  #Check epi_plot function---------------------------------------------------------------------
-   #Clean up parameters
-      #df
-      #sel_cntry:
-
-    epi_plot()
-    # Help function to pull unaids data
-    create_epi_df <- function(){
-      df_epi <- mindthegap::pull_unaids(
-        data_type = "HIV Estimates", #1 of 2 options
-        pepfar_only = TRUE) %>% #pulls from PEPFAR Only Estimates
-        dplyr::filter(
-          age == "All",
-          indicator %in% c("Number New HIV Infections")) %>% #grab new infections indicator
-        dplyr::select(year, country,indicator, estimate) %>% #change indicator value to estimate
-        dplyr::arrange(country, indicator, year)
-
-      return(df_epi)
-    }
-
-
-    # helper function to pull total deaths
-    create_tot_dths_df <- function(g_id = "1CSVOauu2gyq9Am0eCl7TgpAeB1Xd3dCtE_Oc_yk3cI4"){
-      df_deaths <- googlesheets4::range_speedread(ss = g_id, sheet = "UNAIDS_epi_control") %>%
-        dplyr::filter(indicator == "Number Total Deaths HIV Pop",
-                      geo_level == "Country", #drop regional and sub-nat data
-                      age == "all",
-                      sex == "all")  %>%
-        dplyr::select(c(country, year, indicator, estimate)) %>%
-        tidyr::spread(indicator, estimate) %>%
-        janitor::clean_names() %>%
-        dplyr::rename(total_deaths = number_total_deaths_hiv_pop)
-      return(df_deaths)
-    }
-
-
-    # Create the data frame you need
-    get_epi_curve_df <- function(){
-
-      # Pull in total deaths and epi data
-      df_deaths <- create_tot_dths_df()
-      df_epi <- create_epi_df()
-
-      # Perform necessary munging
-      df_epi_ous <-
-        df_epi %>%
-        dplyr::mutate(indicator = stringr::word(indicator, -1) %>% tolower) %>%
-        tidyr::pivot_wider(names_from = "indicator", values_from = "estimate") %>%
-        dplyr::left_join(df_deaths, by = c("year", "country"))
-
-      # Add in ALL PEPFAR data
-      df_epi_pepfar <-
-        df_epi_ous %>%
-        dplyr::bind_rows(df_epi_ous %>%
-                           dplyr::mutate(country = "All PEPFAR") %>%
-                           dplyr::group_by(country, year) %>%
-                           dplyr::summarise(across(where(is.numeric), \(x) sum(x,na.rm = TRUE)), .groups = "drop"))
-
-      # Create necessary vars
-      df_epi_pepfar <-
-        df_epi_pepfar %>%
-        dplyr::mutate(declining_deaths = total_deaths - dplyr::lag(total_deaths, order_by = year) <= 0, by = c(country)) %>% #TRUE/FALSE declining
-        dplyr::mutate(infections_below_deaths = infections < total_deaths,
-                      ratio = infections / total_deaths,
-                      direction_streak = sequence(rle(declining_deaths)$lengths),
-                      epi_control = declining_deaths == TRUE & infections_below_deaths == TRUE) %>%
-        tidyr::pivot_longer(c(infections, total_deaths), names_to = "indicator") %>% #put back indicators in column
-        dplyr::arrange(country, indicator, year) %>%
-        dplyr::mutate(value_mod = ifelse(indicator == "total_deaths", -value, value),
-                      fill_color = ifelse(indicator == "total_deaths", glitr::old_rose, glitr::denim))
-
-      return(df_epi_pepfar)
-
-    }
-
-
-    # Probably should make this an object that is bundled with package
-    # So it does not need to be called each time
-    pull_ou_list <- function(df = df_epi){
-      ou_list <- df %>% dplyr::distinct(country) %>% dplyr::pull()
-      return(ou_list)
-    }
-
-    # Plotting function to make the epi curves
-    # By default, it will produce the All PEPFAR curve
-    epi_plot <- function(df = df_epi, sel_cntry = c("All PEPFAR")){
-
-      # Check if each value is valid
-      is_valid <- all(sel_cntry %in% ou_list)
-
-      # Output the result
-      stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
-
-      df_viz <-
-        df %>%
-        dplyr::filter(country %in% sel_cntry) %>% #change to listed countries
-        dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~
-                                                   scales::number(value, 1, scale = 0.001, suffix = "k")),
-                      max_plot_pt = max(value),
-                      min_plot_pt = min(value_mod),
-                      lab_pt = dplyr::case_when(year == max(year) ~ value_mod)) %>%
-        dplyr::mutate(cntry_order = max(value, na.rm = T), .by = country) %>%
-        dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
-
-      suppressWarnings(df_viz %>%
-                         ggplot2::ggplot(aes(year, value_mod, group = indicator, fill = fill_color, color = fill_color)) +
-                         ggplot2::geom_blank(aes(y = max_plot_pt)) + #sets max y-axis above
-                         ggplot2::geom_blank(aes(y = -max_plot_pt)) + #sets max y-axis below
-                         ggplot2::geom_area(alpha = 0.25) +
-                         ggplot2::geom_hline(yintercept = 0,color = glitr::grey80k) +
-                         ggplot2::geom_line() +
-                         ggplot2::geom_point(aes(y = lab_pt), na.rm = TRUE, shape = 21, color = "white", size = 3) +
-                         ggplot2::geom_text(aes(label = val_lab), na.rm = TRUE, #value label text
-                                            hjust = -0.3,
-                                            family = "Source Sans Pro Light") +
-                         ggplot2::facet_wrap(~country) + #small multiples of countries
-                         #scale_y_continuous(labels = ~(scales::label_number_si())(abs(.))) + #deprecated - use 'scale_cut'
-                         ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
-                                                     expand = c(0, 0)) +
-                         ggplot2::scale_x_continuous(breaks = seq(min(df$year), max(df$year),5)) + #automatic x-axis min/max
-                         #ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) + #manual x-axis breaks
-                         ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
-                         ggplot2::labs(x = NULL, y = NULL) + coord_cartesian(expand = T, clip = "off") +
-                         glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing with facet_space
-                         ggplot2::theme(axis.text.y = ggtext::element_markdown()) +
-                         ggplot2::labs(caption = "Source: UNAIDS Data 2022 Release"))
-
-    }
-
-
 # TEST IT ============================================================================
 
   #Test functions
@@ -395,7 +270,7 @@
     View(gdrive_df)
 
     #validate_cols
-    df <- validate_cols(gs_id_names, "HIV Estimates")
+    df <- validate_cols("HIV Estimates")
 
     #munge_unaids
     final_df <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
@@ -407,16 +282,12 @@
     View(final_percent_df)
 
     #pull_unaids
-      clean_est <- range_speedread(gs_clean_id)
+      #clean_est <- range_speedread(gs_clean_id)
 
-      pepfar_est <- range_speedread(pepfar_clean_id)
+      #pepfar_est <- range_speedread(pepfar_clean_id)
 
-    df <- pull_unaids("HIV Estimates", pepfar_only = TRUE)
-    df_2 <- pull_unaids("HIV Test & Treat", pepfar_only = TRUE)
-
-    #epi_plot
-    epi_plot() #default is "ALL PEPFAR"
-    epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Malawi", "Kenya")) #specify countries
+    #df_1 <- pull_unaids("HIV Estimates", pepfar_only = TRUE)
+    #df_2 <- pull_unaids("HIV Test & Treat", pepfar_only = TRUE)
 
 
 
