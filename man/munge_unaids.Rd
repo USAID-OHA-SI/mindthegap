@@ -11,10 +11,9 @@ munge_unaids(return_type, indicator_type)
 
 \item{indicator_type}{Returns either 'Integer' or 'Percent' indicator values}
 }
-\value{
-
-}
 \description{
+(Updated July 2023)
+
 This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 }
 \examples{
