@@ -28,7 +28,7 @@ read_rename <- function(return_type) {
   skip_n = ifelse(sheetname == "HIV2023Estimates_ByYear", 5, 4)
 
   gdrive_df <- suppressMessages(
-    googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing) %>%
+    googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing, col_types = "c") %>%
     dplyr::rename(year = !!names(.[1]),
                   iso =  !!names(.[2]),
                   country =  !!names(.[3]))
