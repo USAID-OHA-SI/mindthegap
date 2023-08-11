@@ -1,33 +1,29 @@
 # Push clean UNAIDS estimates to gdrive and flag epi control
 
 #date:  12/23/2021
-#update: 07/24/2023
+#update: 07/24/2023 (2023 Estimates)
 
 #load packages
 library(mindthegap)
 library(tidyverse)
 library(purrr)
+library(glamr)
 
 #authorize googlesheets
 googledrive::drive_auth()
 googlesheets4::gs4_auth()
+glamr::load_secrets()
 library(googledrive)
 library(googlesheets4)
 
 # EPI CONTROL FLAGS --------------------------------------
-
-# Flagging epi control countries and 95's progress
-
-
 
 #read clean data from munge_unaids
 df_est <- munge_unaids(return_type = "HIV Estimates", indicator_type = "Integer")
 df_tt <- munge_unaids(return_type = "HIV Test & Treat", indicator_type = "Percent")
 
 #read national data from EDMS
-  #filter for "Total Deaths" indicator
-df_nat <- read_sheet("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98") %>%
-  filter(indicator == "Total deaths to HIV Population")
+df_nat <- googlesheets4::range_speedread("1Brg_v0rXtDcvtdrUkmyjztu4Vwzx_yzUcw4EzzKSA98")
 
 #rename columns & format to match clean data
 df_nat <- df_nat %>%
@@ -54,28 +50,46 @@ df_nat <- df_nat %>%
 #Compare
 check <- pepfar_country_list
 
-setequal(df_nat$country, df_est$country)
-intersect(df_nat$country, df_est$country) #check overlap
-setdiff(df_nat$country, df_est$country)#check difference
-#"Sub-Saharan Africa", "Latin America and the Caribbean", "Africa","PEPFAR Country Programs", "PEPFAR Regional Programs" only in nat data
-setdiff(df_est$country, df_nat$country)
-setdiff(check$country, df_nat$country)
-#Of PEPFAR countries, nat data is missing "India", Nigeria", "Kazakhstan", "Ukraine"
-setequal(df_nat$region, df_est$region)
-intersect(df_nat$region, df_est$region)
-setdiff(df_nat$region, df_est$region)
-setdiff(df_est$region, df_nat$region)
+# setequal(df_nat$country, df_est$country)
+# intersect(df_nat$country, df_est$country) #check overlap
+# setdiff(df_nat$country, df_est$country)#check difference
+# #"Sub-Saharan Africa", "Latin America and the Caribbean", "Africa","PEPFAR Country Programs", "PEPFAR Regional Programs" only in nat data
+# setdiff(df_est$country, df_nat$country)
+# setdiff(check$country, df_nat$country)
+# #Of PEPFAR countries, nat data is missing "India", Nigeria", "Kazakhstan", "Ukraine"
+# setequal(df_nat$region, df_est$region)
+# intersect(df_nat$region, df_est$region)
+# setdiff(df_nat$region, df_est$region)
+# setdiff(df_est$region, df_nat$region)
+
+#fix ISO code misalignment for Global and regions
+iso_nat <- df_nat %>% distinct(iso) %>% pull()
+iso_est <- df_est %>% distinct(iso) %>% pull()
+change_isos <- setdiff(iso_nat, iso_est)
+
+#pull out the Global and regional isos
+reg_isos <- df_nat %>%
+  filter(iso %in% change_isos) %>%
+  count(country, iso) %>%
+  select(-n) %>%
+  rename(iso_new = iso)
+
+#change them in df_est
+df_est <- df_est %>%
+  left_join(reg_isos, by = c("country")) %>%
+  mutate(iso = ifelse(!is.na(iso_new), iso_new, iso)) %>%
+  select(-iso_new)
 
 
 #Bind together
-#df_est <- df_est %>%
- # bind_rows(df_nat)
+df_est_join <- df_est %>%
+bind_rows(df_nat)
 
-# EPI CONTROL FLAG: INFECTIONS + DEATHS
+# EPI CONTROL FLAG: INFECTIONS + DEATHS ----------------------------------------
 
-df_est_lim <- df_est %>%
+df_est_lim <- df_est_join %>%
   filter(indicator %in% c("Number PLHIV",
-                          "Total Deaths", #substitute "Number AIDS Related Deaths" with "Total Deaths"
+                          "Total deaths to HIV Population", #substitute "Number AIDS Related Deaths" with "Total Deaths"
                           "Number New HIV Infections"),
          age == "All",
          sex == "All") %>%
@@ -85,7 +99,7 @@ df_est_lim <- df_est %>%
 df_est_lim <- df_est_lim %>%
   pivot_wider(names_from = indicator,
               values_from = estimate,
-              names_glue = "{indicator %>% str_extract_all('Deaths|Infections|PLHIV') %>% tolower}")
+              names_glue = "{indicator %>% str_extract_all('Total deaths to HIV Population|Infections|PLHIV') %>% tolower}")
 
   #plhiv for reference
 df_plhiv <- df_est_lim %>%
@@ -96,6 +110,7 @@ df_plhiv <- df_est_lim %>%
 df_epi_cntry <- df_est_lim %>%
   arrange(country, year) %>%
   group_by(country) %>%
+  rename(deaths = `total deaths to hiv population`) %>%
   mutate(declining_deaths = deaths - lag(deaths, order_by = year) <= 0) %>%
   ungroup() %>%
   mutate(infections_below_deaths = infections < deaths,
@@ -106,7 +121,7 @@ df_epi_cntry <- df_est_lim %>%
          !is.na(ratio)) %>%
   select(country, iso, epi_control)
 
-#95'S PROGRESS - PLHIV BASE
+#95'S PROGRESS - PLHIV BASE ---------------------------------------------
 
 #UNAID GOAL - 95
 goal <- 95
@@ -133,7 +148,7 @@ plhiv_base_95 <- df_tt_lim %>%
   distinct(country, iso, plhiv_base_95s) %>%
   rename(`Achieved 95s with PLHIV base in 2022` = plhiv_base_95s)
 
-#95'S PROGRESS - RELATIVE CASCADE BASE
+#95'S PROGRESS - RELATIVE CASCADE BASE -----------------------------------------
 
 #Relative Base
 df_tt_rel_lim <- df_tt %>%
@@ -162,8 +177,8 @@ rename(`Achieved 95s with relative base in 2022` = rel_base_95s)
 
 #COMBINE 3 FLAGS INTO ONE DF AND LIST
 
-flag_list <- full_join(plhiv_base_95, rel_base_95, by = c("country", "iso")) %>% list()
-#flag_list <- full_join(flag_list, df_epi_cntry, by = c("country", "iso")) %>% list()
+flag_list <- full_join(plhiv_base_95, rel_base_95, by = c("country", "iso"))
+flag_list <- full_join(flag_list, df_epi_cntry, by = c("country", "iso")) %>% list()
 
 #ADD CUSTOM PULL INTO DF
 
@@ -179,6 +194,13 @@ lst <- purrr::map2( .x = data_type,
                     .f = ~munge_unaids(.x, .y)
 )
 
+#add df_nat to df_est, integers
+lst[[1]] <- lst[[1]] %>%
+  left_join(reg_isos, by = c("country")) %>%
+  mutate(iso = ifelse(!is.na(iso_new), iso_new, iso)) %>%
+  select(-iso_new) %>%
+  bind_rows(df_nat)
+
 unaids_list <- map(1:4, ~map2(lst[.x], flag_list, ~left_join(.x, .y, by = c("country", "iso"))))
 
 unaids_list <- flatten(unaids_list)
@@ -186,7 +208,7 @@ unaids_list <- flatten(unaids_list)
 #FULL DATASET -----------------------------
 
 #add file to drive
-gs_id_new <- drive_create(name = "UNAIDS 2023 Clean Estimates", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
+gs_id_new <- drive_create(name = "UNAIDS 2023 Clean Estimates - FINAL", path = "SI Folder/Analysis, Data & Tools/UNAIDS", type = "spreadsheet")
 
 #specify sheet names
 #tab_names <- c("HIV Estimates - Integer", "HIV Estimates - Percent", "Test & Treat - Integer", "Test & Treat - Percent")
