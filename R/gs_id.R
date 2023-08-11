@@ -7,13 +7,13 @@
 
 #2022 IDS --------------------------------------------
 
-gs_id_unaids <- "1ENUF8tKegwkbSck489aA2S1C_BEEvkgJG2hOevUKDyw"
-#original UNAIDS data - 2022 estimates
+gs_id_unaids <- "1TivNwrgVKGfm7maCIr9CwZgVyakS_zxbYvVPMX4VKcw"
+#original UNAIDS data - 2023 estimates
 
 gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
 #UNAIDS crosswalk - updated with new tab
 
-pepfar_clean_id <-
+pepfar_clean_id <- "1FGLyx0lFsJGEsPU_eTc1tRPuoS-swopc_78eOweNd-M"
 #PEPFAR only Clean UNAIDS data on google drive
 
 
