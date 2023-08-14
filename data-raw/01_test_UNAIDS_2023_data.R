@@ -406,8 +406,9 @@
     #epi_plot
       df_epi <- get_epi_curve_df()
       ou_list <- pull_ou_list()
-      epi_plot()
-      epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+      epi_plot() #default is "ALL PEPFAR"
+      epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi")) #specify countries
+      epi_plot(df_epi, sel_cntry = "USA") #break with non-PEPFAR countries
 
 
 
