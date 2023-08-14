@@ -2,11 +2,8 @@
 #'
 #' @description Pull clean UNAIDS 2022 (1990-2021) estimates
 #'
-#' @param orginal_unaids if TRUE, navigates to the original UNAIDS data received in July 2022.
-#' If FALSE, navigates to the additional epicontrol, cascade, and prev indicators received in August 2022
-#' @param data_type returns the available data set types
-#' eg "HIV Estimates", "HIV Test & Treat" for original UNAIDS data (original_unaids = TRUE) or "epicontrol",
-#' "cascade", "prev" for additional UNAIDS data (original_unaids = FALSE)
+#' @param data_type returns one of 2  available data set types
+#' eg "HIV Estimates", "HIV Test & Treat"
 #' @param pepfar_only filters dataset to only PEPFAR countries if TRUE (default = TRUE)
 #'
 #' @return
@@ -18,19 +15,15 @@
 #' }
 #'
 
-#if extra_unaids_indics is true, the data_type params are: "epicontrol", "cascade", "prev"
-#if extra_unaids_indics is false, the data_type param is normal ("HIV Esimates", "HIV Test & Treat")
-
-pull_unaids <- function(orginal_unaids = TRUE, data_type, pepfar_only = TRUE) {
+pull_unaids <- function(data_type, pepfar_only = TRUE) {
 
   temp_folder <- glamr::temp_folder()
+  version_tag <- "v2023.08.11"
 
-  if(orginal_unaids == FALSE) {
-    filename <- glue::glue("UNAIDS_{data_type}_2022.csv.gz")
-    version_tag <- "v2022.08.10"
+  if (pepfar_only == TRUE) {
+    filename <- glue::glue("UNAIDS_2023_Clean_Estimates_PEPFAR-only.csv.gz")
   } else {
-    filename <- glue::glue("UNAIDS_2022_Clean_Estimates.csv.gz")
-    version_tag <- "v2022.07.27"
+    filename <- glue::glue("UNAIDS_2023_Clean_Estimates.csv.gz")
   }
 
   #download a specific file - test
@@ -42,12 +35,7 @@ pull_unaids <- function(orginal_unaids = TRUE, data_type, pepfar_only = TRUE) {
   df <- temp_folder %>%
     glamr::return_latest() %>%
     readr::read_csv() %>%
-    dplyr::filter(pepfar == pepfar_only)
-
-  if(orginal_unaids == TRUE) {
-    df <- df %>%
-      dplyr::filter(sheet == data_type)
-  }
+    dplyr::filter(sheet == data_type)
 
   return(df)
 }
