@@ -49,10 +49,10 @@
     gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
     #UNAIDS crosswalk (updated)
 
-    gs_clean_id <- "1CX_2e_XF2Vl1cBoJBTLsKyVNwJIMsoHppCe5NUdmR_w"
+    gs_clean_id <- "1TivNwrgVKGfm7maCIr9CwZgVyakS_zxbYvVPMX4VKcw"
     #Clean UNAIDS estimates data on google drive (new)
 
-    pepfar_clean_id <- "1209UB0inKK7S6hvMQgHNvcNgEGrPEN0NZJJQB5_eyCw"
+    pepfar_clean_id <- "1FGLyx0lFsJGEsPU_eTc1tRPuoS-swopc_78eOweNd-M"
     #PEPFAR only Clean UNAIDS data on google drive (new)
 
     drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
@@ -295,7 +295,7 @@
         #dplyr::mutate(indicator = stringr::word(indicator, -1) %>% tolower) %>% #filters indicator name to last word
         tidyr::pivot_wider(names_from = indicator, #pivots data wide into deaths and infections column
                            values_from = estimate,
-                           names_glue = "{indicator %>% str_extract_all('deaths|Infections') %>% tolower}") #indicator change?
+                           names_glue = "{indicator %>% str_extract_all('deaths|Infections') %>% tolower}") #new death indicator
 
       # Add in ALL PEPFAR data
       df_epi_pepfar <-
@@ -317,7 +317,7 @@
                       epi_control = declining_deaths == TRUE & infections_below_deaths == TRUE) %>%
         tidyr::pivot_longer(c(infections, deaths), names_to = "indicator") %>% #put back indicators in column
         dplyr::arrange(country, indicator, year) %>%
-        dplyr::mutate(val_mod = ifelse(indicator == "deaths", -value, value), #create dual-axis (estimate vs value?)
+        dplyr::mutate(val_mod = ifelse(indicator == "deaths", -value, value), #create dual-axis
                       fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim)) #add colors to indicate flip axis
 
       return(df_epi_pepfar)
@@ -333,7 +333,7 @@
 
     # Plotting function to make the epi curves
     # By default, it will produce the All PEPFAR curve
-    epi_plot <- function(df = df_epi, sel_cntry = c("All PEPFAR")){
+    epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
 
       # Check if each value is valid
       is_valid <- all(sel_cntry %in% ou_list)
@@ -347,13 +347,13 @@
         dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~
                                                    scales::number(value, 1, scale = 0.001, suffix = "k")),
                       max_plot_pt = max(value),
-                      min_plot_pt = min(value_mod),
-                      lab_pt = dplyr::case_when(year == max(year) ~ value_mod)) %>%
+                      min_plot_pt = min(val_mod),
+                      lab_pt = dplyr::case_when(year == max(year) ~ val_mod)) %>%
         dplyr::mutate(cntry_order = max(value, na.rm = T), .by = country) %>%
         dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
 
       suppressWarnings(df_viz %>%
-                         ggplot2::ggplot(aes(year, value_mod, group = indicator, fill = fill_color, color = fill_color)) +
+                         ggplot2::ggplot(aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
                          ggplot2::geom_blank(aes(y = max_plot_pt)) + #sets max y-axis above
                          ggplot2::geom_blank(aes(y = -max_plot_pt)) + #sets max y-axis below
                          ggplot2::geom_area(alpha = 0.25) +
@@ -404,10 +404,10 @@
     #df_test <- pull_unaids("HIV Test & Treat", pepfar_only = TRUE)
 
     #epi_plot
-      #df_epi <- get_epi_curve_df()
-      #ou_list <- pull_ou_list()
-      #epi_plot()
-      #epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Malawi"))
+      df_epi <- get_epi_curve_df()
+      ou_list <- pull_ou_list()
+      epi_plot()
+      epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
 
 
 
