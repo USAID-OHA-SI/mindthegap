@@ -2,10 +2,13 @@
 
 export("%>%")
 export(epi_plot)
+export(gs_clean_id_2022)
+export(gs_id_names)
 export(gs_id_unaids)
 export(load_data)
 export(munge_unaids)
 export(package_check)
+export(pepfar_clean_id_2022)
 export(pull_unaids)
 export(regions)
 export(source_note)

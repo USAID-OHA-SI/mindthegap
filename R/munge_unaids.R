@@ -1,4 +1,7 @@
 #' @title Cleaning UNAIDS Data
+#' @description
+#' (Updated July 2023)
+#'
 #'
 #' @description This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 #' @param return_type Returns either 'HIV Estimates' or 'HIV Test & Treat' Data
@@ -25,14 +28,18 @@ munge_unaids <- function(return_type, indicator_type) {
   #Munge
   gdrive_df_clean <-
     gdrive_df %>%
-    dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
+    #dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
     #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
     dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
     tidyr::fill(region) %>% #get regions column
     tidyr::pivot_longer(-c(year, iso, country, region),
                         names_to = c("indicator")) %>%
     tidyr::separate(indicator, sep = "_", into = c("indicator", "age", "sex", "stat")) %>%
-    tidyr::pivot_wider(names_from = 'stat', values_from = "value")
+    tidyr::pivot_wider(names_from = 'stat', values_from = "value") %>%
+    dplyr::mutate(estimate_flag = ifelse(stringr::str_detect(est, "<"), TRUE, FALSE)) %>% #estimate flag
+    dplyr::mutate(dplyr::across(c(est:high), ~gsub(" |<|>", "", .))) %>% #replace special characters
+    dplyr::mutate(dplyr::across(c(est:high), ~ gsub("m","00000", .x))) %>% #replace unit values
+    dplyr::mutate(dplyr::across(c(est:high), ~ ifelse(grepl("\\.\\d+00000$", .x), gsub("\\.", "", .x), .x)))
 
   #Add sheet and indicator type variable
   gdrive_df_clean <- gdrive_df_clean %>%

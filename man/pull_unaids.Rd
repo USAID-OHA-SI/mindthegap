@@ -4,20 +4,13 @@
 \alias{pull_unaids}
 \title{Pull clean UNAIDS 2022 Estimates}
 \usage{
-pull_unaids(orginal_unaids = TRUE, data_type, pepfar_only = TRUE)
+pull_unaids(data_type, pepfar_only = TRUE)
 }
 \arguments{
-\item{orginal_unaids}{if TRUE, navigates to the original UNAIDS data received in July 2022.
-If FALSE, navigates to the additional epicontrol, cascade, and prev indicators received in August 2022}
-
-\item{data_type}{returns the available data set types
-eg "HIV Estimates", "HIV Test & Treat" for original UNAIDS data (original_unaids = TRUE) or "epicontrol",
-"cascade", "prev" for additional UNAIDS data (original_unaids = FALSE)}
+\item{data_type}{returns one of 2  available data set types
+eg "HIV Estimates", "HIV Test & Treat"}
 
 \item{pepfar_only}{filters dataset to only PEPFAR countries if TRUE (default = TRUE)}
-}
-\value{
-
 }
 \description{
 Pull clean UNAIDS 2022 (1990-2021) estimates

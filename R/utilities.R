@@ -24,11 +24,11 @@ read_rename <- function(return_type) {
   #to specify NA's when reading in data
   missing <- c("...", " ")
 
-  sheetname = ifelse(return_type == "HIV Estimates", "HIV2022Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
-  skip_n = ifelse(sheetname == "HIV2022Estimates_ByYear", 4, 3)
+  sheetname = ifelse(return_type == "HIV Estimates", "HIV2023Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
+  skip_n = ifelse(sheetname == "HIV2023Estimates_ByYear", 5, 4)
 
   gdrive_df <- suppressMessages(
-    googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing) %>%
+    googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing, col_types = "c") %>%
     dplyr::rename(year = !!names(.[1]),
                   iso =  !!names(.[2]),
                   country =  !!names(.[3]))

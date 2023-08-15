@@ -3,7 +3,7 @@
 # REF ID:   b35bcd5e
 # LICENSE:  MIT
 # DATE:     2022-10-11
-# UPDATED:
+# UPDATED: 2023-08-11 (2023 data release)
 
 # DEPENDENCIES ------------------------------------------------------------
 
@@ -15,7 +15,7 @@
 # FIRST UNAIDS RELEASE - 07-22-22 -----------------------------------------
 
 #add version tag for date
-new_tag <- "v2022.07.27"
+new_tag <- "v2023.08.11"
 
 #create a new release (default will go to the USAID-OHA-SI/mindthegap repo)
 pb_new_release(tag = new_tag)
@@ -24,15 +24,15 @@ pb_new_release(tag = new_tag)
 glamr::temp_folder()
 
 #import data
-df_all <- googlesheets4::range_speedread(gs_clean_id)
-df_pepfar <- googlesheets4::range_speedread(pepfar_clean_id)
+df_all <- googlesheets4::range_speedread(gs_clean_id_2022)
+df_pepfar <- googlesheets4::range_speedread(pepfar_clean_id_2022)
 
 #save data to temp folder
-readr::write_csv(df_all, file.path(folderpath_tmp, "UNAIDS_2022_Clean_Estimates.csv.gz"))
-saveRDS(df_all, file.path(folderpath_tmp, "UNAIDS_2022_Clean_Estimates.rds"))
+readr::write_csv(df_all, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates.csv.gz"))
+saveRDS(df_all, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates.rds"))
 
-readr::write_csv(df_pepfar, file.path(folderpath_tmp, "UNAIDS_2022_Clean_Estimates_PEPFAR-only.csv.gz"))
-saveRDS(df_pepfar, file.path(folderpath_tmp, "UNAIDS_2022_Clean_Estimates_PEPFAR-only.rds"))
+readr::write_csv(df_pepfar, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates_PEPFAR-only.csv.gz"))
+saveRDS(df_pepfar, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates_PEPFAR-only.rds"))
 
                 #upload multiple files to release
                 list.files(folderpath_tmp, full.names = TRUE) %>%
