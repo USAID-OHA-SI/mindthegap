@@ -6,7 +6,7 @@
 \alias{mindthegap-package}
 \title{mindthegap: Mind the Gap: 90-90-90 Trends and ART Coverage Gaps}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
 Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country.
 }
