@@ -1,6 +1,6 @@
 #' @title Pull clean UNAIDS 2022 Estimates
 #'
-#' @description Pull clean UNAIDS 2022 (1990-2021) estimates
+#' @description Pull clean UNAIDS 2022 (1990-2022) estimates
 #'
 #' @param data_type returns one of 2  available data set types
 #' eg "HIV Estimates", "HIV Test & Treat"

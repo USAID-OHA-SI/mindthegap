@@ -13,7 +13,7 @@ eg "HIV Estimates", "HIV Test & Treat"}
 \item{pepfar_only}{filters dataset to only PEPFAR countries if TRUE (default = TRUE)}
 }
 \description{
-Pull clean UNAIDS 2022 (1990-2021) estimates
+Pull clean UNAIDS 2022 (1990-2022) estimates
 }
 \examples{
  \dontrun{

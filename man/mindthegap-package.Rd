@@ -26,6 +26,7 @@ Useful links:
 Authors:
 \itemize{
   \item Karishma Srikanth \email{ksrikanth@usaid.gov}
+  \item Lemlem Baraki \email{lbaraki@usaid.gov}
   \item Tim Essam \email{tessam@usaid.gov}
 }
 
