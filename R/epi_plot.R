@@ -28,7 +28,7 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
     #dplyr::mutate(indicator = stringr::word(indicator, -1) %>% tolower) %>% #filters indicator name to last word
     tidyr::pivot_wider(names_from = indicator, #pivots data wide into deaths and infections column
                        values_from = estimate,
-                       names_glue = "{indicator %>% str_extract_all('deaths|Infections') %>% tolower}") #new death indicator
+                       names_glue = "{indicator %>% stringr::str_extract_all('deaths|Infections') %>% tolower}") #new death indicator
 
   # Add in ALL PEPFAR data
   df_epi_pepfar <-
@@ -54,13 +54,14 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
                   fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim)) #add colors to indicate flip axis
 
   # OU list to check entries
-  ou_list <- df_epi %>% dplyr::distinct(country) %>% dplyr::pull()
+    ou_list <- glamr::pepfar_country_list %>% dplyr::distinct(country) %>% dplyr::pull()
+    #ou_list <- df_epi %>% dplyr::distinct(country) %>% dplyr::pull()
 
   # Check if each value is valid
-  is_valid <- all(sel_cntry %in% ou_list)
+  #is_valid <- all(sel_cntry %in% ou_list)
 
   # Output the result
-  stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
+  #stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
 
   df_viz <-
     df %>%
