@@ -4,21 +4,24 @@
 \alias{epi_plot}
 \title{Epidemic Control Plot}
 \usage{
-epi_plot(sel_cntry)
+epi_plot(df = df_epi_pepfar, sel_cntry = c("All PEPFAR"))
 }
 \arguments{
-\item{sel_cntry}{country to visualize (OU name or "ALL PEPFAR")}
+\item{df}{This pulls the merged dataframe}
+
+\item{sel_cntry}{country to visualize ("ALL PEPFAR" as default or list OU names)}
 }
 \value{
 epidemic control plot showing trends in new infections and AIDS-related deaths
 }
 \description{
-This function creates epidemic control curves for selected OU or "ALL PEPFAR"
+This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
 }
 \examples{
  \dontrun{
+   epi_plot()
    epi_plot(sel_cntry = "Lesotho")
-   epi_plot(sel_cntry = "ALL PEPFAR")
+   epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
 }
 
 }
