@@ -65,13 +65,16 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
   stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
 
   df_viz <-
-    df %>%
+    df_epi_pepfar %>%
     dplyr::filter(country %in% sel_cntry) %>% #change to listed countries
     dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~
                                                scales::number(value, 1, scale = 0.001, suffix = "k")),
                   max_plot_pt = max(value),
                   min_plot_pt = min(val_mod),
-                  lab_pt = dplyr::case_when(year == max(year) ~ val_mod)) %>%
+                  lab_pt = dplyr::case_when(year == max(year) ~ val_mod),
+                  indicator = ifelse(indicator == "deaths", "Total Deaths to HIV Population", "New HIV Infections"), #creating labels
+                  new_hiv_label = dplyr::case_when(value == max_plot_pt ~ indicator),  #assigning label location to min/max
+                  tot_death_label = dplyr::case_when(val_mod == min_plot_pt ~ indicator)) %>%
     dplyr::mutate(cntry_order = max(value, na.rm = T), .by = country) %>%
     dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
 
@@ -90,13 +93,17 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
                      #scale_y_continuous(labels = ~(scales::label_number_si())(abs(.))) + #deprecated - use 'scale_cut'
                      ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
                                                  expand = c(0, 0)) +
-                     ggplot2::scale_x_continuous(breaks = seq(min(df$year), max(df$year),5)) + #automatic x-axis min/max
+                     ggplot2::scale_x_continuous(breaks = seq(min(df_epi$year), max(df_epi$year),5)) + #automatic x-axis min/max
                      #ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) + #manual x-axis breaks
                      ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
-                     #ggplot2::annotate(geom = "text", x = 2010, y =2.8e5, label = c("New HIV Infections"), hjust = 0,
-                     #        family = "Source Sans Pro Light", color = glitr::denim) +  #add labels to plot
-                     #ggplot2::annotate(geom = "text", x = 2010, y = -2.8e5, label = c("Total Deaths to HIV Population"), hjust = 0,
-                     #                 family = "Source Sans Pro Light", color = glitr::old_rose) +
+                     geom_text(aes(label = new_hiv_label, x = 2005, y = (max_plot_pt)), na.rm = TRUE,
+                               hjust = -0.3, family = "Source Sans Pro Light") +
+                     geom_text(aes(label = tot_death_label, x = 2005, y = (min_plot_pt)), na.rm = TRUE,
+                               hjust = -0.3, family = "Source Sans Pro Light") +
+                     #ggplot2::annotate(geom = "text", x = 2008, y = 2.8e6, label = c("New HIV Infections"), hjust = 0,
+                     #      family = "Source Sans Pro Light", color = glitr::denim) +  #add labels to plot
+                     #ggplot2::annotate(geom = "text", x = 2008, y = -1.5e6, label = c("Total Deaths to HIV Population"), hjust = 0,
+                     #               family = "Source Sans Pro Light", color = glitr::old_rose) +
                      ggplot2::labs(x = NULL, y = NULL) + ggplot2::coord_cartesian(expand = T, clip = "off") +
                      glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing with facet_space
                      ggplot2::theme(axis.text.y = ggtext::element_markdown()) +
