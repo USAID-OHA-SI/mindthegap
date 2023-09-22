@@ -7,12 +7,12 @@
 epi_plot(df = df_epi_pepfar, sel_cntry = c("All PEPFAR"))
 }
 \arguments{
-\item{df}{This pulls the merged dataframe}
+\item{df}{UNAIDS based data frame}
 
-\item{sel_cntry}{country to visualize ("ALL PEPFAR" as default or list OU names)}
+\item{sel_cntry}{PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)}
 }
 \value{
-epidemic control plot showing trends in new infections and AIDS-related deaths
+Epidemic control plot showing trends in new infections and total deaths to HIV population
 }
 \description{
 This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
@@ -21,7 +21,8 @@ This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
  \dontrun{
    epi_plot()
    epi_plot(sel_cntry = "Lesotho")
-   epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+   epi_plot(sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+   epi_plot(sel_cntry = "USA") #breaks with non-PEPFAR countries
 }
 
 }

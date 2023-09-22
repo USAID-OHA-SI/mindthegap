@@ -1,16 +1,17 @@
 #' Epidemic Control Plot
 #' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
-#' @param df This pulls the merged dataframe
-#' @param sel_cntry country to visualize ("ALL PEPFAR" as default or list OU names)
+#' @param df UNAIDS based data frame
+#' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
 #'
-#' @return epidemic control plot showing trends in new infections and AIDS-related deaths
+#' @return Epidemic control plot showing trends in new infections and total deaths to HIV population
 #' @export
 #'
 #' @examples
 #'  \dontrun{
 #'    epi_plot()
 #'    epi_plot(sel_cntry = "Lesotho")
-#'    epi_plot(df_epi, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+#'    epi_plot(sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+#'    epi_plot(sel_cntry = "USA") #breaks with non-PEPFAR countries
 #' }
 #'
 
@@ -54,14 +55,14 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
                   fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim)) #add colors to indicate flip axis
 
   # OU list to check entries
-    ou_list <- glamr::pepfar_country_list %>% dplyr::distinct(country) %>% dplyr::pull()
-    #ou_list <- df_epi %>% dplyr::distinct(country) %>% dplyr::pull()
+  #ou_list <- glamr::pepfar_country_list %>% dplyr::distinct(country) %>% dplyr::pull()
+  ou_list <- df_epi_pepfar %>% dplyr::distinct(country) %>% dplyr::pull()
 
   # Check if each value is valid
-  #is_valid <- all(sel_cntry %in% ou_list)
+  is_valid <- all(sel_cntry %in% ou_list)
 
   # Output the result
-  #stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
+  stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
 
   df_viz <-
     df %>%
@@ -75,14 +76,14 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
     dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
 
   suppressWarnings(df_viz %>%
-                     ggplot2::ggplot(aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
-                     ggplot2::geom_blank(aes(y = max_plot_pt)) + #sets max y-axis above
-                     ggplot2::geom_blank(aes(y = -max_plot_pt)) + #sets max y-axis below
+                     ggplot2::ggplot(ggplot2::aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
+                     ggplot2::geom_blank(ggplot2::aes(y = max_plot_pt)) + #sets max y-axis above
+                     ggplot2::geom_blank(ggplot2::aes(y = -max_plot_pt)) + #sets max y-axis below
                      ggplot2::geom_area(alpha = 0.25) +
                      ggplot2::geom_hline(yintercept = 0,color = glitr::grey80k) +
                      ggplot2::geom_line() +
-                     ggplot2::geom_point(aes(y = lab_pt), na.rm = TRUE, shape = 21, color = "white", size = 3) +
-                     ggplot2::geom_text(aes(label = val_lab), na.rm = TRUE, #value label text
+                     ggplot2::geom_point(ggplot2::aes(y = lab_pt), na.rm = TRUE, shape = 21, color = "white", size = 3) +
+                     ggplot2::geom_text(ggplot2::aes(label = val_lab), na.rm = TRUE, #value label text
                                         hjust = -0.3,
                                         family = "Source Sans Pro Light") +
                      ggplot2::facet_wrap(~country) + #small multiples of countries
@@ -92,10 +93,13 @@ epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
                      ggplot2::scale_x_continuous(breaks = seq(min(df$year), max(df$year),5)) + #automatic x-axis min/max
                      #ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) + #manual x-axis breaks
                      ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
-                     ggplot2::labs(x = NULL, y = NULL) + coord_cartesian(expand = T, clip = "off") +
+                     #ggplot2::annotate(geom = "text", x = 2010, y =2.8e5, label = c("New HIV Infections"), hjust = 0,
+                     #        family = "Source Sans Pro Light", color = glitr::denim) +  #add labels to plot
+                     #ggplot2::annotate(geom = "text", x = 2010, y = -2.8e5, label = c("Total Deaths to HIV Population"), hjust = 0,
+                     #                 family = "Source Sans Pro Light", color = glitr::old_rose) +
+                     ggplot2::labs(x = NULL, y = NULL) + ggplot2::coord_cartesian(expand = T, clip = "off") +
                      glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing with facet_space
                      ggplot2::theme(axis.text.y = ggtext::element_markdown()) +
                      ggplot2::labs(caption = "Source: UNAIDS Data 2022 Release"))
 
 }
-
