@@ -26,14 +26,13 @@ library(glamr)
 load_secrets()
 ```
 
-
 ## Introduction
 
-This vignette serves as a data dictionary for the UNAIDS 2020 Estimates Data. It will cover the data structure and variables, as well as provide an overview of the indicators across the HIV Estimates tab and the Test & Treat tab. Finally, it will touch briefly on common use cases and which data tab to access for those analytics. 
+This vignette serves as a data dictionary for the UNAIDS 2022 Estimates Data. It will cover the data structure and variables, as well as provide an overview of the indicators across the `"HIV Estimates"` tab and the `"HIV Test & Treat"` tab. Finally, it will touch briefly on common use cases and which data tab to access for those analytics.
 
 ## UNAIDS Clean Data Structure
 
-Let's first take a look at the data structure, using the `HIV Estimates` tab as an example. 
+Let's first take a look at the data structure, using the `HIV Estimates` tab as an example.
 
 ```{r, message = FALSE}
 df_pct <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
@@ -41,7 +40,7 @@ knitr::kable(head(df_pct, n = 6L), format = "html")
 
 ```
 
-Within each of the UNAIDS datasets, there are disaggregates by `age` and `sex`, and `indic_type`. Let's take a look at the disaggregates in the `"HIV Estimates"` tab. 
+Within each of the UNAIDS datasets, there are disaggregates by `age`, `sex`, and `indic_type`. Let's take a look at the disaggregates in the `"HIV Estimates"` tab.
 
 ```{r, message = FALSE, echo = FALSE}
 count_tbl <- df_pct %>% 
@@ -50,19 +49,19 @@ count_tbl <- df_pct %>%
 
 knitr::kable(count_tbl,
              format = "html",
-             caption = "Indic_type/Age/Sex Count Table from the `HIV Estimates - Percent` tab") %>% 
+             caption = "Indic_type/Age/Sex Count Table from the `HIV Estimates` tab") %>% 
     kable_styling(bootstrap_options = c("hover"))
 ```
 
 As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at HIV Incidence (a percent indicator), there are age disaggregates for ages 15-49 and all ages, but no disaggregates for sex. If you were looking at Prevalence, there are sex disaggregates for young adults (15-24), but no sex disaggregates for the age group 15-49.
 
-As such, it is important to filter for the age/sex/incator type disaggregates that are you interested in before diving further into your analytics.
+As such, it is important to filter for the age/sex/indicator type disaggregates that are you interested in before diving further into your analytics.
 
 ## HIV Estimates Indicators and Use Cases
 
-The HIV estimates data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (HIV Prevalence and HIV Incidence) and 4 integer indicators (PLHIV, AIDS-related deaths, PMTCT, and New HIV Infections).
+The `HIV Estimates` data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (HIV Prevalence and HIV Incidence) and 5 integer indicators (PLHIV, AIDS-related deaths, Total deaths, PMTCT, and New HIV Infections).
 
-To pull the HIV Estimates indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Estimates, pepfar_only = TRUE)`.
+To pull the HIV Estimates indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)`.
 
 ```{r, echo = FALSE, message = FALSE}
 hiv_est_info <- tribble(
@@ -71,6 +70,7 @@ hiv_est_info <- tribble(
   "`Percent Incidence`", "HIV Incidence (per 1,000 uninfected population)",
   "`Number PLHIV`", "Estimated number people living with HIV",
   "`Number AIDS Related Deaths`", "AIDS Related Deaths",
+  "`Total deaths to HIV Population`", "Estimated number of deaths from all causes among people living with HIV", 
   "`Number PMTCT Needing ART`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
   "`Number New HIV Infections`", "New HIV Infections",
 )
@@ -86,7 +86,7 @@ kable(
 
 ### Use Case #1: Epidemic Control Curves
 
-PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." The integer indicators in the HIV Estimates data can be used to analyze and plot these trends. 
+PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." The integer indicators in the HIV Estimates data can be used to analyze and plot these trends.
 
 To assess progress towards this definition of epidemic control, we will use the `"HIV Estimates"` data:
 
@@ -98,9 +98,10 @@ df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
 hiv_est_info <- tribble(
     ~ indicator, ~ description,
   "`PLHIV`", "Estimated people living with HIV",
-  "`AIDS Related Deaths`", "AIDS Related Deaths",
-  "`PMTCT`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
-  "`New HIV Infections`", "New HIV Infections",
+  "`Number AIDS Related Deaths`", "AIDS Related Deaths",
+  "`Total deaths to HIV Population`", "Estimated number of deaths from all causes among people living with HIV",
+  "`Number PMTCT Needing ART`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
+  "`Number New HIV Infections`", "New HIV Infections",
 )
 
 kable(
@@ -108,23 +109,23 @@ kable(
   format = "html",
   col.names = c("", "")
 ) %>%
-  group_rows(index = c("Integer Indicators" = 4)) %>%
+  group_rows(index = c("Integer Indicators" = 5)) %>%
   kable_styling(bootstrap_options = c("hover"))
 ```
 
-- To create the epidemic control curves, you will need 2 indicators from the `HIV Estimates` dataset:
-    - **`Number New HIV Infections`**
-    - **`Number AIDS Related Deaths`**
+-   To create the epidemic control curves, you will need 2 indicators from the `HIV Estimates` dataset:
+    -   **`Number New HIV Infections`**
+    -   **`Total deaths to HIV Population`**
 
 For more information on how to create these plots, see the article `Epidemic Control Plots.`
-
 
 ### Use Case #2: Incidence/Prevalence Curves
 
 To plot HIV Incidence and Prevalence curves with confidence intervals, we will use the percent indicators in the `"HIV Estimates"` data:
 
 ```{r, message = FALSE}
-df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
+df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE) %>% 
+  filter(indic_type == "Percent")
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -143,15 +144,15 @@ kable(
   kable_styling(bootstrap_options = c("hover"))
 ```
 
-- To create the incidence/prevalence curves, you will need 2 indicators from the `HIV Estimates - Percent` tab: 
-    - **`Percent Prevalence`**
-    - **`Percent Incidence`**
+-   To create the incidence/prevalence curves, you will need 2 indicators from the `HIV Estimates - Percent` tab:
+    -   **`Percent Prevalence`**
+    -   **`Percent Incidence`**
 
-## Test & Treat Indicators & Use Cases
+## HIV Test & Treat Indicators & Use Cases
 
-The Test & Treat Data covers indicators in the clinical cascade, that can be used to track progress to the UNAIDS 90-90-90 targets. There are 6 percent indicators and 5 integer indicators.
+The `HIV Test & Treat` Data covers indicators in the clinical cascade, that can be used to track progress to the UNAIDS 95-95-95 targets. There are 6 percent indicators and 5 integer indicators.
 
-To pull the Test & Treat indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Test & Treat - Percent, pepfar_only = TRUE)`.
+To pull the HIV Test & Treat indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE)`.
 
 ```{r,echo = FALSE}
 hiv_est_info <- tribble(
@@ -175,20 +176,20 @@ kable(
   format = "html",
   col.names = c("", "")
 ) %>%
-  group_rows(index = c("Percent Indicators" = 6, "Integer Indicators" = 4)) %>%
+  group_rows(index = c("Percent Indicators" = 6, "Integer Indicators" = 5)) %>%
   kable_styling(bootstrap_options = c("hover"))
 ```
 
-### Use Case #3: Progress to 90-90-90 / 95-95-95 Targets
+### Use Case #3: Progress to 95-95-95 Targets
 
-The percent indicators in the Test & Treat data can be used to assess progress to the UNAIDS 90-90-90 targets that were set to be achieved in 2020, where 90% of PLHIV know their status, 90% of those who know their status are accessing treatment, and 90% of those who are accessing treatment are virally suppressed. These can also be used to assess progress to the 95-95-95 goals, which are set to be achieved by 2030.
+The percent indicators in the `HIV Test & Treat` data can be used to assess progress to the UNAIDS 95-95-95 targets that are set to be achieved by 2030, where 95% of PLHIV know their status, 95% of those who know their status are accessing treatment, and 95% of those who are accessing treatment are virally suppressed. These can also be used to assess progress to the 90-90-90 goals, which were set to be achieved in 2020.
 
-To assess progress to 90-90-90 targets, we will use the percent indicators in the `"HIV Test & Treat"` data:
+To assess progress to 95-95-95 targets, we will use the percent indicators in the `"HIV Test & Treat"` data:
 
 ```{r, message = FALSE}
-df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE)
+df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE) %>%
+  filter(indic_type == "Percent")
 ```
-
 
 ```{r, echo = FALSE}
 hiv_est_info <- tribble(
@@ -210,18 +211,15 @@ kable(
   kable_styling(bootstrap_options = c("hover"))
 ```
 
-As you may notice, there are multiple test & treat percent indicators for the clinical cascade. This is because there are 2 types of metrics that can be used to calculate progress to 90-90-90 targets - the **relative base/conditional denominator** or the **PLHIV base/denominator**.
+As you may notice, there are multiple test & treat percent indicators for the clinical cascade. This is because there are 2 types of metrics that can be used to calculate progress to 95-95-95 targets - the **relative base/conditional denominator** or the **PLHIV base/denominator**.
 
-- If you are using the **relative base** to track 90-90-90 progress, use the following indicators from the `"HIV Test & Treat"` data tab.
-    - **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
-    - **`Percent on ART with Known Status`**: Among those who know their status, percent on ART
-    - **`Percent VLS on ART`**: Among those who are on ART, percent virally suppressed
-    
-- If you are using the **PLHIV base**, use the following indicators from the "Test & Treat - Percent" data tab.
-    - **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
-    - **`Percent on ART of PLHIV`**: Among PLHVIV, percent on ART
-    - **`Percent VLS of PLHIV`**: Among PLHIV, percent virally suppressed
-    
-For more information about the distinction between relative/PLHIV base and how to assess 90-90-90 progress, see the article `90-90-90 Target Progress: Relative Base vs. PLHIV Base`.
+-   If you are using the **relative base** to track 95-95-95 progress, use the following indicators from the `"HIV Test & Treat"` data tab.
+    -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
+    -   **`Percent on ART with Known Status`**: Among those who know their status, percent on ART
+    -   **`Percent VLS on ART`**: Among those who are on ART, percent virally suppressed
+-   If you are using the **PLHIV base**, use the following indicators from the "Test & Treat - Percent" data tab.
+    -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
+    -   **`Percent on ART of PLHIV`**: Among PLHVIV, percent on ART
+    -   **`Percent VLS of PLHIV`**: Among PLHIV, percent virally suppressed
 
-    
+For more information about the distinction between relative/PLHIV base and how to assess 95-95-95 progress, see the article `95-95-95 Target Progress: Relative Base vs. PLHIV Base`.
