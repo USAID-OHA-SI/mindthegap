@@ -54,7 +54,8 @@ Suggests:
     googledrive,
     devtools,
     knitr,
-    rmarkdown
+    rmarkdown,
+    kableExtra
 Remotes: 
     ICPI/ICPIutilities,
     USAID-OHA-SI/glamr,
