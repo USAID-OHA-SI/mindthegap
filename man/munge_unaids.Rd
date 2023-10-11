@@ -11,6 +11,9 @@ munge_unaids(return_type, indicator_type)
 
 \item{indicator_type}{Returns either 'Integer' or 'Percent' indicator values}
 }
+\value{
+df
+}
 \description{
 (Updated July 2023)
 

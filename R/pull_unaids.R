@@ -6,7 +6,7 @@
 #' eg "HIV Estimates", "HIV Test & Treat"
 #' @param pepfar_only filters dataset to only PEPFAR countries if TRUE (default = TRUE)
 #'
-#' @return
+#' @return df
 #' @export
 #'
 #' @examples

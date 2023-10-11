@@ -7,7 +7,7 @@
 #' @param return_type Returns either 'HIV Estimates' or 'HIV Test & Treat' Data
 #' @param indicator_type Returns either 'Integer' or 'Percent' indicator values
 
-#' @return
+#' @return df
 #' @export
 #'
 #' @examples
