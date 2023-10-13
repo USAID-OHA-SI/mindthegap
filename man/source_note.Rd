@@ -3,8 +3,7 @@
 \docType{data}
 \name{source_note}
 \alias{source_note}
-\title{Title
-UNAIDS Source Info}
+\title{UNAIDS Source Info}
 \format{
 An object of class \code{character} of length 1.
 }

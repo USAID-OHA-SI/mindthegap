@@ -11,4 +11,5 @@ utils::globalVariables(c("where", "operatingunit",
                          "value_mod", "lab_pt", "val_lab", "new_hiv_label",
                          "max_plot_pt", "aids_label", "min_plot_pt", "countryname_iso",
                          "high", "region", "low", "est", "country_iso", "estimate",
-                         "upper_bound", "pepfar"))
+                         "upper_bound", "pepfar", "cntry_order", "gs_id",
+                         "tot_death_label", "val_mod"))

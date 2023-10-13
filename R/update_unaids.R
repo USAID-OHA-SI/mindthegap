@@ -68,6 +68,8 @@ update_unaids <- function(filepaths, usaid_email){
 
 unaids_hdrs <- function(){
 
+  lifecycle::deprecate_stop("1.1.0", "unaids_hdrs()")
+
   #create headers (due to repeated headers over two lines)
   years <- c(2015:2020)
   indicator <- forcats::as_factor(c("known_status", "on_art", "vl_suppression"))
