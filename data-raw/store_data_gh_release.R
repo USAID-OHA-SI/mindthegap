@@ -3,7 +3,7 @@
 # REF ID:   b35bcd5e
 # LICENSE:  MIT
 # DATE:     2022-10-11
-# UPDATED: 2023-08-11 (2023 data release)
+# UPDATED:  2023-10-13
 
 # DEPENDENCIES ------------------------------------------------------------
 
@@ -11,6 +11,7 @@
   library(tidyverse)
   library(googlesheets4)
   library(piggyback)
+  load_all(.)
 
 # FIRST UNAIDS RELEASE - 07-22-22 -----------------------------------------
 
@@ -34,14 +35,18 @@ saveRDS(df_all, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates.rds"))
 readr::write_csv(df_pepfar, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates_PEPFAR-only.csv.gz"))
 saveRDS(df_pepfar, file.path(folderpath_tmp, "UNAIDS_2023_Clean_Estimates_PEPFAR-only.rds"))
 
-                #upload multiple files to release
-                list.files(folderpath_tmp, full.names = TRUE) %>%
-                  pb_upload(tag = new_tag)
+  #upload multiple files to release for archiving
+  list.files(folderpath_tmp, full.names = TRUE) %>%
+    pb_upload(tag = new_tag)
 
-                #download a specific file - test
-                pb_download(file = "UNAIDS.2022.Clean.Estimates.rds",
-                            repo = "USAID-OHA-SI/mindthegap",
-                            dest = glamr::si_path("path_downloads"))
+  #upload multiple files to latest release for ease of access
+  list.files(folderpath_tmp, full.names = TRUE) %>%
+    pb_upload(tag = "latest")
+
+  #download a specific file - test
+  pb_download(file = "UNAIDS.2022.Clean.Estimates.rds",
+              repo = "USAID-OHA-SI/mindthegap",
+              dest = glamr::si_path("path_downloads"))
 
 
   # ADDITIONAL UNAIDS INDICATORS - 08-10-2022 ------------------------------

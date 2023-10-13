@@ -1,9 +1,9 @@
-#' Title
-#' Export a list of UN regions
-#' @description
+#' UN Defined Regions
+#'
 #' This list is used to filter the UN regions
 #'
 #' @export
+#' @keywords internal
 #'
 regions <- c("Global",
              "Asia and the Pacific",

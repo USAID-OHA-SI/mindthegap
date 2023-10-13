@@ -10,6 +10,8 @@
 
 combo_plot <- function(ctry_sel, folderpath_output = NULL){
 
+  lifecycle::deprecate_stop("1.1.0", "viz_unaids()", "plot_epi()")
+
   print(ctry_sel)
 
   v1 <- viz_unaids(ctry_sel)
@@ -43,6 +45,8 @@ combo_plot <- function(ctry_sel, folderpath_output = NULL){
 #' @keywords internal
 
 viz_unaids <- function(ctry_sel){
+
+  lifecycle::deprecate_stop("1.1.0", "viz_unaids()", "plot_epi()")
 
   if(exists("df_unaids") == FALSE)
     stop("No data. Run load_data()")
@@ -88,6 +92,8 @@ viz_unaids <- function(ctry_sel){
 #' @keywords internal
 
 viz_impatt <- function(ctry_sel){
+
+  lifecycle::deprecate_stop("1.1.0", "viz_impatt()")
 
   if(exists("df_impatt") == FALSE)
     stop("No data. Run load_data()")

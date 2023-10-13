@@ -3,8 +3,7 @@
 \docType{data}
 \name{regions}
 \alias{regions}
-\title{Title
-Export a list of UN regions}
+\title{UN Defined Regions}
 \format{
 An object of class \code{character} of length 9.
 }
@@ -14,4 +13,4 @@ regions
 \description{
 This list is used to filter the UN regions
 }
-\keyword{datasets}
+\keyword{internal}

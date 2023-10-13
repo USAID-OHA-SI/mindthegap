@@ -2,22 +2,16 @@
 #'
 #' @param pkg package name
 #'
-#' @export
+#' @keywords internal
 
 package_check <- function(pkg){
+
   if (!requireNamespace(pkg, quietly = TRUE)) {
     stop(paste("Package", pkg, "needed for this function to work. Please install it."),
          call. = FALSE)
   }
 }
 
-
-.onAttach <- function(libname, pkgname) {
-
-  if (.Platform$OS.type == "windows")
-    grDevices::windowsFonts(GillSans = grDevices::windowsFont("Gill Sans MT"))
-
-}
 
 read_rename <- function(return_type) {
 

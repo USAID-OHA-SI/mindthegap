@@ -21,11 +21,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Aaron Chafetz \email{achafetz@usaid.ogv}
+\strong{Maintainer}: Karishma Srikanth \email{ksrikanth@usaid.gov}
 
 Authors:
 \itemize{
-  \item Karishma Srikanth \email{ksrikanth@usaid.gov}
+  \item Aaron Chafetz \email{achafetz@usaid.ogv}
   \item Lemlem Baraki \email{lbaraki@usaid.gov}
   \item Tim Essam \email{tessam@usaid.gov}
 }

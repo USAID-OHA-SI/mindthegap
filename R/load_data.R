@@ -1,6 +1,8 @@
 
 #' Load data for viz
 #'
+#' Deprecated
+#'
 #' @param usaid_email USAID email to store file on GDrive
 #'
 #' @export
@@ -11,6 +13,8 @@
 #'    load_data("twhitmore@usaid.gov")}
 
 load_data <- function(usaid_email = NULL){
+
+  lifecycle::deprecate_stop("1.1.0", "load_data()", "pull_unaids()")
 
   #if not already authenticated, use email or prompt user
   if(!googlesheets4::gs4_has_token() & !is.null(usaid_email))
