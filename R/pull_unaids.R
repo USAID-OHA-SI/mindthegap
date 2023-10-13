@@ -17,7 +17,7 @@
 
 pull_unaids <- function(data_type, pepfar_only = TRUE) {
 
-  temp_folder <- glamr::temp_folder()
+  temp_folder <- glamr::temp_folder(quiet = TRUE)
   version_tag <- "v2023.08.11"
 
   if (pepfar_only == TRUE) {
@@ -30,11 +30,23 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
   piggyback::pb_download(file = filename,
               repo = "USAID-OHA-SI/mindthegap",
               tag = version_tag,
-              dest = temp_folder)
+              dest = temp_folder,
+              show_progress = FALSE)
 
   df <- temp_folder %>%
-    glamr::return_latest() %>%
-    readr::read_csv() %>%
+    glamr::return_latest(quiet = TRUE) %>%
+    readr::read_csv(
+      col_types = list(
+        year = "d",
+        estimate = "d",
+        lower_bound = "d",
+        upper_bound = "d",
+        pepfar = "l",
+        `Achieved 95s with PLHIV base in 2022` = "l",
+        `Achieved 95s with relative base in 2022` = "l",
+        epi_control = "l",
+        .default = "c")
+    ) %>%
     dplyr::filter(sheet == data_type)
 
   return(df)
