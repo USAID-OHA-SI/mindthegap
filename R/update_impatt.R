@@ -25,7 +25,7 @@ update_impatt <- function(filepath, usaid_email){
     if(grepl("rds$", filepath)){
       df_impatt <- readr::read_rds(filepath)
     } else {
-      df_impatt <- ICPIutilities::read_msd(filepath)
+      df_impatt <- gophr::read_psd(filepath)
     }
 
   #filter to PLHIV and TX_CURR_SUBNAT for most recent year
