@@ -10,7 +10,7 @@ load_data(usaid_email = NULL)
 \item{usaid_email}{USAID email to store file on GDrive}
 }
 \description{
-Load data for viz
+Deprecated
 }
 \examples{
 \dontrun{

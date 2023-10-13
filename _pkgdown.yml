@@ -11,25 +11,49 @@ navbar:
     - tutorials
     - news
     right: github
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    news:
+      text: Changelog
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/USAID-OHA-SI/mindthegap/
+    articles:
+      text: Articles
+      menu:
+      - text: Accesing Clean UNAIDS Data
+        href: articles/accessing-clean-unaids.html
+      - text: "95-95-95 Target Progress: Relative Base vs. PLHIV Base"
+        href: articles/relative-plhiv-base.html
+      - text: Data Dictionary & Use Cases
+        href: articles/unaids-data-dictionary.html
+
 reference:
 - title: Accessing Clean UNAIDS Estimates
   contents:
     - pull_unaids
     - pull_estimates
     - pull_testtreat
-- title: Mindthegap Plotting
-  contents: epi_plot
-- title: UNAIDS Cleaning Function
-  contents: munge_unaids
-- title: Global variables
+
+- title: Plotting UNAIDS Estimates
   contents:
-  - regions
-  - source_note
-- title: Package checks
-  contents: package_check
-- title: Archived functions
+    - epi_plot
+    - source_note
+
+- title: Developer Tools
   contents:
-  - load_data
-  - unaids_hdrs
+    - munge_unaids
+
+- title: Deprecated functions
+  contents:
+    - load_data
+    - unaids_hdrs
+
 
 

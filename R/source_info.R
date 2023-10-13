@@ -1,6 +1,5 @@
-#' Title
 #' UNAIDS Source Info
-#' @description
+#'
 #' Returns UNAIDS Source info for consistent sourcing notes
 #'
 #' @export

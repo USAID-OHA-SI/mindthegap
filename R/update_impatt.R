@@ -19,7 +19,7 @@ update_impatt <- function(filepath, usaid_email){
   if(!grepl("usaid.gov$", usaid_email))
     stop("USAID email address required for GDrive Access")
 
-  package_check("googlesheets4")
+  rlang::is_installed("googlesheets4")
 
   #import IMPATT data
     if(grepl("rds$", filepath)){

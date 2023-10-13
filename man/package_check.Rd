@@ -12,3 +12,4 @@ package_check(pkg)
 \description{
 Check if package exists
 }
+\keyword{internal}

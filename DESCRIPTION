@@ -49,7 +49,8 @@ Imports:
     purrr,
     rlang,
     tidyselect,
-    piggyback
+    piggyback,
+    lifecycle
 Suggests:
     googledrive,
     devtools,
