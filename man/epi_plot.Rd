@@ -4,21 +4,25 @@
 \alias{epi_plot}
 \title{Epidemic Control Plot}
 \usage{
-epi_plot(sel_cntry)
+epi_plot(df = df_epi_pepfar, sel_cntry = c("All PEPFAR"))
 }
 \arguments{
-\item{sel_cntry}{country to visualize (OU name or "ALL PEPFAR")}
+\item{df}{UNAIDS based data frame}
+
+\item{sel_cntry}{PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)}
 }
 \value{
-epidemic control plot showing trends in new infections and AIDS-related deaths
+Epidemic control plot showing trends in new infections and total deaths to HIV population
 }
 \description{
-This function creates epidemic control curves for selected OU or "ALL PEPFAR"
+This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
 }
 \examples{
  \dontrun{
+   epi_plot()
    epi_plot(sel_cntry = "Lesotho")
-   epi_plot(sel_cntry = "ALL PEPFAR")
+   epi_plot(sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+   epi_plot(sel_cntry = "USA") #breaks with non-PEPFAR countries
 }
 
 }
