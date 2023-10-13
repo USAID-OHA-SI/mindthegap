@@ -1,4 +1,4 @@
-#' @title Pull clean UNAIDS 2022 Estimates
+#' @title Pull clean UNAIDS 2022 HIV Estimates or Test & Treat
 #'
 #' @description Pull clean UNAIDS 2022 (1990-2022) estimates
 #'
@@ -49,4 +49,45 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
     dplyr::filter(sheet == data_type)
 
   return(df)
+}
+
+
+#' Pull clean UNAIDS HIV Estimates
+#'
+#' Pull clean UNAIDS 2022 (1990-2022) estimates data. Wrapper around
+#' `pull_unaids`.
+#'
+#' @inheritParams pull_unaids
+#'
+#' @return df
+#' @export
+#'
+#' @examples
+#'  \dontrun{
+#'    pull_estimates()
+#' }
+pull_estimates <- function(pepfar_only = TRUE){
+
+  pull_unaids("HIV Estimates", pepfar_only)
+
+}
+
+#' Pull clean UNAIDS HIV Test & Treat
+#'
+#' Pull clean UNAIDS 2022 (1990-2022) HIV Test & Treat data. Wrapper around
+#' `pull_unaids`.
+#'
+#' @inheritParams pull_unaids
+#'
+#' @return df
+#' @export
+#'
+#' @examples
+#'  \dontrun{
+#'    pull_testtreat()
+#' }
+pull_testtreat <- function(pepfar_only = TRUE){
+
+  pull_unaids("HIV Test & Treat", pepfar_only)
+
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pull_unaids.R
 \name{pull_unaids}
 \alias{pull_unaids}
-\title{Pull clean UNAIDS 2022 Estimates}
+\title{Pull clean UNAIDS 2022 HIV Estimates or Test & Treat}
 \usage{
 pull_unaids(data_type, pepfar_only = TRUE)
 }

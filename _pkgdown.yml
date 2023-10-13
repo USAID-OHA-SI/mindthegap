@@ -13,7 +13,10 @@ navbar:
     right: github
 reference:
 - title: Accessing Clean UNAIDS Estimates
-  contents: pull_unaids
+  contents:
+    - pull_unaids
+    - pull_estimates
+    - pull_testtreat
 - title: Mindthegap Plotting
   contents: epi_plot
 - title: UNAIDS Cleaning Function
