@@ -4,11 +4,11 @@ Version: 1.1.0
 Authors@R: c(
     person(given = "Aaron",
            family = "Chafetz",
-           role = c("aut", "cre"),
+           role = c("aut"),
            email = "achafetz@usaid.ogv"),
     person(given = "Karishma",
          family = "Srikanth",
-         role = c("aut"),
+         role = c("aut", "cre"),
          email = "ksrikanth@usaid.gov"),
     person(given = "Lemlem",
          family = "Baraki",
