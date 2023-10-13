@@ -18,7 +18,6 @@
 pull_unaids <- function(data_type, pepfar_only = TRUE) {
 
   temp_folder <- glamr::temp_folder(quiet = TRUE)
-  version_tag <- "v2023.08.11"
 
   if (pepfar_only == TRUE) {
     filename <- glue::glue("UNAIDS_2023_Clean_Estimates_PEPFAR-only.csv.gz")
@@ -29,7 +28,7 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
   #download a specific file - test
   piggyback::pb_download(file = filename,
               repo = "USAID-OHA-SI/mindthegap",
-              tag = version_tag,
+              tag = "latest",
               dest = temp_folder,
               show_progress = FALSE)
 
