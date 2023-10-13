@@ -13,13 +13,6 @@ package_check <- function(pkg){
 }
 
 
-.onAttach <- function(libname, pkgname) {
-
-  if (.Platform$OS.type == "windows")
-    grDevices::windowsFonts(GillSans = grDevices::windowsFont("Gill Sans MT"))
-
-}
-
 read_rename <- function(return_type) {
 
   #to specify NA's when reading in data
