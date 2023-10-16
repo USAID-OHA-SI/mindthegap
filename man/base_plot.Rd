@@ -12,10 +12,10 @@ base_plot(sel_base, sel_cntry)
 \item{sel_cntry}{PEPFAR country to visualize (list OU name)}
 }
 \value{
-Summary table showing OU progress toward the 95's
+Summary table showing OU progress toward the 95-95-95's
 }
 \description{
-This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
+This function creates a summary table with progress towards the 95's
 }
 \examples{
  \dontrun{

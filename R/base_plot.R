@@ -1,9 +1,9 @@
 #' 95's Table Plot
-#' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
+#' @description This function creates a summary table with progress towards the 95's
 #' @param sel_base Returns one of 2 table types eg "PLHIV", "Relative"
 #' @param sel_cntry  PEPFAR country to visualize (list OU name)
 #'
-#' @return Summary table showing OU progress toward the 95's
+#' @return Summary table showing OU progress toward the 95-95-95's
 #' @export
 #'
 #' @examples
@@ -24,57 +24,57 @@ base_plot <- function(sel_base, sel_cntry){
   #PLHIV base
   if (sel_base == "PLHIV") {
     df_tt <- df_tt %>%
-      filter(year == max(year),
+      dplyr::filter(year == max(year),
              country == sel_cntry,
              indicator %in% c("Percent Known Status of PLHIV",
                               "Percent on ART of PLHIV",
                               "Percent VLS of PLHIV"),
              age == "All",
              sex == "All") %>%
-      mutate(set = recode(indicator, "Percent Known Status of PLHIV" = 1,
+      dplyr::mutate(set = dplyr::recode(indicator, "Percent Known Status of PLHIV" = 1,
                           "Percent on ART of PLHIV" = 2,
                           "Percent VLS of PLHIV" = 3),
              goal_rate = round((goal/100)^set*100),
              achieved = estimate >= goal_rate) %>%
-      select(year, country, indicator, estimate, goal_rate, achieved) %>%
-      gt() %>%
-      cols_hide(c(year, country)) %>%
-      fmt_percent(columns = c(estimate, goal_rate),
+      dplyr::select(year, country, indicator, estimate, goal_rate, achieved) %>%
+      gt::gt() %>%
+      gt::cols_hide(c(year, country)) %>%
+      gt::fmt_percent(columns = c(estimate, goal_rate),
                   decimals = 0, scale_values = FALSE) %>%
-      cols_label(goal_rate = "goal") %>%
+      gt::cols_label(goal_rate = "goal") %>%
       gtExtras::gt_theme_nytimes() %>%
-      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>%
-      tab_options(source_notes.font.size = px(8),
-                  data_row.padding = px(1),
-                  table.font.size = px(12)) %>%
-      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
-      tab_header(title = glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: PLHIV BASE"))
+      gt::tab_source_note(source_note = gt::md(glue::glue("Source: UNAIDS Data 2022 Release"))) %>%
+      gt::tab_options(source_notes.font.size = px(8),
+                  data_row.padding = gt::px(1),
+                  table.font.size = gt::px(12)) %>%
+      gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
+      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: PLHIV BASE"))
 
     #Relative base
   } else if (sel_base == "Relative") {
     df_tt <- df_tt %>%
-      filter(year == max(year),
+      dplyr::filter(year == max(year),
              country == sel_cntry,
              indicator %in% c("Percent Known Status of PLHIV",
                               "Percent on ART with Known Status",
                               "Percent VLS on ART"),
              age == "All",
              sex == "All") %>%
-      mutate(goal_rate = 95, # Use 95 as the goal metric for each indicator
+      dplyr::mutate(goal_rate = 95, # Use 95 as the goal metric for each indicator
              achieved = estimate >= goal_rate) %>%
-      select(year, country, indicator, estimate, goal_rate, achieved) %>%
-      gt() %>%
-      cols_hide(c(year, country)) %>%
-      fmt_percent(columns = c(estimate, goal_rate),
+      dplyr::select(year, country, indicator, estimate, goal_rate, achieved) %>%
+      gt::gt() %>%
+      gt::cols_hide(c(year, country)) %>%
+      gt::fmt_percent(columns = c(estimate, goal_rate),
                   decimals = 0, scale_values = FALSE) %>%
-      cols_label(goal_rate = "goal") %>%
+      gt::cols_label(goal_rate = "goal") %>%
       gtExtras::gt_theme_nytimes() %>%
-      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>%
-      tab_options(source_notes.font.size = px(8),
+      gt::tab_source_note(source_note = gt::md(glue::glue("Source: UNAIDS Data 2022 Release"))) %>%
+      gt::tab_options(source_notes.font.size = px(8),
                   data_row.padding = px(1),
                   table.font.size = px(12)) %>%
-      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
-      tab_header(title = glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE"))
+      gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
+      gt::tab_header(title = glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE"))
   }
   return(df_tt)
 
