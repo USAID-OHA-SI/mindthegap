@@ -1,9 +1,9 @@
-#' 95's Table Plot
-#' @description This function creates a summary table with progress towards the 95's
+#' @title 95's Table Plot
+#' @description This function creates a summary table showing OU progress toward the 95-95-95's
 #' @param sel_base Returns one of 2 table types eg "PLHIV", "Relative"
 #' @param sel_cntry  PEPFAR country to visualize (list OU name)
 #'
-#' @return Summary table showing OU progress toward the 95-95-95's
+#' @return df_tt
 #' @export
 #'
 #' @examples
@@ -44,7 +44,7 @@ base_plot <- function(sel_base, sel_cntry){
       gt::cols_label(goal_rate = "goal") %>%
       gtExtras::gt_theme_nytimes() %>%
       gt::tab_source_note(source_note = gt::md(glue::glue("Source: UNAIDS Data 2022 Release"))) %>%
-      gt::tab_options(source_notes.font.size = px(8),
+      gt::tab_options(source_notes.font.size = gt::px(8),
                   data_row.padding = gt::px(1),
                   table.font.size = gt::px(12)) %>%
       gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
@@ -70,9 +70,9 @@ base_plot <- function(sel_base, sel_cntry){
       gt::cols_label(goal_rate = "goal") %>%
       gtExtras::gt_theme_nytimes() %>%
       gt::tab_source_note(source_note = gt::md(glue::glue("Source: UNAIDS Data 2022 Release"))) %>%
-      gt::tab_options(source_notes.font.size = px(8),
-                  data_row.padding = px(1),
-                  table.font.size = px(12)) %>%
+      gt::tab_options(source_notes.font.size = gt::px(8),
+                  data_row.padding = gt::px(1),
+                  table.font.size = gt::px(12)) %>%
       gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
       gt::tab_header(title = glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE"))
   }

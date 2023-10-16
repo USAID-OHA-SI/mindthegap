@@ -12,10 +12,10 @@ base_plot(sel_base, sel_cntry)
 \item{sel_cntry}{PEPFAR country to visualize (list OU name)}
 }
 \value{
-Summary table showing OU progress toward the 95-95-95's
+df_tt
 }
 \description{
-This function creates a summary table with progress towards the 95's
+This function creates a summary table showing OU progress toward the 95-95-95's
 }
 \examples{
  \dontrun{
