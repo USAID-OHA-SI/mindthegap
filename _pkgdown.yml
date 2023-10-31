@@ -29,31 +29,26 @@ navbar:
       menu:
       - text: Accesing Clean UNAIDS Data
         href: articles/accessing-clean-unaids.html
-      - text: "95-95-95 Target Progress: Relative Base vs. PLHIV Base"
+      - text: '95-95-95 Target Progress: Relative Base vs. PLHIV Base'
         href: articles/relative-plhiv-base.html
       - text: Data Dictionary & Use Cases
         href: articles/unaids-data-dictionary.html
-
 reference:
 - title: Accessing Clean UNAIDS Estimates
   contents:
-    - pull_unaids
-    - pull_estimates
-    - pull_testtreat
-
+  - pull_unaids
+  - pull_estimates
+  - pull_testtreat
 - title: Plotting UNAIDS Estimates
   contents:
-    - epi_plot
-    - source_note
-
+  - epi_plot
+  - source_note
 - title: Developer Tools
   contents:
-    - munge_unaids
+  - munge_unaids
 
 - title: Deprecated functions
   contents:
-    - load_data
-    - unaids_hdrs
-
-
+  - load_data
+  - unaids_hdrs
 

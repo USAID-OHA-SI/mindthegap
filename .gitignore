@@ -18,3 +18,5 @@ GIS/*
 Images/*
 Graphics/*
 inst/doc
+docs
+Dataout/*
