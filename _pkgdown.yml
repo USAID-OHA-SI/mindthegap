@@ -42,6 +42,7 @@ reference:
 - title: Plotting UNAIDS Estimates
   contents:
   - epi_plot
+  - base_plot
   - source_note
 - title: Developer Tools
   contents:
