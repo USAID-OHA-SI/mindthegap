@@ -41,7 +41,7 @@ The **PLHIV base/denominator** (testing and treatment cascade) is best used for 
 Both are useful, but for different purposes (see visual below).
 
 ```{r, echo = FALSE, fig.align="center"}
-knitr::include_graphics("unaids-90s.png", dpi = 150)
+knitr::include_graphics("unaids-95s.png", dpi = 150, error = FALSE)
 ```
 
 ### How to use UNAIDS Data to Assess 95's Progress
@@ -82,10 +82,20 @@ goal <- 95
            achieved = estimate >= goal_rate) %>% #sets the moving goal rate for each 95 for PLHIV base
     select(year, country, indicator, estimate, goal_rate, achieved)
 
-knitr::kable(df_tt_plhiv,
-             format = "html",
-             caption = "Namibia's 95-95-95 Progress using PLHIV Base") %>% 
-    kable_styling(bootstrap_options = c("hover"))
+#create table 
+ gt(df_tt_plhiv) %>% 
+	      cols_hide(c(year, country)) %>% 
+	      fmt_percent(columns = c(estimate, goal_rate),
+	                  decimals = 0, scale_values = FALSE) %>% 
+	      cols_label(goal_rate = "goal") %>% 
+	      gtExtras::gt_theme_nytimes() %>% 
+	      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>% 
+	      tab_options(source_notes.font.size = px(8),
+	                  data_row.padding = px(1),
+	                  table.font.size = px(12)) %>% 
+	      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>% 
+	      tab_header(title = glue("NAMIBIA'S 2022 TREATMENT TARGET GOALS: PLHIV BASE")) 
+  
 
 ```
 
@@ -107,10 +117,19 @@ goal <- 95
            achieved = estimate >= goal_rate) %>% 
     select(year, country, indicator, estimate, goal_rate, achieved)
 
-knitr::kable(df_tt_rel,
-             format = "html",
-             caption = "Namibia's 95-95-95 Progress using the Relative Base") %>% 
-    kable_styling(bootstrap_options = c("hover"))
+#create table
+      gt(df_tt_rel) %>% 
+	      cols_hide(c(year, country)) %>% 
+	      fmt_percent(columns = c(estimate, goal_rate),
+	                  decimals = 0, scale_values = FALSE) %>% 
+	      cols_label(goal_rate = "goal") %>% 
+	      gtExtras::gt_theme_nytimes() %>% 
+	      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>% 
+	      tab_options(source_notes.font.size = px(8),
+	                  data_row.padding = px(1),
+	                  table.font.size = px(12)) %>% 
+	      tab_header(title ="NAMIBIA'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE") %>% 
+      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1))
 
 ```
 
@@ -121,11 +140,11 @@ As a result of these differences between the 2 metrics, the number of PEPFAR cou
 With the relative base, 5 countries have reached all 3 95's: **Eswatini, Botswana, Zimbabwe, Tanzania, and Rwanda**.
 
 ```{r, echo = FALSE}
-knitr::include_graphics("5-countries-relative-base.png", dpi = 150)
+knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error=FALSE)
 ```
 
 With the PLHIV base, the list of countries expands from 5 to 6 countries that have reached all 3 95's, adding **Namibia**.
 
 ```{r, echo = FALSE}
-knitr::include_graphics("6-countries-PLHIV-base.png", dpi = 150)
+knitr::include_graphics("6-countries-PLHIV-base.png", dpi = 150, error = FALSE)
 ```
