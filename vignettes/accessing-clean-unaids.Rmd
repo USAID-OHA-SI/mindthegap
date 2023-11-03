@@ -39,6 +39,8 @@ To use `pull_unaids`, there are 2 parameters:
 
 2.  `pepfar_only`: if TRUE, this parameter will return a dataset of only PEPFAR countries. If you do not specify this parameter, it will default to TRUE.
 
+In order to access the data from GitHub releases, be sure to load the `glamr` package to run the `pull_unaids` function. 
+
 ```{r, message = FALSE}
 library(glamr)
 
