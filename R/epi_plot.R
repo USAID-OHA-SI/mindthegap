@@ -15,7 +15,7 @@
 #' }
 #'
 
-epi_plot <- function(df = df_epi_pepfar, sel_cntry = c("All PEPFAR")){
+epi_plot <- function(sel_cntry = c("All PEPFAR")){
 
   df_epi <- mindthegap::pull_unaids(data_type = "HIV Estimates",pepfar_only = TRUE) %>% #pull from PEPFAR Only estimates
     dplyr::filter(age == "All", sex == "All",

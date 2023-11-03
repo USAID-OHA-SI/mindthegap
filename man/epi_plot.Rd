@@ -4,12 +4,12 @@
 \alias{epi_plot}
 \title{Epidemic Control Plot}
 \usage{
-epi_plot(df = df_epi_pepfar, sel_cntry = c("All PEPFAR"))
+epi_plot(sel_cntry = c("All PEPFAR"))
 }
 \arguments{
-\item{df}{UNAIDS based data frame}
-
 \item{sel_cntry}{PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)}
+
+\item{df}{UNAIDS based data frame}
 }
 \value{
 Epidemic control plot showing trends in new infections and total deaths to HIV population
