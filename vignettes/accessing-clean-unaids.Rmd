@@ -42,6 +42,7 @@ To use `pull_unaids`, there are 2 parameters:
 In order to access the data from GitHub releases, be sure to load the `glamr` package to run the `pull_unaids` function. 
 
 ```{r, message = FALSE}
+remotes::install_github("USAID-OHA-SI/glamr")
 library(glamr)
 
 df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
