@@ -19,11 +19,12 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ```{r setup, include = FALSE, message = FALSE}
 library(mindthegap)
-library(knitr)
 library(tidyverse)
-library(kableExtra)
+library(glue)
+library(gt)
+library(gtExtras)
 library(glamr)
-load_secrets()
+library(glitr)
 ```
 
 ## Introduction
@@ -40,7 +41,7 @@ The **PLHIV base/denominator** (testing and treatment cascade) is best used for 
 
 Both are useful, but for different purposes (see visual below).
 
-```{r, echo = FALSE, fig.align="center"}
+```{r, echo = FALSE, fig.align="center",  out.width = "400px"}
 knitr::include_graphics("unaids-95s.png", dpi = 150, error = FALSE)
 ```
 
@@ -65,7 +66,7 @@ df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE) %>%
 
 Let's take a deep dive into Namibia's progress to the 95's using the PLHIV base.
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 goal <- 95
 
  #limit Test and Treat data
@@ -95,26 +96,11 @@ goal <- 95
 	      tab_options(source_notes.font.size = px(8),
 	                  data_row.padding = px(1),
 	                  table.font.size = px(12)) %>% 
-	      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>% 
+	      gt_color_rows(achieved,
+	                    palette = c(glitr::burnt_sienna, glitr::scooter),
+	                    domain = c(0,1),
+	                    pal_type = "discrete") %>% 
 	      tab_header(title = glue("NAMIBIA'S 2022 TREATMENT TARGET GOALS: PLHIV BASE")) 
-
-<<<<<<< HEAD
-=======
-#create table 
- gt(df_tt_plhiv) %>% 
-	      cols_hide(c(year, country)) %>% 
-	      fmt_percent(columns = c(estimate, goal_rate),
-	                  decimals = 0, scale_values = FALSE) %>% 
-	      cols_label(goal_rate = "goal") %>% 
-	      gtExtras::gt_theme_nytimes() %>% 
-	      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>% 
-	      tab_options(source_notes.font.size = px(8),
-	                  data_row.padding = px(1),
-	                  table.font.size = px(12)) %>% 
-	      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>% 
-	      tab_header(title = glue("NAMIBIA'S 2022 TREATMENT TARGET GOALS: PLHIV BASE")) 
-  
->>>>>>> d9bfb6e340a71fee5066d27f072da352c4cebd96
 
 ```
 
@@ -129,20 +115,18 @@ goal <- 95
   df_tt_rel <- df_tt %>% 
     filter(year == max(year),
            country == "Namibia",
-           indicator %in% c("Percent Known Status of PLHIV", "Percent on ART with Known Status", "Percent VLS on ART"), #using relative base indicators
+           indicator %in% c("Percent Known Status of PLHIV",
+                            "Percent on ART with Known Status",
+                            "Percent VLS on ART"), #using rel base indicators
            age == "All",
            sex == "All") %>%
     mutate(goal_rate = goal, #use 95 as the goal metric for each indicator
            achieved = estimate >= goal_rate) %>% 
     select(year, country, indicator, estimate, goal_rate, achieved)
 
-<<<<<<< HEAD
-	#create table       
-  gt(df_tt_rel) %>% 
-=======
+
 #create table
       gt(df_tt_rel) %>% 
->>>>>>> d9bfb6e340a71fee5066d27f072da352c4cebd96
 	      cols_hide(c(year, country)) %>% 
 	      fmt_percent(columns = c(estimate, goal_rate),
 	                  decimals = 0, scale_values = FALSE) %>% 
@@ -153,7 +137,10 @@ goal <- 95
 	                  data_row.padding = px(1),
 	                  table.font.size = px(12)) %>% 
 	      tab_header(title ="NAMIBIA'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE") %>% 
-      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1))
+      gt_color_rows(achieved,
+	                    palette = c(glitr::burnt_sienna, glitr::scooter),
+	                    domain = c(0,1),
+	                    pal_type = "discrete")
 
 ```
 
@@ -163,16 +150,12 @@ As a result of these differences between the 2 metrics, the number of PEPFAR cou
 
 With the relative base, 5 countries have reached all 3 95's: **Eswatini, Botswana, Zimbabwe, Tanzania, and Rwanda**.
 
-```{r, echo = FALSE}
-<<<<<<< HEAD
-knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error = FALSE)
-=======
+```{r, echo = FALSE, fig.align="center", out.width = "400px"}
 knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error=FALSE)
->>>>>>> d9bfb6e340a71fee5066d27f072da352c4cebd96
 ```
 
 With the PLHIV base, the list of countries expands from 5 to 6 countries that have reached all 3 95's, adding **Namibia**.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.align="center", out.width = "400px"}
 knitr::include_graphics("6-countries-PLHIV-base.png", dpi = 150, error = FALSE)
 ```

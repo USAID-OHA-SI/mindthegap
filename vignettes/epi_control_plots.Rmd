@@ -20,13 +20,13 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```{r setup, include = FALSE, message = FALSE}
 library(mindthegap)
 library(knitr)
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 library(kableExtra)
 library(glamr)
 remotes::install_github("USAID-OHA-SI/glitr")
 library(glitr)
-install.packages("ggtext")
+#install.packages("ggtext")
 library(ggtext)
 
 ```
@@ -35,20 +35,27 @@ library(ggtext)
 
 PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." The integer indicators in the HIV Estimates data can be used to analyze and plot these trends.
 
-To assess progress towards this definition of epidemic control, we can use the `"HIV Estimates"` and `"epicontrol"` tab of the UNAIDS data. This vignette will walk through how to use the `epi_plot` function in the MindTheGap package to generate plots.
+To assess progress towards this definition of epidemic control, we can use the `"HIV Estimates"` tab of the UNAIDS data. This vignette will walk through how to use the `epi_plot` function in the MindTheGap package to generate plots.
 
 ### Epidemic Control Plotting Function
 
-First, let's take a look at the `epi_plot` function in action: to use this function, first load the `mindthegap` package and specify your PEPFAR country/countries of interest in the `sel_cntry` parameter of the `epi_plot` function.
+First, let's take a look at the `epi_plot` function in action: to use this function, first load the `mindthegap` package and specify your PEPFAR country of interest in the `sel_cntry` parameter of the `epi_plot` function.
 
-```{r, message = FALSE, warning=FALSE, fig.show = "hold", out.width="50%"}
+```{r, message = FALSE, warning=FALSE, fig.align="center"}
 
 #Load library 
 library(mindthegap)
 
 epi_plot(sel_cntry = "Kenya")
-epi_plot(sel_cntry = c("Kenya","Mozambique", "Tanzania"))
 
+```
+The `epi_plot` function allows for you to list several countries of interest in the `sel_cntry` parameter, in case you want to compare epidemic control across countries. 
+
+```{r, message = FALSE, warning=FALSE, fig.align="center"}
+
+library(mindthegap)
+
+epi_plot(sel_cntry = c("Kenya","Mozambique", "Tanzania"))
 ```
 
 In addition to looking at epidemic control at the country level, we can also see trends across all of PEPFAR by just using the `epi_plot()` function, as "ALL PEPFAR" is the default country in the `sel_cntry` parameter.
@@ -69,6 +76,7 @@ First, let's load all the other libraries that we need to generate these plots a
 
 ```{r, message= FALSE}
 library(glitr)
+library(extrafont)
 library(scales)
 library(ggtext)
 library(magrittr)

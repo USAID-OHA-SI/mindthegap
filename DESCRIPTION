@@ -47,6 +47,7 @@ Imports:
     piggyback,
     lifecycle,
     ggtext, 
+    extrafont,
     gt,
     gtExtras,
     RColorBrewer
