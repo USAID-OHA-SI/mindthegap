@@ -26,6 +26,7 @@ library(kableExtra)
 library(glamr)
 remotes::install_github("USAID-OHA-SI/glitr")
 library(glitr)
+install.packages("ggtext")
 library(ggtext)
 
 ```
