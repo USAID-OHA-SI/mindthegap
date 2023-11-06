@@ -25,7 +25,6 @@ library(tidyverse)
 library(kableExtra)
 library(glamr)
 
-load_secrets()
 ```
 
 ## Introduction
