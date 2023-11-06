@@ -70,9 +70,7 @@ First, let's load all the other libraries that we need to generate these plots a
 ```{r, message= FALSE}
 library(glitr)
 library(scales)
-library(tidytext)
 library(ggtext)
-library(glue)
 library(magrittr)
 library(ggplot2)
 
