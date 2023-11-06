@@ -49,7 +49,9 @@ base_plot <- function(sel_base, sel_cntry){
                   data_row.padding = gt::px(1),
                   table.font.size = gt::px(12)) %>%
       #gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
-      gtExtras::gt_color_rows(achieved, palette = "ggthemes::Traffic",
+      gtExtras::gt_color_rows(achieved,
+                              palette = c(glitr::burnt_sienna, glitr::scooter), #change palette to raw values
+                              #palette = "ggthemes::Traffic",
                               domain = c(0,1),
                               pal_type = "discrete") %>%
       gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: PLHIV BASE"))
@@ -78,7 +80,9 @@ base_plot <- function(sel_base, sel_cntry){
                   data_row.padding = gt::px(1),
                   table.font.size = gt::px(12)) %>%
       #gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
-      gtExtras::gt_color_rows(achieved, palette = "ggthemes::Traffic",
+      gtExtras::gt_color_rows(achieved,
+                              palette = c(glitr::burnt_sienna, glitr::scooter), #change palette to raw values
+                              #palette = "ggthemes::Traffic",
                               domain = c(0,1),
                               pal_type = "discrete") %>%
       gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE"))

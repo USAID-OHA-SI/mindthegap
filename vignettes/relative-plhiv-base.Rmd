@@ -72,7 +72,9 @@ goal <- 95
   df_tt_plhiv <- df_tt %>% 
     filter(year == max(year),
            country == "Namibia",
-           indicator %in% c("Percent Known Status of PLHIV", "Percent on ART of PLHIV", "Percent VLS of PLHIV"), #Using the PLHIV base indicators
+           indicator %in% c("Percent Known Status of PLHIV",
+                            "Percent on ART of PLHIV",
+                            "Percent VLS of PLHIV"), #Using the PLHIV base indicators
            age == "All",
            sex == "All") %>% 
     mutate(set = recode(indicator, "Percent Known Status of PLHIV" = 1, 
@@ -81,7 +83,23 @@ goal <- 95
            goal_rate = round((goal/100)^set*100), 
            achieved = estimate >= goal_rate) %>% #sets the moving goal rate for each 95 for PLHIV base
     select(year, country, indicator, estimate, goal_rate, achieved)
+  
+  #create table 
+  gt(df_tt_plhiv) %>% 
+    cols_hide(c(year, country)) %>% 
+    fmt_percent(columns = c(estimate, goal_rate),
+	                  decimals = 0, scale_values = FALSE) %>% 
+	      cols_label(goal_rate = "goal") %>% 
+	      gtExtras::gt_theme_nytimes() %>% 
+	      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>% 
+	      tab_options(source_notes.font.size = px(8),
+	                  data_row.padding = px(1),
+	                  table.font.size = px(12)) %>% 
+	      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>% 
+	      tab_header(title = glue("NAMIBIA'S 2022 TREATMENT TARGET GOALS: PLHIV BASE")) 
 
+<<<<<<< HEAD
+=======
 #create table 
  gt(df_tt_plhiv) %>% 
 	      cols_hide(c(year, country)) %>% 
@@ -96,6 +114,7 @@ goal <- 95
 	      gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>% 
 	      tab_header(title = glue("NAMIBIA'S 2022 TREATMENT TARGET GOALS: PLHIV BASE")) 
   
+>>>>>>> d9bfb6e340a71fee5066d27f072da352c4cebd96
 
 ```
 
@@ -117,8 +136,13 @@ goal <- 95
            achieved = estimate >= goal_rate) %>% 
     select(year, country, indicator, estimate, goal_rate, achieved)
 
+<<<<<<< HEAD
+	#create table       
+  gt(df_tt_rel) %>% 
+=======
 #create table
       gt(df_tt_rel) %>% 
+>>>>>>> d9bfb6e340a71fee5066d27f072da352c4cebd96
 	      cols_hide(c(year, country)) %>% 
 	      fmt_percent(columns = c(estimate, goal_rate),
 	                  decimals = 0, scale_values = FALSE) %>% 
@@ -140,7 +164,11 @@ As a result of these differences between the 2 metrics, the number of PEPFAR cou
 With the relative base, 5 countries have reached all 3 95's: **Eswatini, Botswana, Zimbabwe, Tanzania, and Rwanda**.
 
 ```{r, echo = FALSE}
+<<<<<<< HEAD
+knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error = FALSE)
+=======
 knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error=FALSE)
+>>>>>>> d9bfb6e340a71fee5066d27f072da352c4cebd96
 ```
 
 With the PLHIV base, the list of countries expands from 5 to 6 countries that have reached all 3 95's, adding **Namibia**.

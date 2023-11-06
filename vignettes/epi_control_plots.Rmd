@@ -20,11 +20,11 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```{r setup, include = FALSE, message = FALSE}
 library(mindthegap)
 library(knitr)
+install.packages("tidyverse")
 library(tidyverse)
 library(kableExtra)
 library(glamr)
 
-load_secrets()
 ```
 
 ## Introduction
