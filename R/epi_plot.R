@@ -24,16 +24,14 @@ epi_plot <- function(sel_cntry = c("All PEPFAR")){
     dplyr::arrange(country, indicator, year) #order rows by these variables
 
   # Perform necessary munging
-  df_epi_ous <-
-    df_epi %>%
+  df_epi_ous <- df_epi %>%
     #dplyr::mutate(indicator = stringr::word(indicator, -1) %>% tolower) %>% #filters indicator name to last word
     tidyr::pivot_wider(names_from = indicator, #pivots data wide into deaths and infections column
                        values_from = estimate,
                        names_glue = "{indicator %>% stringr::str_extract_all('deaths|Infections') %>% tolower}") #new death indicator
 
   # Add in ALL PEPFAR data
-  df_epi_pepfar <-
-    df_epi_ous %>%
+  df_epi_pepfar <- df_epi_ous %>%
     dplyr::bind_rows(df_epi_ous %>%
                        dplyr::mutate(country = "All PEPFAR") %>%
                        dplyr::group_by(country, year) %>%
@@ -42,8 +40,7 @@ epi_plot <- function(sel_cntry = c("All PEPFAR")){
                                         .groups = "drop")) #sums PEPFAR country estimates
 
   # Create epi control flag
-  df_epi_pepfar <-
-    df_epi_pepfar %>%
+  df_epi_pepfar <- df_epi_pepfar %>%
     dplyr::mutate(declining_deaths = deaths - dplyr::lag(deaths, order_by = year) <= 0, by = c(country)) %>% #TRUE/FALSE declining
     dplyr::mutate(infections_below_deaths = infections < deaths,
                   ratio = infections / deaths,
@@ -64,8 +61,7 @@ epi_plot <- function(sel_cntry = c("All PEPFAR")){
   # Output the result
   stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
 
-  df_viz <-
-    df_epi_pepfar %>%
+  df_viz <- df_epi_pepfar %>%
     dplyr::filter(country %in% sel_cntry) %>% #change to listed countries
     dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~
                                                scales::number(value, 1, scale = 0.001, suffix = "k")),
