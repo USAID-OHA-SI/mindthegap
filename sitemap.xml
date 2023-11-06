@@ -31,7 +31,13 @@
     <loc>https://usaid-oha-si.github.io/mindthegap/index.html</loc>
   </url>
   <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/news/index.html</loc>
+  </url>
+  <url>
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/base_gray.html</loc>
+  </url>
+  <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/base_plot.html</loc>
   </url>
   <url>
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/blue_palette.html</loc>
@@ -49,7 +55,13 @@
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/grid_gray.html</loc>
   </url>
   <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id.html</loc>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_clean_id_2022.html</loc>
+  </url>
+  <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id_names.html</loc>
+  </url>
+  <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id_unaids.html</loc>
   </url>
   <url>
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/index.html</loc>
@@ -70,7 +82,16 @@
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/package_check.html</loc>
   </url>
   <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/pepfar_clean_id_2022.html</loc>
+  </url>
+  <url>
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_estimates.html</loc>
+  </url>
+  <url>
+    <loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_testtreat.html</loc>
   </url>
   <url>
     <loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_unaids.html</loc>
