@@ -20,13 +20,13 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```{r setup, include = FALSE, message = FALSE}
 library(mindthegap)
 library(knitr)
-#install.packages("tidyverse")
+install.packages("tidyverse")
 library(tidyverse)
 library(kableExtra)
 library(glamr)
 remotes::install_github("USAID-OHA-SI/glitr")
 library(glitr)
-#install.packages("ggtext")
+install.packages("ggtext")
 library(ggtext)
 
 ```
