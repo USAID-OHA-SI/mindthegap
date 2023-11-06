@@ -24,6 +24,7 @@ install.packages("tidyverse")
 library(tidyverse)
 library(kableExtra)
 library(glamr)
+library(glitr)
 
 ```
 
