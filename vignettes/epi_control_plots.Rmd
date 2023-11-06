@@ -24,6 +24,7 @@ install.packages("tidyverse")
 library(tidyverse)
 library(kableExtra)
 library(glamr)
+remotes::install_github("USAID-OHA-SI/glitr")
 library(glitr)
 
 ```
