@@ -46,6 +46,8 @@ Imports:
     tidyselect,
     piggyback,
     lifecycle,
+    ggtext, 
+    extrafont,
     gt,
     gtExtras,
     RColorBrewer

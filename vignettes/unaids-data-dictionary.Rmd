@@ -23,7 +23,6 @@ library(knitr)
 library(tidyverse)
 library(kableExtra)
 library(glamr)
-load_secrets()
 ```
 
 ## Introduction
@@ -53,13 +52,13 @@ knitr::kable(count_tbl,
     kable_styling(bootstrap_options = c("hover"))
 ```
 
-As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at HIV Incidence (a percent indicator), there are age disaggregates for ages 15-49 and all ages, but no disaggregates for sex. If you were looking at Prevalence, there are sex disaggregates for young adults (15-24), but no sex disaggregates for the age group 15-49.
+As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at Percent Incidence (a percent indicator), there are age disaggregates for ages 15-49 and all ages, but no disaggregates for sex. If you were looking at Percent Prevalence, there are sex disaggregates for young adults (15-24), but no sex disaggregates for the age group 15-49.
 
 As such, it is important to filter for the age/sex/indicator type disaggregates that are you interested in before diving further into your analytics.
 
 ## HIV Estimates Indicators and Use Cases
 
-The `HIV Estimates` data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (HIV Prevalence and HIV Incidence) and 5 integer indicators (PLHIV, AIDS-related deaths, Total deaths, PMTCT, and New HIV Infections).
+The `HIV Estimates` data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (Percent Prevalence and Percent Incidence) and 5 integer indicators (Number PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number PMTCT, and Number New HIV Infections).
 
 To pull the HIV Estimates indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)`.
 
@@ -144,7 +143,7 @@ kable(
   kable_styling(bootstrap_options = c("hover"))
 ```
 
--   To create the incidence/prevalence curves, you will need 2 indicators from the `HIV Estimates - Percent` tab:
+-   To create the incidence/prevalence curves, you will need 2 percent indicators from the `HIV Estimates` tab:
     -   **`Percent Prevalence`**
     -   **`Percent Incidence`**
 
@@ -213,11 +212,11 @@ kable(
 
 As you may notice, there are multiple test & treat percent indicators for the clinical cascade. This is because there are 2 types of metrics that can be used to calculate progress to 95-95-95 targets - the **relative base/conditional denominator** or the **PLHIV base/denominator**.
 
--   If you are using the **relative base** to track 95-95-95 progress, use the following indicators from the `"HIV Test & Treat"` data tab.
+-   If you are using the **relative base** to track 95-95-95 progress, use the following percent indicators from the `"HIV Test & Treat"` data tab.
     -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
     -   **`Percent on ART with Known Status`**: Among those who know their status, percent on ART
     -   **`Percent VLS on ART`**: Among those who are on ART, percent virally suppressed
--   If you are using the **PLHIV base**, use the following indicators from the "Test & Treat - Percent" data tab.
+-   If you are using the **PLHIV base**, use the following percent indicators from the `"HIV Test & Treat"` data tab.
     -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
     -   **`Percent on ART of PLHIV`**: Among PLHVIV, percent on ART
     -   **`Percent VLS of PLHIV`**: Among PLHIV, percent virally suppressed
