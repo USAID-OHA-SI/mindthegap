@@ -20,13 +20,13 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```{r setup, include = FALSE, message = FALSE}
 library(mindthegap)
 library(knitr)
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 library(kableExtra)
 library(glamr)
-remotes::install_github("USAID-OHA-SI/glitr")
+#remotes::install_github("USAID-OHA-SI/glitr")
 library(glitr)
-install.packages("ggtext")
+#install.packages("ggtext")
 library(ggtext)
 
 ```
@@ -49,13 +49,14 @@ library(mindthegap)
 epi_plot(sel_cntry = "Kenya")
 
 ```
-The `epi_plot` function allows for you to list several countries of interest in the `sel_cntry` parameter, in case you want to compare epidemic control across countries. 
+
+In case you want to compare epidemic control across countries, the `epi_plot` function allows for you to list several countries of interest in the `sel_cntry` parameter as well.
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
 
 library(mindthegap)
 
-epi_plot(sel_cntry = c("Kenya","Mozambique", "Tanzania"))
+epi_plot(sel_cntry = c("Kenya","Tanzania"))
 ```
 
 In addition to looking at epidemic control at the country level, we can also see trends across all of PEPFAR by just using the `epi_plot()` function, as "ALL PEPFAR" is the default country in the `sel_cntry` parameter.
