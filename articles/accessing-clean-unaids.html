@@ -57,6 +57,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accesing Clean UNAIDS Data</a>
+    <a class="dropdown-item" href="../articles/epi_control_plots.html">Epidemic Control Plots</a>
     <a class="dropdown-item" href="../articles/relative-plhiv-base.html">95-95-95 Target Progress: Relative Base vs. PLHIV Base</a>
     <a class="dropdown-item" href="../articles/unaids-data-dictionary.html">Data Dictionary &amp; Use Cases</a>
   </div>
@@ -118,9 +119,9 @@ whether a country is a PEPFAR country or not and an
 <code>estimate_flag</code> to indicate estimates that are an
 approximation (previously contained a “&lt;”). In order to make this
 data accessible outside of R and cut down on the processing time, we
-uploaded the clean UNAIDS data to the [package releases] (<a href="https://github.com/USAID-OHA-SI/mindthegap/releases" class="external-link uri">https://github.com/USAID-OHA-SI/mindthegap/releases</a>) and
-wrote the function <code>pull_unaids</code> for users to easily access
-this data.</p>
+uploaded the clean UNAIDS data to the <a href="https://github.com/USAID-OHA-SI/mindthegap/releases" class="external-link">package
+releases</a> and wrote the function <code>pull_unaids</code> for users
+to easily access this data.</p>
 <p>To use <code>pull_unaids</code>, there are 2 parameters:</p>
 <ol style="list-style-type: decimal">
 <li><p><code>data_type</code>: This parameter returns one of the 2
@@ -137,18 +138,6 @@ it will default to TRUE.</p></li>
 function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"USAID-OHA-SI/glamr"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; cpp11      (NA -&gt; 0.4.6) [CRAN]</span></span>
-<span><span class="co">#&gt; filelock   (NA -&gt; 1.0.2) [CRAN]</span></span>
-<span><span class="co">#&gt; sodium     (NA -&gt; 1.3.0) [CRAN]</span></span>
-<span><span class="co">#&gt; assertthat (NA -&gt; 0.2.1) [CRAN]</span></span>
-<span><span class="co">#&gt; keyring    (NA -&gt; 1.3.1) [CRAN]</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="color: #00BBBB;">R CMD build</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; * checking for file ‘/tmp/Rtmpv2LAZJ/remotes1b8270600825/USAID-OHA-SI-glamr-2e08344/DESCRIPTION’ ... OK</span></span>
-<span><span class="co">#&gt; * preparing ‘glamr’:</span></span>
-<span><span class="co">#&gt; * checking DESCRIPTION meta-information ... OK</span></span>
-<span><span class="co">#&gt; * checking for LF line-endings in source and make files and shell scripts</span></span>
-<span><span class="co">#&gt; * checking for empty or unneeded directories</span></span>
-<span><span class="co">#&gt; * building ‘glamr_1.3.0.tar.gz’</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/glamr" class="external-link">glamr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">df_est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Estimates"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
