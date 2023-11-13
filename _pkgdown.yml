@@ -29,6 +29,8 @@ navbar:
       menu:
       - text: Accesing Clean UNAIDS Data
         href: articles/accessing-clean-unaids.html
+      - text: Epidemic Control Plots
+        href: articles/epi_control_plots.html
       - text: '95-95-95 Target Progress: Relative Base vs. PLHIV Base'
         href: articles/relative-plhiv-base.html
       - text: Data Dictionary & Use Cases
