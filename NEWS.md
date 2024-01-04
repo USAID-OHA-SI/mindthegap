@@ -1,4 +1,5 @@
 # mindthegap 1.1
+* Change instructions to install from rOpenSci [2024-01-04]
 * Deprecate outdated function and internalize ones only needed within the package [2023-10-13]
 * Create wrappers around `pull_unaids`, `pull_estimates` and `pull_testtreat` to  minimize typing and improve clarity [2022-10-13]
 * Duplicate release with the "latest" tag to minimizing confusion and manual updating in future [2022-10-13]

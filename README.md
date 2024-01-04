@@ -1,22 +1,34 @@
+# mindthegap <img src='man/figures/logo.png' align="right" height="120" />
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/USAID-OHA-SI/mindthegap/workflows/R-CMD-check/badge.svg)](https://github.com/USAID-OHA-SI/mindthegap/actions)
+[![mindthegap status badge](https://usaid-oha-si.r-universe.dev/badges/mindthegap)](https://usaid-oha-si.r-universe.dev/mindthegap)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![:name status badge](https://usaid-oha-si.r-universe.dev/badges/:name)](https://usaid-oha-si.r-universe.dev/)
 <!-- badges: end -->
-
-# mindthegap <img src='man/figures/logo.png' align="right" height="120" />
 
 mindthegap was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package to process, clean, and export tidy UNAIDS Estimates data for ease of access.
 
 ## Installing mindthegap
 
-mindthegap is not on CRAN, so you will have to install it directly from Github using devtools.
+`mindthegap` is not on CRAN, so you will have to install it directly from [rOpenSci](https://usaid-oha-si.r-universe.dev/packages) or [GitHub](https://github.com/USAID-OHA-SI/) using the code found below.
 
-If you do not have the devtools package installed, you will have to run the `install.packages("devtools")` line in the code below as well.
 
 ```{r}
+## SETUP
 
-  #install
-    install.packages("devtools")
-    devtools::install_github("USAID-OHA-SI/mindthegap")
+  #install from rOpenSci
+    install.packages('mindthegap', repos = c('https://usaid-oha-si.r-universe.dev', 'https://cloud.r-project.org'))
+    
+  #alt: install from GitHub using pak
+    #install.packages("pak")
+    #pak::pak("USAID-OHA-SI/mindthegap")
+    
+  #load the package
+    library(mindthegap)
+
+## LIST TYPES OF STYLES INCLUDED WITH PACKAGE
+  ls("package:mindthegap")
     
 ```
 
