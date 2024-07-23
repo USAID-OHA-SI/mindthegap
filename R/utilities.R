@@ -13,13 +13,20 @@ package_check <- function(pkg){
 }
 
 
+#' Import function for reading original UNAIDS estimates
+#'
+#' @param return_type Either "HIV Estimates" or "HIV Test & Treat"
+#'
+#' @return returns df to pass into munge_unaids()
+
+
 read_rename <- function(return_type) {
 
   #to specify NA's when reading in data
   missing <- c("...", " ")
 
-  sheetname = ifelse(return_type == "HIV Estimates", "HIV2023Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
-  skip_n = ifelse(sheetname == "HIV2023Estimates_ByYear", 5, 4)
+  sheetname = ifelse(return_type == "HIV Estimates", "HIV2024Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
+  skip_n = ifelse(sheetname == "HIV2024Estimates_ByYear", 6, 4)
 
   gdrive_df <- suppressMessages(
     googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing, col_types = "c") %>%
