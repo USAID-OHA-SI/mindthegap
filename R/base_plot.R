@@ -44,7 +44,7 @@ base_plot <- function(sel_base, sel_cntry){
                   decimals = 0, scale_values = FALSE) %>%
       gt::cols_label(goal_rate = "goal") %>%
       gtExtras::gt_theme_nytimes() %>%
-      gt::tab_source_note(source_note = gt::md(glue::glue("Source: UNAIDS Data 2022 Release"))) %>%
+      gt::tab_source_note(source_note = gt::md(source_note)) %>%
       gt::tab_options(source_notes.font.size = gt::px(8),
                   data_row.padding = gt::px(1),
                   table.font.size = gt::px(12)) %>%
@@ -54,7 +54,7 @@ base_plot <- function(sel_base, sel_cntry){
                               #palette = "ggthemes::Traffic",
                               domain = c(0,1),
                               pal_type = "discrete") %>%
-      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: PLHIV BASE"))
+      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S {unaids_year} TREATMENT TARGET GOALS: PLHIV BASE"))
 
     #Relative base
   } else if (sel_base == "Relative") {
@@ -75,7 +75,7 @@ base_plot <- function(sel_base, sel_cntry){
                   decimals = 0, scale_values = FALSE) %>%
       gt::cols_label(goal_rate = "goal") %>%
       gtExtras::gt_theme_nytimes() %>%
-      gt::tab_source_note(source_note = gt::md(glue::glue("Source: UNAIDS Data 2022 Release"))) %>%
+      gt::tab_source_note(source_note = gt::md(source_note)) %>%
       gt::tab_options(source_notes.font.size = gt::px(8),
                   data_row.padding = gt::px(1),
                   table.font.size = gt::px(12)) %>%
@@ -85,7 +85,7 @@ base_plot <- function(sel_base, sel_cntry){
                               #palette = "ggthemes::Traffic",
                               domain = c(0,1),
                               pal_type = "discrete") %>%
-      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE"))
+      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S {unaids_year} TREATMENT TARGET GOALS: RELATIVE BASE"))
   }
   })
   return(df_tt)

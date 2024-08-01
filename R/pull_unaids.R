@@ -1,6 +1,6 @@
-#' @title Pull clean UNAIDS 2022 HIV Estimates or Test & Treat
+#' @title Pull clean UNAIDS HIV Estimates and Test & Treat Data
 #'
-#' @description Pull clean UNAIDS 2022 (1990-2022) estimates
+#' @description Pull clean UNAIDS estimates
 #'
 #' @param data_type returns one of 2  available data set types
 #' eg "HIV Estimates", "HIV Test & Treat"
@@ -20,9 +20,9 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
   temp_folder <- glamr::temp_folder(quiet = TRUE)
 
   if (pepfar_only == TRUE) {
-    filename <- glue::glue("UNAIDS_2023_Clean_Estimates_PEPFAR-only.csv.gz")
+    filename <- glue::glue("UNAIDS_{unaids_year}_Clean_Estimates_PEPFAR-only.csv.gz")
   } else {
-    filename <- glue::glue("UNAIDS_2023_Clean_Estimates.csv.gz")
+    filename <- glue::glue("UNAIDS_{unaids_year}_Clean_Estimates.csv.gz")
   }
 
   #download a specific file - test
@@ -40,9 +40,10 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
         estimate = "d",
         lower_bound = "d",
         upper_bound = "d",
+        estimate_flag = "l",
         pepfar = "l",
-        `Achieved 95s with PLHIV base in 2022` = "l",
-        `Achieved 95s with relative base in 2022` = "l",
+        achv_95_plhiv = "l",
+        achv_95_relative = "l",
         epi_control = "l",
         .default = "c")
     ) %>%
@@ -54,7 +55,7 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
 
 #' Pull clean UNAIDS HIV Estimates
 #'
-#' Pull clean UNAIDS 2022 (1990-2022) estimates data. Wrapper around
+#' Pull clean UNAIDS estimates data. Wrapper around
 #' `pull_unaids`.
 #'
 #' @inheritParams pull_unaids

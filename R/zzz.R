@@ -1,8 +1,7 @@
 .onLoad <- function (libname, pkgname)
 {
 
-  packageStartupMessage("\nTo pull UNAIDS estimates (1990-2022), use pull_unaids(). See function documentation for further information.\n")
-
+  startup_msg()
 
   invisible ()
 }

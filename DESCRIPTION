@@ -33,7 +33,7 @@ Imports:
     dplyr,
     tidyr,
     glue,
-    purrr, 
+    purrr,
     googlesheets4,
     readr,
     forcats,
@@ -46,11 +46,12 @@ Imports:
     tidyselect,
     piggyback,
     lifecycle,
-    ggtext, 
+    ggtext,
     extrafont,
     gt,
     gtExtras,
-    RColorBrewer
+    RColorBrewer,
+    cli
 Suggests:
     googledrive,
     devtools,

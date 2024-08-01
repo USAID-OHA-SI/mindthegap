@@ -103,6 +103,6 @@ epi_plot <- function(sel_cntry = c("All PEPFAR")){
                      ggplot2::labs(x = NULL, y = NULL) + ggplot2::coord_cartesian(expand = T, clip = "off") +
                      glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing with facet_space
                      ggplot2::theme(axis.text.y = ggtext::element_markdown()) +
-                     ggplot2::labs(caption = "Source: UNAIDS Data 2022 Release"))
+                     ggplot2::labs(caption = source_note))
 
 }
