@@ -235,7 +235,42 @@
   #write_csv(df_unaids_2024_release, "../../UNAIDS/2024/df_unaids_2024_release.csv")
 
 
+# FIRST UNAIDS RELEASE - 2024-08-01 -----------------------------------------
 
+  library(piggyback)
+  #add version tag for date
+  date_release <- format(Sys.Date(), "%Y.%m.%d")
+  new_tag <- glue::glue("v{date_release}")
+
+  #create a new release (default will go to the USAID-OHA-SI/mindthegap repo)
+  pb_new_release(tag = new_tag)
+
+  #set up a temp folder
+  glamr::temp_folder()
+
+  #save data to temp folder
+  curr_year <- format(Sys.Date(), "%Y")
+  readr::write_csv(df_unaids_2024_release, file.path(folderpath_tmp, glue("UNAIDS_{curr_year}_Clean_Estimates.csv.gz")))
+  saveRDS(df_unaids_2024_release, file.path(folderpath_tmp, glue("UNAIDS_{curr_year}_Clean_Estimates.rds")))
+
+  readr::write_csv(df_unaids_2024_release %>% filter(pepfar == TRUE), file.path(folderpath_tmp, glue("UNAIDS_{curr_year}_Clean_Estimates_PEPFAR-only.csv.gz")))
+  saveRDS(df_unaids_2024_release %>% filter(pepfar == TRUE), file.path(folderpath_tmp, glue("UNAIDS_{curr_year}_Clean_Estimates_PEPFAR-only.rds")))
+
+  #upload multiple files to release for archiving
+  list.files(folderpath_tmp, full.names = TRUE) %>%
+    pb_upload(tag = new_tag)
+
+  #upload multiple files to latest release for ease of access
+  list.files(folderpath_tmp, full.names = TRUE) %>%
+    pb_upload(tag = "latest")
+
+  #download a specific file - test
+  pb_download(file = glue("UNAIDS_{curr_year}_Clean_Estimates.rds"),
+              repo = "USAID-OHA-SI/mindthegap",
+              dest = glamr::si_path("path_downloads"))
+
+# Optional, test
+  #tmp <- read_rds("../../../Downloads/UNAIDS_2024_Clean_Estimates.rds")
 
 
 
