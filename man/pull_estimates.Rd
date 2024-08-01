@@ -13,7 +13,7 @@ pull_estimates(pepfar_only = TRUE)
 df
 }
 \description{
-Pull clean UNAIDS 2022 (1990-2022) estimates data. Wrapper around
+Pull clean UNAIDS estimates data. Wrapper around
 \code{pull_unaids}.
 }
 \examples{

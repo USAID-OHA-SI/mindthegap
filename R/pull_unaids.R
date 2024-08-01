@@ -3,7 +3,7 @@
 #' @description Pull clean UNAIDS estimates
 #'
 #' @param data_type returns one of 2  available data set types
-#' eg "HIV Estimates", "HIV Test & Treat"
+#' eg "HIV Estimates", "HIV Test & Treat" (or both if missing)
 #' @param pepfar_only filters dataset to only PEPFAR countries if TRUE (default = TRUE)
 #'
 #' @return df
@@ -46,8 +46,16 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
         achv_95_relative = "l",
         epi_control = "l",
         .default = "c")
-    ) %>%
-    dplyr::filter(sheet == data_type)
+    )
+
+  if(missing(data_type)){
+    df <- df %>%
+      filter(!(indicator == "Number PMTCT Needing ART" & sheet == "HIV Test & Treat"))
+  } else {
+    df <- df %>%
+      dplyr::filter(sheet == data_type)
+  }
+
 
   return(df)
 }
