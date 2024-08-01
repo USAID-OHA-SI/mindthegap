@@ -279,5 +279,9 @@
 # Optional, test
   #tmp <- read_rds("../../../Downloads/UNAIDS_2024_Clean_Estimates.rds")
 
+  # Post to google drive
+  sheet_id <- "1ZBXDexM2Vw3fmiLs7KxfGO9WXlSdN6iZ541ttrnA6tU"
+  write_sheet(df_unaids_2024_release, ss = as_id(sheet_id))
+
 
 
