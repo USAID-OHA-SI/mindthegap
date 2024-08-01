@@ -261,6 +261,13 @@
     pb_upload(tag = new_tag)
 
   #upload multiple files to latest release for ease of access
+  pb_delete(
+    file = NULL,
+    repo = "USAID-OHA-SI/mindthegap",
+    tag = "latest",
+    .token = gh::gh_token()
+  )
+
   list.files(folderpath_tmp, full.names = TRUE) %>%
     pb_upload(tag = "latest")
 
