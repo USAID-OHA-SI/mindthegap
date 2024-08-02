@@ -50,7 +50,7 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
 
   if(missing(data_type)){
     df <- df %>%
-      filter(!(indicator == "Number PMTCT Needing ART" & sheet == "HIV Test & Treat"))
+      dplyr::filter(!(indicator == "Number PMTCT Needing ART" & sheet == "HIV Test & Treat"))
   } else {
     df <- df %>%
       dplyr::filter(sheet == data_type)
