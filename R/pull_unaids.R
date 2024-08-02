@@ -20,9 +20,9 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
   temp_folder <- glamr::temp_folder(quiet = TRUE)
 
   if (pepfar_only == TRUE) {
-    filename <- glue::glue("UNAIDS_{unaids_year}_Clean_Estimates_PEPFAR-only.csv.gz")
+    filename <- glue::glue("UNAIDS_{unaids_year+1}_Clean_Estimates_PEPFAR-only.csv.gz")
   } else {
-    filename <- glue::glue("UNAIDS_{unaids_year}_Clean_Estimates.csv.gz")
+    filename <- glue::glue("UNAIDS_{unaids_year+1}_Clean_Estimates.csv.gz")
   }
 
   #download a specific file - test
@@ -45,17 +45,15 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
         achv_95_plhiv = "l",
         achv_95_relative = "l",
         epi_control = "l",
+        epi_ratio_2023 = "d",
         .default = "c")
     )
 
   if(missing(data_type)){
-    df <- df %>%
-      dplyr::filter(!(indicator == "Number PMTCT Needing ART" & sheet == "HIV Test & Treat"))
+    df <- dplyr::filter(df, !(indicator == "Number PMTCT Needing ART" & sheet == "HIV Test & Treat"))
   } else {
-    df <- df %>%
-      dplyr::filter(sheet == data_type)
+    df <- dplyr::filter(df, sheet == data_type)
   }
-
 
   return(df)
 }
