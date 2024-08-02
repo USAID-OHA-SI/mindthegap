@@ -14,7 +14,7 @@
 update_unaids <- function(filepaths, usaid_email){
 
   #import
-    df <- vroom::vroom(filepaths, col_names = unaids_hdrs(), col_types = c(.default = "c"), skip = 2, id = "file")
+    df <- readr::read_csv(filepaths, col_names = unaids_hdrs(), col_types = c(.default = "c"), skip = 2, id = "file")
 
   #munge
     df <- df %>%
