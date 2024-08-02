@@ -73,7 +73,7 @@ validate_cols <- function(df, return_type) {
 #' @keywords internal
 
 startup_msg <- function() {
-  cli::cli_inform("To pull UNAIDS estimates (1990-{unaids_year}), use {.fun pull_unaids}. See function documentation ({.code ?pull_unaids}) for further information.",
+  cli::cli_inform("To pull UNAIDS time series estimates, use {.fun pull_unaids}. See function documentation ({.code ?pull_unaids}) for further information.",
                   class = "packageStartupMessage")
 
 }
