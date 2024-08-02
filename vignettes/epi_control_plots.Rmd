@@ -25,6 +25,10 @@ To assess progress towards this definition of epidemic control, we can use the `
 
 ### Load dependencies
 
+```{r, include=FALSE}
+install.packages(c('glamr','glitr'), repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+```
+
 ```{r setup, include = TRUE, message = FALSE}
 library(mindthegap)
 library(knitr)
