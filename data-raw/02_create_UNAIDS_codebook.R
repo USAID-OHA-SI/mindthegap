@@ -66,4 +66,4 @@
       epi_control = "Flag indicating a country has reached epi countrol -- where total number of new HIV infections falls below the total number of deaths to HIV population"
     )
 
-  makeDataReport(UNAIDS_2024_Clean_Estimates, codebook = TRUE, replace = TRUE)
+  makeDataReport(UNAIDS_2024_Clean_Estimates, file = "data-raw/UNAIDS_2024_Clean_Estimates_codebook", codebook = TRUE, replace = TRUE)
