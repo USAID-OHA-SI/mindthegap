@@ -54,7 +54,8 @@ Suggests:
     usethis,
     rmarkdown,
     kableExtra,
-    systemfonts
+    systemfonts,
+    tibble
 Remotes: 
     USAID-OHA-SI/gophr,
     USAID-OHA-SI/glamr,

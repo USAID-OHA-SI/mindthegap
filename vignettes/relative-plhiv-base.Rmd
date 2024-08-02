@@ -16,22 +16,27 @@ knitr::opts_chunk$set(
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
-
-```{r setup, include = FALSE, message = FALSE}
-library(mindthegap)
-library(tidyverse)
-library(glue)
-library(gt)
-library(gtExtras)
-library(glamr)
-library(glitr)
+```{r, include=FALSE}
+install.packages(c('glamr','glitr'), repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
 ```
+
 
 ## Introduction
 
 In 2020, UNAIDS newly released the 95-95-95 targets which are set to be achieved by 2025, where 95% of PLHIV know their status, 95% of those who know their status are accessing treatment, and 95% of those who are accessing treatment are virally suppressed.
 
 Importantly, there are two types of metrics to measure 95-95-95 target progress by: **the PLHIV base** and the **relative/conditional denominator** base. This vignette will outline the key differences between the two metrics, which UNAIDS indicators to use for each, and how to interpret the different parameters.
+
+```{r setup, message = FALSE}
+library(mindthegap)
+library(dplyr)
+library(tidyr)
+library(glue)
+library(gt)
+library(gtExtras)
+library(glamr) #install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+library(glitr) #install.packages('glitr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+```
 
 ### What's the difference between the relative base and the PLHIV base?
 

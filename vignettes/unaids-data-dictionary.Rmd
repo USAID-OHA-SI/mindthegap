@@ -17,17 +17,24 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
-```{r setup, include = FALSE, message = FALSE}
-library(mindthegap)
-library(knitr)
-library(tidyverse)
-library(kableExtra)
-library(glamr)
+```{r, include=FALSE}
+install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
 ```
 
 ## Introduction
 
 This vignette serves as a data dictionary for the UNAIDS 2022 Estimates Data. It will cover the data structure and variables, as well as provide an overview of the indicators across the `"HIV Estimates"` tab and the `"HIV Test & Treat"` tab. Finally, it will touch briefly on common use cases and which data tab to access for those analytics.
+
+```{r setup, message = FALSE}
+library(mindthegap)
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(knitr)
+library(kableExtra)
+library(glamr)
+```
 
 ## UNAIDS Clean Data Structure
 
