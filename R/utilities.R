@@ -40,7 +40,7 @@ read_rename <- function(return_type) {
   if (return_type == "HIV Test & Treat") {
     gdrive_df <-  suppressWarnings(
       gdrive_df %>%
-        dplyr::mutate(across(tidyselect:::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
+        dplyr::mutate(across(tidyselect::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
         dplyr::slice(-c(1,2))
     )
   }
