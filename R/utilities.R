@@ -16,10 +16,8 @@ package_check <- function(pkg){
 #' Import function for reading original UNAIDS estimates
 #'
 #' @param return_type Either "HIV Estimates" or "HIV Test & Treat"
-#'
+#' @keywords internal
 #' @return returns df to pass into munge_unaids()
-
-
 read_rename <- function(return_type) {
 
   #to specify NA's when reading in data
