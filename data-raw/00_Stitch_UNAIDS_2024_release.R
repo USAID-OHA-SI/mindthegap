@@ -19,6 +19,8 @@
   library(tidytext)
   library(patchwork)
   library(ggtext)
+  library(googlesheets4)
+  library(googledrive)
 
 
 # GLOBAL VARIABLES --------------------------------------------------------
@@ -172,7 +174,7 @@
     filter(!is.na(indicator)) %>%
     mutate(sheet = case_when(
       str_detect(indicator, "Deaths averted|Infections averted|Total deaths") ~ "HIV Estimates",
-      TRUE ~ indicator
+      TRUE ~ sheet
     ))
 
   # CHECK INDICATORS
