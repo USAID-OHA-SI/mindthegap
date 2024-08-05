@@ -39,7 +39,8 @@
 
   # Read in the new 2024 data
   df_hivest <- range_speedread(ss = drive_id_2024, sheet = "HIV Estimates")
-  df_tntest <- range_speedread(ss = drive_id_2024, sheet = "HIV T&T")
+  df_tntest <- range_speedread(ss = drive_id_2024, sheet = "HIV T&T") %>%
+    filter(indicator != "Number PMTCT Needing ART")
 
   df_tdths <- range_speedread(ss = drive_id_tdth_2024) %>%
     janitor::clean_names()
@@ -198,7 +199,7 @@
            ratio = infections / deaths,
            direction_streak = sequence(rle(declining_deaths)$lengths),
            epi_control = (declining_deaths == TRUE & infections_below_deaths == TRUE)) %>%
-    filter(year == max(year)) %>%
+    filter(year == max(year), !is.na(epi_control)) %>%
     select(iso, epi_ratio_2023 = ratio, epi_control)
 
 
@@ -206,8 +207,8 @@
 
   df_unaids_2024_release <-
     df_unaids_2024 %>%
-    full_join(flag_list) %>%
-    full_join(df_epi_cntrl_flag)
+    left_join(flag_list) %>%
+    left_join(df_epi_cntrl_flag)
 
 # TEST THE RELEASE
 
@@ -230,7 +231,8 @@
 
   # Do the disaggregates look correct?
   df_unaids_2024_release %>%
-    distinct(indicator, age, sex) %>%
+    filter(country == "Zambia") %>%
+    count(indicator, age, sex, country) %>%
     prinf()
 
   summary(df_unaids_2024_release)
