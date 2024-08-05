@@ -263,5 +263,5 @@ df_viz_cntry %>%
   labs(x = NULL, y = NULL) + coord_cartesian(expand = T, clip = "off") +
   glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing 
   theme(axis.text.y = ggtext::element_markdown()) +
-  labs(caption = "Source: UNAIDS Data 2022 Release")
+  labs(caption = source_note)
 ```

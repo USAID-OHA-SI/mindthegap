@@ -65,7 +65,7 @@ As such, it is important to filter for the age/sex/indicator type disaggregates 
 
 ## HIV Estimates Indicators and Use Cases
 
-The `HIV Estimates` data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (Percent Prevalence and Percent Incidence) and 5 integer indicators (Number PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number PMTCT, and Number New HIV Infections).
+The `HIV Estimates` data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (Percent Prevalence and Percent Incidence) and 7 integer indicators (Number PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number PMTCT Needing ART, Number New HIV Infections, Deaths averted by ART, and Infections averted by PMTCT).
 
 To pull the HIV Estimates indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)`.
 
@@ -79,6 +79,8 @@ hiv_est_info <- tribble(
   "`Total deaths to HIV Population`", "Estimated number of deaths from all causes among people living with HIV", 
   "`Number PMTCT Needing ART`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
   "`Number New HIV Infections`", "New HIV Infections",
+  "`Deaths averted by ART`", "Deaths averted by antiretroviral treatment",
+  "`Infections averted by PMTCT`", "Infections averted by preventing mother-to-child transmission",
 )
 
 kable(
@@ -86,7 +88,7 @@ kable(
   format = "html",
   col.names = c("", "")
 ) %>%
-  group_rows(index = c("Percent Indicators" = 2, "Integer Indicators" = 4)) %>%
+  group_rows(index = c("Percent Indicators" = 2, "Integer Indicators" = 7)) %>%
   kable_styling(bootstrap_options = c("hover"))
 ```
 
@@ -108,6 +110,8 @@ hiv_est_info <- tribble(
   "`Total deaths to HIV Population`", "Estimated number of deaths from all causes among people living with HIV",
   "`Number PMTCT Needing ART`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
   "`Number New HIV Infections`", "New HIV Infections",
+  "`Deaths averted by ART`", "Deaths averted by antiretroviral treatment",
+  "`Infections averted by PMTCT`", "Infections averted by preventing mother-to-child transmission",
 )
 
 kable(
@@ -115,7 +119,7 @@ kable(
   format = "html",
   col.names = c("", "")
 ) %>%
-  group_rows(index = c("Integer Indicators" = 5)) %>%
+  group_rows(index = c("Integer Indicators" = 7)) %>%
   kable_styling(bootstrap_options = c("hover"))
 ```
 

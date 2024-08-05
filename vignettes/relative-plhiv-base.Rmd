@@ -16,10 +16,10 @@ knitr::opts_chunk$set(
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
+
 ```{r, include=FALSE}
 install.packages(c('glamr','glitr'), repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
 ```
-
 
 ## Introduction
 
@@ -91,13 +91,15 @@ goal <- 95
     select(year, country, indicator, estimate, goal_rate, achieved)
   
   #create table 
+  year <- unique(df_tt_plhiv$year)
+  
   gt(df_tt_plhiv) %>% 
     cols_hide(c(year, country)) %>% 
     fmt_percent(columns = c(estimate, goal_rate),
 	                  decimals = 0, scale_values = FALSE) %>% 
 	      cols_label(goal_rate = "goal") %>% 
 	      gtExtras::gt_theme_nytimes() %>% 
-	      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>% 
+	      tab_source_note(source_note = gt::md(glue(source_note))) %>% 
 	      tab_options(source_notes.font.size = px(8),
 	                  data_row.padding = px(1),
 	                  table.font.size = px(12)) %>% 
@@ -105,11 +107,11 @@ goal <- 95
 	                    palette = c(glitr::burnt_sienna, glitr::scooter),
 	                    domain = c(0,1),
 	                    pal_type = "discrete") %>% 
-	      tab_header(title = glue("NAMIBIA'S 2022 TREATMENT TARGET GOALS: PLHIV BASE")) 
+	      tab_header(title = glue("NAMIBIA'S {year} TREATMENT TARGET GOALS: PLHIV BASE")) 
 
 ```
 
-As we can see, using the PLHIV base, Namibia reached all three of the 95's - 95% of PLHIV know their status, 91% of PLHIV are accessing treatment, and 86% of PLHIV are virally suppressed.
+As we can see, using the PLHIV base, Namibia reached one of the 95's - 93% of PLHIV know their status, 89% of PLHIV are accessing treatment, and 87% of PLHIV are virally suppressed.
 
 What happens if we use the relative base?
 
@@ -131,17 +133,19 @@ goal <- 95
 
 
 #create table
+   year <- unique(df_tt_rel$year)
+   
       gt(df_tt_rel) %>% 
 	      cols_hide(c(year, country)) %>% 
 	      fmt_percent(columns = c(estimate, goal_rate),
 	                  decimals = 0, scale_values = FALSE) %>% 
 	      cols_label(goal_rate = "goal") %>% 
 	      gtExtras::gt_theme_nytimes() %>% 
-	      tab_source_note(source_note = gt::md(glue("Source: UNAIDS Data 2022 Release"))) %>% 
+	      tab_source_note(source_note = gt::md(glue(source_note))) %>% 
 	      tab_options(source_notes.font.size = px(8),
 	                  data_row.padding = px(1),
 	                  table.font.size = px(12)) %>% 
-	      tab_header(title ="NAMIBIA'S 2022 TREATMENT TARGET GOALS: RELATIVE BASE") %>% 
+	      tab_header(title ="NAMIBIA'S {year} TREATMENT TARGET GOALS: RELATIVE BASE") %>% 
       gt_color_rows(achieved,
 	                    palette = c(glitr::burnt_sienna, glitr::scooter),
 	                    domain = c(0,1),
@@ -149,18 +153,12 @@ goal <- 95
 
 ```
 
-Using the relative base, we can see that 93% of PLHIV in Namibia know their status, 97% of the 93% who know their status are on treatment, and 97% of the 97% who are on treatment are virally suppressed. As such, Namibia meets the 2nd and 3rd 95 with the relative base, but does not reach the 1st 95.
+Using the relative base, we can see that 93% of PLHIV in Namibia know their status, 95% of the 93% who know their status are on treatment, and 98% of the 95% who are on treatment are virally suppressed. As such, Namibia meets the 2nd and 3rd 95 with the relative base, but does not reach the 1st 95.
 
-As a result of these differences between the 2 metrics, the number of PEPFAR countries that have reached all of the 95's varies depending on the denominator.
+As a result of these differences between the 2 metrics, the number of PEPFAR countries that have reached all of the 95's can vary depending on the denominator.
 
-With the relative base, 5 countries have reached all 3 95's: **Eswatini, Botswana, Zimbabwe, Tanzania, and Rwanda**.
+With the relative base and PLHIV base, 7 countries have reached all 3 95's: **Botswana, Eswatini, Kenya, Malawi, Rwanda, Zambia, and Zimbabwe**.
 
 ```{r, echo = FALSE, fig.align="center", out.width = "400px"}
 knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error=FALSE)
-```
-
-With the PLHIV base, the list of countries expands from 5 to 6 countries that have reached all 3 95's, adding **Namibia**.
-
-```{r, echo = FALSE, fig.align="center", out.width = "400px"}
-knitr::include_graphics("6-countries-PLHIV-base.png", dpi = 150, error = FALSE)
 ```
