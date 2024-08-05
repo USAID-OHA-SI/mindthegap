@@ -1,4 +1,4 @@
-#2022 IDS (updated 2023) --------------------------------------------
+#2023 IDS (updated 2024) --------------------------------------------
 
 #' UNAIDS Original Data Google Sheet ID
 #'
@@ -7,8 +7,8 @@
 #' @keywords internal
 #'
 
-gs_id_unaids <- "1ENUF8tKegwkbSck489aA2S1C_BEEvkgJG2hOevUKDyw"
-#original UNAIDS data - 2022 estimates
+gs_id_unaids <- "1HWuvdI_IhdvV5pOLQngujq2kjkFLhPlHh4dMiLIQCe8"
+#original UNAIDS data - 2023 estimates
 
 #' UNAIDS crosswalk ID
 #'
@@ -20,26 +20,23 @@ gs_id_unaids <- "1ENUF8tKegwkbSck489aA2S1C_BEEvkgJG2hOevUKDyw"
 gs_id_names <- "1vaeac7hb7Jb6RSaMcxLXCeTyim3mtTcy-a1DQ6JooCw"
 #UNAIDS crosswalk - updated with new tab
 
-#' 2022 Clean Estimates - all data
-#'
-#' @export
-#' @return Dataframe of all tidied UNAIDS 2022 Data
-#' @keywords internal
-#'
-gs_clean_id_2022 <- "1TivNwrgVKGfm7maCIr9CwZgVyakS_zxbYvVPMX4VKcw"
-#Clean UNAIDS 2022 estimates data on google drive
-
-#' 2022 Clean Estimates - PEPFAR only data
-#'
-#' @export
-#' @return Dataframe of PEPFAR only tidy UNAIDS 2022 Data
-#' @keywords internal
-#'
-pepfar_clean_id_2022 <- "1FGLyx0lFsJGEsPU_eTc1tRPuoS-swopc_78eOweNd-M"
-#PEPFAR only Clean UNAIDS 2022 data on google drive
 
 drive_id <- googledrive::as_id("1-iCrHGyU-xfDmzdfgXJ1P_wLI90s5RR-")
 #UNAIDS drive folder
+
+#add clean PEPFAR and all when done
+
+
+#2022 IDS (updated 2023) --------------------------------------------
+
+gs_id_2022 <- "1ENUF8tKegwkbSck489aA2S1C_BEEvkgJG2hOevUKDyw"
+#original UNAIDS data - 2022 Estimates
+
+gs_clean_id_2022 <- "1TivNwrgVKGfm7maCIr9CwZgVyakS_zxbYvVPMX4VKcw"
+#Clean UNAIDS 2022 estimates data on google drive
+
+pepfar_clean_id_2022 <- "1FGLyx0lFsJGEsPU_eTc1tRPuoS-swopc_78eOweNd-M"
+#PEPFAR only Clean UNAIDS 2022 data on google drive
 
 
 #2021 IDS (updated 2022) --------------------------------------------

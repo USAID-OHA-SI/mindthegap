@@ -18,7 +18,7 @@ mindthegap was developed in 2019 in preparation for agency self assessments and 
 ## SETUP
 
   #install from rOpenSci
-    install.packages('mindthegap', repos = c('https://usaid-oha-si.r-universe.dev', 'https://cloud.r-project.org'))
+    install.packages('mindthegap', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
     
   #alt: install from GitHub using pak
     #install.packages("pak")
@@ -34,15 +34,15 @@ mindthegap was developed in 2019 in preparation for agency self assessments and 
 
 ## Example
 
-The UNAIDS data reports on HIV estimates with uncertainty bounds from 1990 to 2021, and includes both epidemic control indicators and indicators that show progress to the 95s. The data is sourced from the UNAIDS AIDSInfo database, making it publicly accessible data.
+The [UNAIDS data](aidsinfo.unaids.org/) reports on HIV estimates with uncertainty bounds from 1990 onward, and includes both epidemic control indicators and indicators that show progress to the 95s. The data is sourced from the UNAIDS AIDSInfo database, making it publicly accessible data. UNAIDS releases new estimates each July.
 
-To access the core set of UNAIDS Data, released in 2022, see the below example using `pull_unaids()`.
+To access the core set of UNAIDS Data see the below example using `pull_unaids()`.
 
 - There are 2 main groups of data in this dataset:
     - HIV/AIDS Estimates
     - HIV Testing and Treatment Cascade Data
 
-This is a basic example of how to load the data from Google Drive using `pull_unaids()`. 
+This is a basic example of how to load the data using `pull_unaids()`. 
 
 
 ```{r}
@@ -52,21 +52,7 @@ df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
 df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE)
 
 ```
-
-
-## Data Sources
-
-Data are sourced from UNAIDS' AIDSInfo [public] and PEPFAR Implementation and Planning Attributes (IMPATT, now referred to as NAT_SUBNAT) [non public].
-
-  - UNAIDS Progress towards 90-90-90
-    - data downloaded from aidsinfo.unaids.org/ 
-    - data extracted on 2020-10-17
-  - IMPATT data
-    - data downloaded from pepfar-panorama.org/
-    - MER_Structured_Datasets_NAT_SUBNAT_FY15-21_20200918_v2_1.txt
-    - data extracted on 2020-09-30
-    - munged IMPATT dataset stored on USAID Google Drive
-
+Additionally, data can be manually downloaded from the [GitHub Releases page](https://github.com/USAID-OHA-SI/mindthegap/releases).
 
 ---
 

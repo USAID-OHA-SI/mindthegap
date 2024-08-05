@@ -19,6 +19,10 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
+```{r, include=FALSE}
+install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+```
+
 ### Introduction
 
 This vignette covers how to access the clean and tidy annual UNAIDS Estimates from GitHub Releases. The MindTheGap package uses a cleaning function (`munge_unaids`) to process, munge, and tidy the UNAIDS HIV Estimates from AIDSInfo and `pull_unaids` to pull the cleaned data from Google Drive.
@@ -27,6 +31,8 @@ Let's start by loading the MindTheGap package.
 
 ```{r setup, message = FALSE}
 library(mindthegap)
+library(glamr) #install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+library(knitr)
 ```
 
 ### Pull clean data from GitHub Releases
@@ -42,9 +48,7 @@ To use `pull_unaids`, there are 2 parameters:
 In order to access the data from GitHub releases, be sure to load the `glamr` package to run the `pull_unaids` function.
 
 ```{r, message = FALSE}
-remotes::install_github("USAID-OHA-SI/glamr")
-library(glamr)
-
 df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
-knitr::kable(head(df_est), format = "html")
+
+kable(head(df_est), format = "html")
 ```

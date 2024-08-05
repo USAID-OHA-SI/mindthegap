@@ -13,13 +13,18 @@ package_check <- function(pkg){
 }
 
 
+#' Import function for reading original UNAIDS estimates
+#'
+#' @param return_type Either "HIV Estimates" or "HIV Test & Treat"
+#' @keywords internal
+#' @return returns df to pass into munge_unaids()
 read_rename <- function(return_type) {
 
   #to specify NA's when reading in data
   missing <- c("...", " ")
 
-  sheetname = ifelse(return_type == "HIV Estimates", "HIV2023Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
-  skip_n = ifelse(sheetname == "HIV2023Estimates_ByYear", 5, 4)
+  sheetname = ifelse(return_type == "HIV Estimates", "HIV2024Estimates_ByYear", "HIV-Test-&-Treat_ByYear")
+  skip_n = ifelse(sheetname == "HIV2024Estimates_ByYear", 6, 4)
 
   gdrive_df <- suppressMessages(
     googlesheets4::read_sheet(gs_id_unaids, sheet = sheetname, skip = skip_n, na = missing, col_types = "c") %>%
@@ -33,7 +38,7 @@ read_rename <- function(return_type) {
   if (return_type == "HIV Test & Treat") {
     gdrive_df <-  suppressWarnings(
       gdrive_df %>%
-        dplyr::mutate(across(tidyselect:::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
+        dplyr::mutate(across(tidyselect::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
         dplyr::slice(-c(1,2))
     )
   }
@@ -60,5 +65,15 @@ validate_cols <- function(df, return_type) {
   names(df) <- names(names_cw)
 
   return(df)
+
+}
+
+
+#' Start up message
+#' @keywords internal
+
+startup_msg <- function() {
+  cli::cli_inform("To pull UNAIDS time series estimates, use {.fun pull_unaids}. See function documentation ({.code ?pull_unaids}) for further information.",
+                  class = "packageStartupMessage")
 
 }
