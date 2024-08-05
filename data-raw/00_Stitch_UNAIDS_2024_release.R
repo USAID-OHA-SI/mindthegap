@@ -169,7 +169,11 @@
 
   # Bind them all together
   df_unaids_2024 <- bind_rows(df_hivest, df_tntest, df_tdths_2024) %>%
-    filter(!is.na(indicator))
+    filter(!is.na(indicator)) %>%
+    mutate(sheet = case_when(
+      str_detect(indicator, "Deaths averted|Infections averted|Total deaths") ~ "HIV Estimates",
+      TRUE ~ indicator
+    ))
 
   # CHECK INDICATORS
   df_unaids_2024 %>% distinct(indicator)
