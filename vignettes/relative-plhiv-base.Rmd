@@ -157,8 +157,81 @@ Using the relative base, we can see that 93% of PLHIV in Namibia know their stat
 
 As a result of these differences between the 2 metrics, the number of PEPFAR countries that have reached all of the 95's can vary depending on the denominator.
 
-With the relative base and PLHIV base, 7 countries have reached all 3 95's: **Botswana, Eswatini, Kenya, Malawi, Rwanda, Zambia, and Zimbabwe**.
+With the PLHIV base, 7 countries have reached all 3 95's: **Botswana, Eswatini, Kenya, Malawi, Rwanda, Zambia, and Zimbabwe**.
 
-```{r, echo = FALSE, fig.align="center", out.width = "400px"}
-knitr::include_graphics("5-countries-relative-base.png", dpi = 150, error=FALSE)
+```{r, echo = FALSE, warning = FALSE}
+df_tt %>% 
+      filter(
+        year == max(year),
+        indicator %in% c("Percent Known Status of PLHIV",
+                         "Percent on ART of PLHIV",
+                         "Percent VLS of PLHIV"), #Using the PLHIV base indicators
+        age == "All", sex == "All",
+        achv_95_plhiv == TRUE) %>% 
+  mutate(set = recode(indicator, "Percent Known Status of PLHIV" = 1, 
+                          "Percent on ART of PLHIV" = 2,
+                          "Percent VLS of PLHIV" = 3),
+             goal_rate = round((goal/100)^set*100), 
+             achieved = estimate >= goal_rate
+             ) %>% #sets the moving goal rate for each 95 for PLHIV base
+      select(country, indicator, estimate, achieved) %>% 
+      pivot_wider(names_from = indicator,
+                 values_from = "estimate",
+                names_glue = "{indicator %>% str_extract_all('Status|ART|VLS') %>% tolower}"
+               ) %>% 
+  gt() %>% 
+   cols_hide(c(achieved)) %>% 
+        fmt_percent(columns = c(status, art, vls),
+                    decimals = 0, scale_values = FALSE) %>% 
+        cols_label(status = "Known Status",
+                   art = "On ART",
+                   vls = "VLS") %>% 
+        gtExtras::gt_theme_nytimes() %>% 
+        tab_source_note(source_note = gt::md(glue(source_note))) %>% 
+        tab_options(source_notes.font.size = px(8),
+                    data_row.padding = px(1),
+                    table.font.size = px(12)) %>% 
+        tab_header(title = "UNAIDS Treatment Target Goals",
+                   subtitle = md("*PLHIV goal rate: 95-90-86*"))
+  
+  
+  
+```
+
+With the relative base, 7 countries have reached all 3 95's: **Botswana, Eswatini, Kenya, Malawi, Rwanda, Zambia, and Zimbabwe**.
+
+```{r, echo = FALSE, warning = FALSE}
+
+df_tt %>% 
+      filter(
+        year == max(year),
+        indicator %in% c("Percent Known Status of PLHIV",
+                         "Percent on ART with Known Status",
+                         "Percent VLS on ART"), #using rel base indicators
+        age == "All", sex == "All",
+        achv_95_relative == TRUE) %>% 
+   mutate(
+          goal_rate = goal, #use 95 as the goal metric for each indicator
+          achieved = estimate >= goal_rate) %>% 
+        select(country, indicator, estimate, achieved) %>% 
+        pivot_wider(names_from = indicator,
+                    values_from = "estimate",
+                    names_glue = "{indicator %>% str_extract_all('PLHIV|with|VLS') %>% tolower}"
+                    ) %>% 
+  gt() %>%
+  cols_hide(c(achieved)) %>% 
+        fmt_percent(columns = c(plhiv, with, vls),
+                    decimals = 0, scale_values = FALSE) %>% 
+        cols_label(plhiv = "Known Status",
+                   with = "On ART",
+                   vls = "VLS") %>% 
+        gtExtras::gt_theme_nytimes() %>% 
+        tab_source_note(source_note = gt::md(glue(source_note))) %>% 
+        tab_options(source_notes.font.size = px(8),
+                    data_row.padding = px(1),
+                    table.font.size = px(12)) %>% 
+        #tab_spanner(label = "Goal: 95, 90, 86") %>% 
+        tab_header(title = "UNAIDS Treatment Target Goals",
+                   subtitle = md("*Relative goal rate: 95-95-95*"))
+  
 ```
