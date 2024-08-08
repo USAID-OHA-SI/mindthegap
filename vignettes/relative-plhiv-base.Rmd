@@ -145,7 +145,7 @@ goal <- 95
 	      tab_options(source_notes.font.size = px(8),
 	                  data_row.padding = px(1),
 	                  table.font.size = px(12)) %>% 
-	      tab_header(title ="NAMIBIA'S {year} TREATMENT TARGET GOALS: RELATIVE BASE") %>% 
+	      tab_header(title =glue("NAMIBIA'S {year} TREATMENT TARGET GOALS: RELATIVE BASE")) %>% 
       gt_color_rows(achieved,
 	                    palette = c(glitr::burnt_sienna, glitr::scooter),
 	                    domain = c(0,1),
