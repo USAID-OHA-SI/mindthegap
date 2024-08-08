@@ -145,7 +145,7 @@ goal <- 95
 	      tab_options(source_notes.font.size = px(8),
 	                  data_row.padding = px(1),
 	                  table.font.size = px(12)) %>% 
-	      tab_header(title ="NAMIBIA'S {year} TREATMENT TARGET GOALS: RELATIVE BASE") %>% 
+	      tab_header(title =glue("NAMIBIA'S {year} TREATMENT TARGET GOALS: RELATIVE BASE")) %>% 
       gt_color_rows(achieved,
 	                    palette = c(glitr::burnt_sienna, glitr::scooter),
 	                    domain = c(0,1),
@@ -177,7 +177,7 @@ df_tt %>%
       select(country, indicator, estimate, achieved) %>% 
       pivot_wider(names_from = indicator,
                  values_from = "estimate",
-                names_glue = "{indicator %>% str_extract_all('Status|ART|VLS') %>% tolower}"
+                names_glue = "{indicator %>% stringr::str_extract_all('Status|ART|VLS') %>% tolower}"
                ) %>% 
   gt() %>% 
    cols_hide(c(achieved)) %>% 
@@ -216,7 +216,7 @@ df_tt %>%
         select(country, indicator, estimate, achieved) %>% 
         pivot_wider(names_from = indicator,
                     values_from = "estimate",
-                    names_glue = "{indicator %>% str_extract_all('PLHIV|with|VLS') %>% tolower}"
+                    names_glue = "{indicator %>% stringr::str_extract_all('PLHIV|with|VLS') %>% tolower}"
                     ) %>% 
   gt() %>%
   cols_hide(c(achieved)) %>% 
