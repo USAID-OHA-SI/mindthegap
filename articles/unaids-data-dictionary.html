@@ -896,9 +896,10 @@ analytics.</p>
 <p>The <code>HIV Estimates</code> data covers epidemiological
 indicators, such as HIV prevalence/incidence, new infections,
 AIDS-related death, etc. There are 2 percent indicators (Percent
-Prevalence and Percent Incidence) and 5 integer indicators (Number
-PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number
-PMTCT, and Number New HIV Infections).</p>
+Prevalence and Percent Incidence) and 7 integer indicators (Number
+PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number PMTCT
+Needing ART, Number New HIV Infections, Deaths averted by ART, and
+Infections averted by PMTCT).</p>
 <p>To pull the HIV Estimates indicators for PEPFAR countries, use
 <code>pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)</code>.</p>
 <table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
@@ -930,7 +931,7 @@ HIV Prevalence
 HIV Incidence (per 1,000 uninfected population)
 </td>
 </tr>
-<tr grouplength="4">
+<tr grouplength="7">
 <td colspan="2" style="border-bottom: 1px solid;">
 <strong>Integer Indicators</strong>
 </td>
@@ -969,11 +970,27 @@ transmission
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
 <code>Number New HIV Infections</code>
 </td>
 <td style="text-align:left;">
 New HIV Infections
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Deaths averted by ART</code>
+</td>
+<td style="text-align:left;">
+Deaths averted by antiretroviral treatment
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Infections averted by PMTCT</code>
+</td>
+<td style="text-align:left;">
+Infections averted by preventing mother-to-child transmission
 </td>
 </tr>
 </tbody>
@@ -998,7 +1015,7 @@ will use the <code>"HIV Estimates"</code> data:</p>
 </th>
 </tr></thead>
 <tbody>
-<tr grouplength="5">
+<tr grouplength="7">
 <td colspan="2" style="border-bottom: 1px solid;">
 <strong>Integer Indicators</strong>
 </td>
@@ -1042,6 +1059,22 @@ transmission
 </td>
 <td style="text-align:left;">
 New HIV Infections
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Deaths averted by ART</code>
+</td>
+<td style="text-align:left;">
+Deaths averted by antiretroviral treatment
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Infections averted by PMTCT</code>
+</td>
+<td style="text-align:left;">
+Infections averted by preventing mother-to-child transmission
 </td>
 </tr>
 </tbody>
