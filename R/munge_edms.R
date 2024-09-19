@@ -14,6 +14,12 @@ munge_edms <- function(path){
 
   df <- read_edms(path)
 
+  df <- subset_cols(df)
+
+  df <- munge_components(df)
+
+  df <- munge_country(df)
+
   return(df)
 
 }
@@ -42,9 +48,6 @@ read_edms <- function(path){
   #convert to lowercase
   df <- dplyr::rename_all(df, tolower)
 
-  #validate structure/columns
-  validate_columns(df)
-
   return(df)
 }
 
@@ -66,6 +69,28 @@ validate_path <- function(path){
     cli::cli_abort(c("File does not exist: {.file {path}}."))
 }
 
+
+
+#' Remove extraneous columns
+#'
+#' Keep only necessary columns that are required for output or are needed in the
+#' process.
+#'
+#' @param df imported dataframe
+#'
+#' @keywords internal
+#'
+subset_cols <- function(df){
+
+  #validate structure/columns
+  validate_columns(df)
+
+  #subset dataset to just key columns
+  df <- dplyr::select(df, dplyr::all_of(req_cols))
+
+  return(df)
+}
+
 #' Validate Columns
 #'
 #' Ensure that all the columns that are needed exists in the import
@@ -81,4 +106,83 @@ validate_columns <- function(df){
     cli::cli_abort("The dataframe is missing {length(col_missing)} key column{?s} needed: {.field {col_missing}}")
   }
 
+}
+
+#' Clean up indicator and disaggregate columns
+#'
+#' @param df datafrane
+#' @keywords internal
+#'
+munge_components <- function(df){
+
+ #parse indicator name
+  df <- parse_indicator(df)
+
+  #clean up age and sex
+  df <- df %>%
+    dplyr::mutate(age = ifelse(age == "allAges", "All", age),
+                  sex = dplyr::case_match(sex,
+                                          "M+F" ~ "All",
+                                          "F" ~ "Female",
+                                          "M" ~ "Male"))
+
+  #map acronyms to clean indicator names
+  df <- df %>%
+    dplyr::left_join(indicator_map %>%
+                         dplyr::distinct(indicator, acronym),
+                       by = "acronym") %>%
+    dplyr::select(-acronym)
+
+  #reoder & drop unnecessary indicator related columns
+  df <- df %>%
+    dplyr::relocate(indicator, .before = indicator_edms) %>%
+    dplyr::select(-c(e_cat, e_ind, indicator_edms, other))
+
+  #add indicator type
+  df <- df %>%
+    dplyr::mutate(indicator_type = ifelse(stringr::str_detect(indicator, "Percent") | indicator == "Incidence (per 1,000)", "Percent", "Integer"),
+                  .after = indicator)
+
+  return(df)
+
+}
+
+#' Parse indicator
+#' Standardize indicator across years and other components (eg bounds)
+#'
+#' @param df dataframe
+#' @keywords internal
+parse_indicator <- function(df){
+
+  if(!"e_ind" %in% names(df))
+    cli::cli_abort("Cannot find {.var e_ind} in the data frame to parse.")
+
+  df %>%
+    dplyr::mutate(indicator_edms = e_ind %>%
+                    stringr::str_extract("(?<=-\\s).*") %>%
+                    stringr::str_remove("(;| \\(| Male| Female| - Lower| - Upper).*"),
+                  .before = e_ind)
+}
+
+
+#' Munge PEPFAR country
+#'
+#' Apply PEPFAR naming conventions where applicable and flag the countries that
+#' received PEPFAR funding.
+#'
+#' @param df dataframe
+#' @keywords internal
+munge_country <- function(df){
+
+  df_pepfar <-  glamr::pepfar_country_list %>%
+    dplyr::select(country_pepfar = country, iso3 = country_iso)
+
+  df <- df %>%
+    dplyr::left_join(df_pepfar, by = "iso3") %>%
+    dplyr::mutate(country = ifelse(is.na(country_pepfar), e_count, country_pepfar),
+                  pepfar = !is.na(country_pepfar)) %>%
+    dplyr::select(-c(country_pepfar, e_count)) %>%
+    dplyr::rename(iso = iso3)
+
+  return(df)
 }
