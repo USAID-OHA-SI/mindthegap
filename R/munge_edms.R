@@ -136,7 +136,7 @@ munge_components <- function(df){
   #reoder & drop unnecessary indicator related columns
   df <- df %>%
     dplyr::relocate(indicator, .before = indicator_edms) %>%
-    dplyr::select(-c(e_cat, e_ind, indicator_edms, other))
+    dplyr::select(-c(e_cat, e_ind, indicator_edms))
 
   #add indicator type
   df <- df %>%
@@ -217,13 +217,40 @@ validate_countries <- function(df){
 }
 
 
+#' Pivot Values
+#' Spread estimates and bounds to their own columns. Create a flag where
+#' estimate use < or >. Handle character truncation (eg "m").
+#'
+#' @param df dataframe
+#' @keywords internal
 spread_values <- function(df){
+
+  #spread estimate and bounds to own columns
   df <- df %>%
     dplyr::mutate(other = dplyr::case_match(other,
                                             "lb" ~ "lower_bound",
                                             "ub" ~ "upper_bound",
                                             .default = "estimate")) %>%
-    dplyr::select(-e_ind) %>%
     tidyr::pivot_wider(names_from = other,
                        values_from = formatted)
+
+  #add flag and clean up characters in numeric columns
+  df <- df %>%
+    dplyr::mutate(estimate_flag = ifelse(stringr::str_detect(estimate, "<|>"), TRUE, FALSE)) %>% #estimate flag
+    dplyr::mutate(dplyr::across(c(estimate:upper_bound), ~ gsub(" |<|>", "", .x))) %>% #replace special characters
+    dplyr::mutate(dplyr::across(c(estimate:upper_bound), ~ gsub("m","00000", .x))) %>% #replace unit values
+    dplyr::mutate(dplyr::across(c(estimate:upper_bound), ~ ifelse(grepl("\\.\\d+00000$", .x), gsub("\\.", "", .x), .x)))
+
+
+  #convert values to numeric (handling percent and integers differently)
+  df <- df %>%
+    dplyr::mutate(dplyr::across(estimate:upper_bound, as.numeric),
+                  dplyr::across(estimate:upper_bound, ~dplyr::case_when(indicator_type == "Integer" ~ round(.x),
+                                                                        indicator_type == "Percent" ~ .x))
+    )
+
+  return(df)
 }
+
+
+
