@@ -20,6 +20,8 @@ munge_edms <- function(path){
 
   df <- munge_country(df)
 
+  df <- clean_cols(df)
+
   return(df)
 
 }
@@ -252,5 +254,30 @@ spread_values <- function(df){
   return(df)
 }
 
+#' Clean Columns
+#' Reorder and rename columns
+#'
+#' @param df dataframe
+#' @keywords internal
+#'
+clean_cols <- function(df){
+
+  #reorder and rename columns
+  df %>%
+    dplyr::select(year = time,
+                  iso,
+                  country,
+                  pepfar,
+                  region,
+                  indicator,
+                  indicator_type,
+                  age,
+                  sex,
+                  estimate,
+                  lower_bound,
+                  upper_bound,
+                  estimate_flag)
+
+}
 
 
