@@ -45,7 +45,8 @@ Imports:
     ggtext,
     gt,
     gtExtras,
-    cli
+    cli,
+    tools
 Suggests:
     googledrive,
     gridExtra,
