@@ -174,9 +174,11 @@ parse_indicator <- function(df){
 #' @keywords internal
 munge_country <- function(df){
 
+  #table of PEPFAR countries
   df_pepfar <-  glamr::pepfar_country_list %>%
     dplyr::select(country_pepfar = country, iso3 = country_iso)
 
+  #map PEPFAR countries onto df, use the PEFPAR name in place of UN default
   df <- df %>%
     dplyr::left_join(df_pepfar, by = "iso3") %>%
     dplyr::mutate(country = ifelse(is.na(country_pepfar), e_count, country_pepfar),
@@ -184,5 +186,44 @@ munge_country <- function(df){
     dplyr::select(-c(country_pepfar, e_count)) %>%
     dplyr::rename(iso = iso3)
 
+  #validate all PEFPAR countries are in dataframe
+  validate_countries(df)
+
   return(df)
+}
+
+
+#' Validate PEPFAR countries
+#'
+#' Ensure there are no missing PEPFAR countries from the EDMS pull
+#'
+#' @param df dataframe
+#' @keywords internal
+validate_countries <- function(df){
+
+  pepfar_countries_expected <- glamr::pepfar_country_list$country
+
+  pepfar_countries_edms <- df %>%
+    dplyr::distinct(country, pepfar) %>%
+    dplyr::filter(pepfar == TRUE) %>%
+    dplyr::pull(country)
+
+  missing <- setdiff(pepfar_countries_expected, pepfar_countries_edms)
+
+  if(length(missing) > 0)
+    cli::cli_warn(c("{length(missing)} countr{?y/ies} {?is/are} missing from the EDMS data pull.",
+                    i = "Missing countr{?y/ies}: {.val {missing}}"))
+
+}
+
+
+spread_values <- function(df){
+  df <- df %>%
+    dplyr::mutate(other = dplyr::case_match(other,
+                                            "lb" ~ "lower_bound",
+                                            "ub" ~ "upper_bound",
+                                            .default = "estimate")) %>%
+    dplyr::select(-e_ind) %>%
+    tidyr::pivot_wider(names_from = other,
+                       values_from = formatted)
 }
