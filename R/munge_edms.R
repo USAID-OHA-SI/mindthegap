@@ -18,9 +18,13 @@ munge_edms <- function(path){
 
   df <- munge_components(df)
 
+  #TODO indicator validation
+
   df <- munge_country(df)
 
   df <- clean_cols(df)
+
+  #TODO Epi control and target acheivement values
 
   return(df)
 
