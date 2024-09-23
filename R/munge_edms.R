@@ -209,7 +209,7 @@ validate_ind_disaggs <- function(df){
                   ind_combo = stringr::str_glue("{indicator_edms}: {sex}|{age} [{source}]"))
 
   #check if anything is missing
-  missing <- df_data_v %>%
+  missing <- df_status %>%
     dplyr::filter(status == "Missing") %>%
     dplyr::pull()
 
@@ -219,7 +219,7 @@ validate_ind_disaggs <- function(df){
     ))
 
   #check if anything is extra
-  additional <- df_data_v %>%
+  additional <- df_status %>%
     dplyr::filter(status == "Additional") %>%
     dplyr::pull()
 
