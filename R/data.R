@@ -25,7 +25,7 @@
 #' A dataframe containing the different indicators and their disaggregate p
 #' pieces to ensure all data expected are being exported from EDMS.
 #'
-#' @format A data frame with 122 rows and 4 columns:
+#' @format A data frame with 62 rows and 4 columns:
 #' \describe{
 #'   \item{indicator_edms}{Parsed EDMS indicator name}
 #'   \item{age, sex}{EDMS indicator disaggregates}

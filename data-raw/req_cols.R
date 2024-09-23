@@ -16,7 +16,8 @@ df_ind <- path %>%
 
 indicator_validation <- df_ind %>%
   dplyr::arrange(indicator_edms) %>%
-  dplyr::select(indicator_edms, age, sex, source = e_cat)
+  dplyr::select(indicator_edms, age, sex, source = e_cat) %>%
+  dplyr::distinct()
 
 usethis::use_data(indicator_validation, overwrite = TRUE)
 
