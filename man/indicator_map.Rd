@@ -12,7 +12,7 @@ A data frame with 21 rows and 3 columns:
 \item{indicator}{Common indicator name}
 }
 
-A data frame with 122 rows and 4 columns:
+A data frame with 62 rows and 4 columns:
 \describe{
 \item{indicator_edms}{Parsed EDMS indicator name}
 \item{age, sex}{EDMS indicator disaggregates}

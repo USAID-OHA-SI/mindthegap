@@ -18,8 +18,6 @@ munge_edms <- function(path){
 
   df <- munge_components(df)
 
-  #TODO indicator validation
-
   df <- munge_country(df)
 
   df <- clean_cols(df)
@@ -121,8 +119,11 @@ validate_columns <- function(df){
 #'
 munge_components <- function(df){
 
- #parse indicator name
+  #parse indicator name
   df <- parse_indicator(df)
+
+  #validate indicators/disaggregates
+  validate_ind_disaggs(df)
 
   #clean up age and sex
   df <- df %>%
@@ -139,14 +140,20 @@ munge_components <- function(df){
                        by = "acronym") %>%
     dplyr::select(-acronym)
 
-  #reoder & drop unnecessary indicator related columns
+  #add indicator_edms as indicator if missing from mapping list
+  df <- df %>%
+    dplyr::mutate(indicator = ifelse(is.na(indicator),
+                                     indicator_edms, indicator))
+
+  #reorder & drop unnecessary indicator related columns
   df <- df %>%
     dplyr::relocate(indicator, .before = indicator_edms) %>%
     dplyr::select(-c(e_cat, e_ind, indicator_edms))
 
   #add indicator type
   df <- df %>%
-    dplyr::mutate(indicator_type = ifelse(stringr::str_detect(indicator, "Percent") | indicator == "Incidence (per 1,000)", "Percent", "Integer"),
+    dplyr::mutate(indicator_type = ifelse(stringr::str_detect(indicator, "Percent") | indicator == "Incidence (per 1,000)",
+                                          "Percent", "Integer"),
                   .after = indicator)
 
   return(df)
@@ -170,6 +177,57 @@ parse_indicator <- function(df){
                   .before = e_ind)
 }
 
+#' Validate Indicator and Disaggregated included
+#'
+#' Check if all expected indicators and their disaggregates are included and/or
+#' any additional indicators/disaggregates are included
+#'
+#' @param df dataframe
+#' @keywords internal
+#'
+validate_ind_disaggs <- function(df){
+  #get list of indicators in EDMS output
+  df_included <- df %>%
+    # parse_indicator() %>%
+    dplyr::filter(e_cat != "Uncertainty Analysis") %>%
+    dplyr::distinct(indicator_edms, age, sex, source = e_cat) %>%
+    dplyr::mutate(in_data = TRUE)
+
+  #list of indicators/disaggs expected (for normal, annual pull)
+  df_expected <- indicator_validation %>%
+    dplyr::mutate(expected = TRUE)
+
+  #join list to see what is missing/additional
+  df_join <- dplyr::full_join(df_included, df_expected,
+                              dplyr::join_by(indicator_edms, age, sex, source))
+
+  #create a status to sort on
+  df_status <- df_join %>%
+    dplyr::mutate(status = dplyr::case_when(expected == TRUE  & in_data == TRUE  ~ "Success",
+                                            expected == TRUE  & in_data == FALSE ~ "Missing",
+                                            expected == FALSE & in_data == TRUE  ~ "Additional"),
+                  ind_combo = stringr::str_glue("{indicator_edms}: {sex}|{age} [{source}]"))
+
+  #check if anything is missing
+  missing <- df_data_v %>%
+    dplyr::filter(status == "Missing") %>%
+    dplyr::pull()
+
+  if(length(missing) > 0)
+    cli::cli_warn(c("The following {length(missing)} expected item{?s} {?is/are} missing from the EDMS output:",
+                    setNames(missing, rep("*", length(missing)))
+    ))
+
+  #check if anything is extra
+  additional <- df_data_v %>%
+    dplyr::filter(status == "Additional") %>%
+    dplyr::pull()
+
+  if(length(additional) > 0)
+    cli::cli_warn(c("The following {length(additional)} additional item{?s} {?is/are} included in the EDMS output:",
+                    setNames(additional, rep("*", length(additional)))
+    ))
+}
 
 #' Munge PEPFAR country
 #'
@@ -283,5 +341,7 @@ clean_cols <- function(df){
                   estimate_flag)
 
 }
+
+
 
 
