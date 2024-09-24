@@ -26,8 +26,9 @@ munge_edms <- function(path, epi_95s_flag = TRUE){
 
   df <- clean_cols(df)
 
-  #TODO Epi control and target acheivement values
   df <- flag_95s(df, epi_95s_flag)
+
+  df <- flag_epi(df, epi_95s_flag)
 
   return(df)
 
@@ -420,7 +421,66 @@ flag_95s <- function(df, epi_95s_flag = TRUE){
 
 }
 
+#' Flag Epi contol status
+#'
+#' Add flags for Epi contol status for all age and sex
+#'
+#' @param df dataframe
+#' @inheritParams munge_edms
+#' @keywords internal
+#'
+flag_epi <- function(df, epi_95s_flag = TRUE){
 
+  #exit if there is no desire to add flags to dataset
+  if(epi_95s_flag == FALSE)
+    return(df)
+
+  # subset dataset to indicator and columns needed
+  df_epi <- df %>%
+    dplyr::filter(indicator %in% c("Number Total Deaths to HIV Population",
+                                   "Number New HIV Infections"),
+                  age == "All",
+                  sex == "All") %>%
+    dplyr::select(iso, year, indicator, estimate)
+
+  #clean up indicator name to make easier when reshaped to column
+  df_epi <- df_epi %>%
+    dplyr::mutate(indicator = stringr::str_extract(indicator, "Infections|Deaths") %>% tolower)
+
+  #spread to calculate epi control
+  df_epi <- df_epi %>%
+    tidyr::pivot_wider(names_from = indicator,
+                       values_from = estimate) %>%
+    dplyr::arrange(iso, year)
+
+  #by country, check if deaths and infections are declining YoY
+  df_epi <- df_epi %>%
+    dplyr::group_by(iso) %>%
+    dplyr::mutate(dplyr::across(c(deaths, infections),
+                                \(x) x - dplyr::lag(x, order_by = year) <= 0,
+                                .names = "declining_{.col}")) %>%
+    dplyr::ungroup()
+
+  #calculate epi control
+  df_epi <- df_epi %>%
+    dplyr::mutate(infections_below_deaths = infections < deaths,
+                  epi_ratio = infections / deaths,
+                  # direction_streak = sequence(rle(declining_deaths)$lengths),
+                  epi_control = (declining_deaths == TRUE & declining_infections == TRUE & infections_below_deaths == TRUE))
+  # epi_control = all(declining_deaths, declining_infections, infections_below_deaths))
+  #subset
+  df_epi <- df_epi %>%
+    dplyr::filter(year != min(year), !is.na(epi_control)) %>%
+    dplyr::select(year, iso, epi_ratio, epi_control)
+
+  #join onto main dataframe (will not join with Age/Sex pairs that don't exist for the 95s)
+  df_j <- dplyr::left_join(df,
+                           df_epi,
+                           by = dplyr::join_by(year, iso))
+
+  return(df_j)
+
+}
 
 
 
