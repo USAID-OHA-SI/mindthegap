@@ -7,7 +7,7 @@
 read_edms(path)
 }
 \arguments{
-\item{path}{fileoath to the EDMS export (csv)}
+\item{path}{filepath to the EDMS export (csv)}
 }
 \description{
 Read in the data that has been downloaded from the

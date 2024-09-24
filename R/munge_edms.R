@@ -1,6 +1,8 @@
 #' Clean UNAIDS Data from EDMS
 #'
-#' @param path fileoath to the EDMS export (csv)
+#' @param path filepath to the EDMS export (csv)
+#' @param epi_95s_flag add variables to dataframe for UNAIDS 95s achievement and
+#'   epidemic control status, default = TRUE
 #'
 #' @return df
 #' @export
@@ -10,7 +12,7 @@
 #'   filepath <- "../DataList_10_1_2030-12_00_00-AM.csv"
 #'   df <- munge_edms(filepath)
 #' }
-munge_edms <- function(path){
+munge_edms <- function(path, epi_95s_flag = TRUE){
 
   df <- read_edms(path)
 
@@ -25,6 +27,7 @@ munge_edms <- function(path){
   df <- clean_cols(df)
 
   #TODO Epi control and target acheivement values
+  df <- flag_95s(df, epi_95s_flag)
 
   return(df)
 
@@ -343,6 +346,81 @@ clean_cols <- function(df){
                   estimate_flag)
 
 }
+
+#' Flag 95 Achievement
+#'
+#' Add flags for achievement across all three 95s (for both relative and PLHIV
+#' base) across country, year, age, and sex.
+#'
+#' @param df dataframe
+#' @inheritParams munge_edms
+#' @keywords internal
+#'
+flag_95s <- function(df, epi_95s_flag = TRUE){
+
+  #exit if there is no desire to add flags to dataset
+  if(epi_95s_flag == FALSE)
+    return(df)
+
+  #UNAIDS GOAL
+  goal <- 95
+
+  #columns needed
+  key_cols_95s <- c("year", "iso", "indicator", "age", "sex")
+
+  #indicators needed
+  key_ind_95s <- c("Percent Known Status of PLHIV",
+                   "Percent on ART of PLHIV",
+                   "Percent VLS of PLHIV",
+                   "Percent on ART with Known Status",
+                   "Percent VLS on ART")
+
+  #subset dataset to what is needed
+  df_achv <- df %>%
+    dplyr::filter(indicator %in% key_ind_95s) %>%
+    dplyr::select(dplyr::all_of(key_cols_95s), estimate) %>%
+    dplyr::filter(!is.na(estimate))
+
+  #create achievement goals for each indicator in both bases
+  df_achv <- df_achv %>%
+    dplyr::mutate(set = dplyr::case_match(indicator,
+                                          "Percent on ART of PLHIV" ~ 2,
+                                          "Percent VLS of PLHIV" ~ 3,
+                                          .default = 1),
+                  base = dplyr::case_when(indicator == "Percent Known Status of PLHIV" ~ "Both",
+                                          set == 1 ~ "Relative",
+                                          TRUE ~ "PLHIV"),
+                  goal_rate = (goal/100)^set*100,
+                  achv_plhiv = dplyr::case_when(base != "Relative" ~ estimate >= goal_rate),
+                  achv_relative = dplyr::case_when(base != "PLHIV" ~ estimate >= goal_rate))
+
+  #full achievement?
+  df_achv <- df_achv %>%
+    dplyr::group_by(year, iso, age, sex) %>%
+    dplyr::mutate(#n_achv_plhiv = sum(achv_plhiv, na.rm = TRUE),
+      #n_achv_relative = sum(achv_relative, na.rm = TRUE),
+      achv_95_plhiv = sum(achv_plhiv, na.rm = TRUE) == 3,
+      achv_95_relative = sum(achv_relative, na.rm = TRUE) == 3) %>%
+    dplyr::ungroup()
+
+  #clean up dataset
+  df_achv <- df_achv %>%
+    dplyr::select(dplyr::all_of(key_cols_95s), -indicator,
+                  dplyr::starts_with("achv_95")) %>%
+    dplyr::distinct()
+
+
+  #join onto main dataframe (will not join with Age/Sex pairs that don't exist for the 95s)
+  df_j <- dplyr::left_join(df,
+                           df_achv,
+                           by = dplyr::join_by(year, iso, age, sex))
+
+
+  return(df_j)
+
+}
+
+
 
 
 

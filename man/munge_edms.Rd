@@ -4,10 +4,13 @@
 \alias{munge_edms}
 \title{Clean UNAIDS Data from EDMS}
 \usage{
-munge_edms(path)
+munge_edms(path, epi_95s_flag = TRUE)
 }
 \arguments{
-\item{path}{fileoath to the EDMS export (csv)}
+\item{path}{filepath to the EDMS export (csv)}
+
+\item{epi_95s_flag}{add variables to dataframe for UNAIDS 95s achievement and
+epidemic control status, default = TRUE}
 }
 \value{
 df

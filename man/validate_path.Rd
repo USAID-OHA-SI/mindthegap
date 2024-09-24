@@ -7,7 +7,7 @@
 validate_path(path)
 }
 \arguments{
-\item{path}{fileoath to the EDMS export (csv)}
+\item{path}{filepath to the EDMS export (csv)}
 }
 \description{
 Validate file path to EDMS output is a csv and exits.
