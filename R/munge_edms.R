@@ -277,8 +277,8 @@ validate_countries <- function(df){
   missing <- setdiff(pepfar_countries_expected, pepfar_countries_edms)
 
   if(length(missing) > 0)
-    cli::cli_warn(c("{length(missing)} countr{?y/ies} {?is/are} missing from the EDMS data pull.",
-                    i = "Missing countr{?y/ies}: {.val {missing}}"))
+    cli::cli_warn(c("{length(missing)} expected countr{?y/ies} {?is/are} missing from the EDMS data pull.",
+                    i = "Missing PEPFAR countr{?y/ies}: {.val {missing}}"))
 
 }
 
