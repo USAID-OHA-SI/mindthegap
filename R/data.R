@@ -22,8 +22,8 @@
 
 #' Full list of expected indicators
 #'
-#' A dataframe containing the different indicators and their disaggregate p
-#' pieces to ensure all data expected are being exported from EDMS.
+#' A dataframe containing the different indicators and their disaggregate
+#' components to ensure all data expected for are being exported from EDMS.
 #'
 #' @format A data frame with 62 rows and 4 columns:
 #' \describe{
@@ -31,4 +31,4 @@
 #'   \item{age, sex}{EDMS indicator disaggregates}
 #'   \item{source}{Source folder on EDMS}
 #' }
-"indicator_map"
+"indicator_validation"

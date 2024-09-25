@@ -11,23 +11,11 @@ A data frame with 21 rows and 3 columns:
 \item{indicator_edms}{Parsed EDMS indicator name}
 \item{indicator}{Common indicator name}
 }
-
-A data frame with 62 rows and 4 columns:
-\describe{
-\item{indicator_edms}{Parsed EDMS indicator name}
-\item{age, sex}{EDMS indicator disaggregates}
-\item{source}{Source folder on EDMS}
-}
 }
 \usage{
-indicator_map
-
 indicator_map
 }
 \description{
 A mapping of the EDMS \code{acronym} to common names used by OHA analysts.
-
-A dataframe containing the different indicators and their disaggregate p
-pieces to ensure all data expected are being exported from EDMS.
 }
 \keyword{datasets}

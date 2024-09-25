@@ -12,4 +12,11 @@ utils::globalVariables(c("where", "operatingunit",
                          "max_plot_pt", "aids_label", "min_plot_pt", "countryname_iso",
                          "high", "region", "low", "est", "country_iso", "estimate",
                          "upper_bound", "pepfar", "cntry_order", "gs_id",
-                         "tot_death_label", "val_mod", "set", "goal_rate", "achieved"))
+                         "tot_death_label", "val_mod", "set", "goal_rate", "achieved",
+                         "achv_plhiv", "achv_relative", "acronym", "country_pepfar",
+                         "declining_infections", "e_cat", "e_count", "e_ind",
+                         "epi_control", "epi_ratio", "estimate_flag", "formatted",
+                         "indicator_edms", "indicator_map", "indicator_type",
+                         "indicator_validation", "iso3", "lower_bound",
+                         "other", "req_cols", "status", "time"
+                         ))

@@ -1,6 +1,5 @@
 #' Epidemic Control Plot
 #' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
-#' @param df UNAIDS based data frame
 #' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
 #'
 #' @return Epidemic control plot showing trends in new infections and total deaths to HIV population
