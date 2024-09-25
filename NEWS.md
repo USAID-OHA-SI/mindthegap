@@ -1,3 +1,7 @@
+# mindthegap 2.0
+* Develop unit tests for `munge_edms` help ensures the code is performing as expected with annual updates and make updating/catching errors easier [2024-09-24]
+* Create `munge_edms` (and internal sub functions + data) for handing UNAIDS data directly out of the EDMS database [2024-09-23]
+
 # mindthegap 1.1
 * Added a [codebook output](https://github.com/USAID-OHA-SI/mindthegap/blob/update-2023/data-raw/dataReporter_UNAIDS_2024_Clean_Estimates.pdf) [2024-08-02]
 * Simplified the number of package dependencies [2024-08-02]
