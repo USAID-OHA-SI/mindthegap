@@ -8,6 +8,20 @@
 #' A vector of length 11
 "req_cols"
 
+
+#' PEPFAR countries + ISO codes
+#'
+#' This is a dataframe of countries that receive PEPFAR funding. This df comes
+#' from `glamr::pepfar_country_list` and is originally derived from the
+#' PEPFAR Financial Structured Dataset (FSD).
+#'
+#' @format A data frame with 55 rows and 2 columns:
+#' \describe{
+#'   \item{country_pepfar}{Country name}
+#'   \item{iso3}{Country ISO3 code}
+#' }
+"pepfar"
+
 #' Mapping of EDMS Indicator Names to those used in OHA
 #'
 #' A mapping of the EDMS `acronym` to common names used by OHA analysts.
@@ -25,10 +39,11 @@
 #' A dataframe containing the different indicators and their disaggregate
 #' components to ensure all data expected for are being exported from EDMS.
 #'
-#' @format A data frame with 62 rows and 4 columns:
+#' @format A data frame with 62 rows and 5 columns:
 #' \describe{
 #'   \item{indicator_edms}{Parsed EDMS indicator name}
 #'   \item{age, sex}{EDMS indicator disaggregates}
 #'   \item{source}{Source folder on EDMS}
+#'   \item{expected}{Expected as part of EDMS Epi + 95s pull (TRUE)}
 #' }
-"indicator_validation"
+"expected_ind"

@@ -3,8 +3,18 @@ req_cols <- c("region", "e_count", "iso3", "e_cat", "e_ind", "acronym","age", "s
 
 usethis::use_data(req_cols, overwrite = TRUE)
 
+## PEPFAR countries
+
+#table of PEPFAR countries
+pepfar <-  glamr::pepfar_country_list %>%
+  dplyr::select(country_pepfar = country, iso3 = country_iso)
+
+usethis::use_data(pepfar, overwrite = TRUE)
+
 
 # INDICATOR MAPPING AND VALIDATION ----------------------------------------
+
+path <- "../../../Downloads/DataList_9_19_2024-3_30_17-PM.csv"
 
 df_ind <- path %>%
   read_edms() %>%
@@ -14,12 +24,13 @@ df_ind <- path %>%
   dplyr::distinct()
 
 
-indicator_validation <- df_ind %>%
+expected_ind <- df_ind %>%
   dplyr::arrange(indicator_edms) %>%
   dplyr::select(indicator_edms, age, sex, source = e_cat) %>%
+  dplyr::mutate(expected = TRUE) %>%
   dplyr::distinct()
 
-usethis::use_data(indicator_validation, overwrite = TRUE)
+usethis::use_data(expected_ind, overwrite = TRUE)
 
 # df_ind %>%
 #   dplyr::distinct(acronym, indicator_edms)

@@ -18,5 +18,6 @@ utils::globalVariables(c("where", "operatingunit",
                          "epi_control", "epi_ratio", "estimate_flag", "formatted",
                          "indicator_edms", "indicator_map", "indicator_type",
                          "indicator_validation", "iso3", "lower_bound",
-                         "other", "req_cols", "status", "time"
+                         "other", "req_cols", "status", "time", "expected_ind",
+                         "in_data", "expected"
                          ))

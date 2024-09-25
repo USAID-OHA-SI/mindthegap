@@ -98,12 +98,7 @@ munge_components <- function(df){
   validate_ind_disaggs(df)
 
   #clean up age and sex
-  df <- df %>%
-    dplyr::mutate(age = ifelse(age == "allAges", "All", age),
-                  sex = dplyr::case_match(sex,
-                                          "M+F" ~ "All",
-                                          "F" ~ "Female",
-                                          "M" ~ "Male"))
+  df <- standarize_agesex(df)
 
   #map acronyms to clean indicator names
   df <- df %>%
@@ -150,6 +145,20 @@ parse_indicator <- function(df){
 }
 
 
+#' Standardize Age/Sex
+#'
+#' @param df dataframe
+#' @keywords internal
+#'
+standarize_agesex <- function(df){
+
+  df %>%
+    dplyr::mutate(age = ifelse(age == "allAges", "All", age),
+                  sex = dplyr::case_match(sex,
+                                          "M+F" ~ "All",
+                                          "F" ~ "Female",
+                                          "M" ~ "Male"))
+}
 
 #' Munge PEPFAR country
 #'
@@ -160,13 +169,9 @@ parse_indicator <- function(df){
 #' @keywords internal
 munge_country <- function(df){
 
-  #table of PEPFAR countries
-  df_pepfar <-  glamr::pepfar_country_list %>%
-    dplyr::select(country_pepfar = country, iso3 = country_iso)
-
   #map PEPFAR countries onto df, use the PEFPAR name in place of UN default
   df <- df %>%
-    dplyr::left_join(df_pepfar, by = "iso3") %>%
+    dplyr::left_join(pepfar, by = "iso3") %>%
     dplyr::mutate(country = ifelse(is.na(country_pepfar), e_count, country_pepfar),
                   pepfar = !is.na(country_pepfar)) %>%
     dplyr::select(-c(country_pepfar, e_count)) %>%

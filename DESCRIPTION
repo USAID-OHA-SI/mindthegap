@@ -57,7 +57,9 @@ Suggests:
     rmarkdown,
     kableExtra,
     systemfonts,
-    tibble
+    tibble,
+    testthat (>= 3.0.0),
+    withr
 Remotes: 
     USAID-OHA-SI/gophr,
     USAID-OHA-SI/glamr,
@@ -66,3 +68,4 @@ Remotes:
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
+Config/testthat/edition: 3
