@@ -15,7 +15,7 @@ validate_ind_disaggs <- function(df, epi_95s_flag = TRUE){
     dplyr::distinct(indicator_edms, age, sex, source = e_cat) %>%
     dplyr::mutate(in_data = TRUE)
 
-  if(epi_95s_flag == TRUE){
+  if(epi_95s_flag == FALSE){
 
     included <- df_included %>%
       dplyr::mutate(ind_combo = stringr::str_glue("{indicator_edms}: {sex}|{age} [{source}]")) %>%
@@ -25,7 +25,7 @@ validate_ind_disaggs <- function(df, epi_95s_flag = TRUE){
                       stats::setNames(included, rep("*", length(included)))
                       ))
 
-    return()
+    invisible()
   }
 
   #join list to see what is missing/additional

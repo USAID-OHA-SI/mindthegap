@@ -87,7 +87,7 @@ subset_cols <- function(df){
 #' Clean up indicator and disaggregate columns
 #'
 #' @inheritParams munge_edms
-#' @param df datafra,e
+#' @param df dataframe
 #' @keywords internal
 #'
 munge_components <- function(df, epi_95s_flag = TRUE){
@@ -102,21 +102,7 @@ munge_components <- function(df, epi_95s_flag = TRUE){
   df <- standarize_agesex(df)
 
   #map acronyms to clean indicator names
-  df <- df %>%
-    dplyr::left_join(indicator_map %>%
-                         dplyr::distinct(indicator, acronym),
-                       by = "acronym") %>%
-    dplyr::select(-acronym)
-
-  #add indicator_edms as indicator if missing from mapping list
-  df <- df %>%
-    dplyr::mutate(indicator = ifelse(is.na(indicator),
-                                     indicator_edms, indicator))
-
-  #reorder & drop unnecessary indicator related columns
-  df <- df %>%
-    dplyr::relocate(indicator, .before = indicator_edms) %>%
-    dplyr::select(-c(e_cat, e_ind, indicator_edms))
+  df <- map_indicator(df)
 
   #add indicator type
   df <- df %>%
@@ -160,6 +146,33 @@ standarize_agesex <- function(df){
                                           "F" ~ "Female",
                                           "M" ~ "Male"))
 }
+
+#' Map working indicator name to EDMS indicator name
+#'
+#' @param df dataframe
+#' @keywords internal
+
+map_indicator <- function(df){
+
+  #table of acronyms with the working indicator name to join onto df
+  df_acronym <- indicator_map %>%
+    dplyr::distinct(indicator, acronym)
+
+  #map acronyms to clean indicator names
+  df <- dplyr::left_join(df, df_acronym, by = "acronym")
+
+  #add indicator_edms as indicator if missing from mapping list
+  df <- df %>%
+    dplyr::mutate(indicator = ifelse(is.na(indicator), indicator_edms, indicator),
+                  .before = indicator_edms)
+
+  #drop unnecessary indicator related columns
+  df <- df %>%
+    dplyr::select(-c(e_cat, e_ind, indicator_edms, acronym))
+
+  return(df)
+}
+
 
 #' Munge PEPFAR country
 #'

@@ -7,7 +7,7 @@
 munge_components(df, epi_95s_flag = TRUE)
 }
 \arguments{
-\item{df}{datafra,e}
+\item{df}{dataframe}
 
 \item{epi_95s_flag}{add variables to dataframe for UNAIDS 95s achievement and
 epidemic control status, default = TRUE}
