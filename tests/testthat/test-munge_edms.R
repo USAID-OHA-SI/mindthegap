@@ -73,7 +73,7 @@ test_that("map_indicator correctly maps indicator names and handles missing acro
 
   # Expected output dataframe
   expected_df <- data.frame(
-    indicator = c("Percent Prevalence", "Number AIDS Related Deaths", "Unknown Indicator"),
+    indicator = c("Prevalence", "Number AIDS Related Deaths", "Unknown Indicator"),
     stringsAsFactors = FALSE
   )
 
