@@ -12,8 +12,7 @@ validate_numeric_string(df)
 \description{
 Ensure that there are not extract character values that are accounted for and
 handled during the munging process. Those values include: "<", ">", ".", " ",
-"m", "k". To resolve, address these exceptions in
-{.fn convert_numeric_string} and add them to the {.code expected_chars}
-list in {.fn validate_numeric_string}.
+"m", "k". To resolve, address these exceptions in convert_numeric_string()
+and add them to the \code{expected_chars} list in validate_numeric_string().
 }
 \keyword{internal}
