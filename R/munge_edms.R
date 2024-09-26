@@ -18,7 +18,7 @@ munge_edms <- function(path, epi_95s_flag = TRUE){
 
   df <- subset_cols(df)
 
-  df <- munge_components(df)
+  df <- munge_components(df, epi_95s_flag)
 
   df <- munge_country(df)
 
@@ -86,16 +86,17 @@ subset_cols <- function(df){
 
 #' Clean up indicator and disaggregate columns
 #'
-#' @param df datafrane
+#' @inheritParams munge_edms
+#' @param df datafra,e
 #' @keywords internal
 #'
-munge_components <- function(df){
+munge_components <- function(df, epi_95s_flag = TRUE){
 
   #parse indicator name
   df <- parse_indicator(df)
 
   #validate indicators/disaggregates
-  validate_ind_disaggs(df)
+  validate_ind_disaggs(df, epi_95s_flag)
 
   #clean up age and sex
   df <- standarize_agesex(df)

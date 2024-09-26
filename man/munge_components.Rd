@@ -4,10 +4,13 @@
 \alias{munge_components}
 \title{Clean up indicator and disaggregate columns}
 \usage{
-munge_components(df)
+munge_components(df, epi_95s_flag = TRUE)
 }
 \arguments{
-\item{df}{datafrane}
+\item{df}{datafra,e}
+
+\item{epi_95s_flag}{add variables to dataframe for UNAIDS 95s achievement and
+epidemic control status, default = TRUE}
 }
 \description{
 Clean up indicator and disaggregate columns

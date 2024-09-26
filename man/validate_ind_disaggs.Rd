@@ -4,10 +4,13 @@
 \alias{validate_ind_disaggs}
 \title{Validate Indicator and Disaggregated included}
 \usage{
-validate_ind_disaggs(df)
+validate_ind_disaggs(df, epi_95s_flag = TRUE)
 }
 \arguments{
 \item{df}{dataframe}
+
+\item{epi_95s_flag}{add variables to dataframe for UNAIDS 95s achievement and
+epidemic control status, default = TRUE}
 }
 \description{
 Check if all expected indicators and their disaggregates are included and/or

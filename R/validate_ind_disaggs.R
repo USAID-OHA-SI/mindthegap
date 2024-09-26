@@ -4,15 +4,29 @@
 #' any additional indicators/disaggregates are included
 #'
 #' @param df dataframe
+#' @inheritParams munge_edms
 #' @keywords internal
 #'
-validate_ind_disaggs <- function(df){
+validate_ind_disaggs <- function(df, epi_95s_flag = TRUE){
   #get list of indicators in EDMS output
   df_included <- df %>%
     # parse_indicator() %>%
     dplyr::filter(e_cat != "Uncertainty Analysis") %>%
     dplyr::distinct(indicator_edms, age, sex, source = e_cat) %>%
     dplyr::mutate(in_data = TRUE)
+
+  if(epi_95s_flag == TRUE){
+
+    included <- df_included %>%
+      dplyr::mutate(ind_combo = stringr::str_glue("{indicator_edms}: {sex}|{age} [{source}]")) %>%
+      dplyr::pull()
+
+    cli::cli_inform(c("The following {length(included)} item{?s} {?is/are} included from the EDMS output:",
+                      stats::setNames(included, rep("*", length(included)))
+                      ))
+
+    return()
+  }
 
   #join list to see what is missing/additional
   df_join <- dplyr::full_join(df_included, expected_ind,
