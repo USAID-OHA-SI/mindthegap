@@ -38,8 +38,8 @@ usethis::use_data(expected_ind, overwrite = TRUE)
 indicator_map <-
   tibble::tribble(
             ~acronym,                                                        ~indicator_edms,                              ~indicator,
-              "Prev",                                                 "Adult HIV prevalence",                    "Percent Prevalence",
-              "Prev",                                                     "Adult prevalence",                    "Percent Prevalence",
+              "Prev",                                                 "Adult HIV prevalence",                            "Prevalence",
+              "Prev",                                                     "Adult prevalence",                            "Prevalence",
                 "AM",                                                          "AIDS deaths",            "Number AIDS Related Deaths",
                 "AM",                                                   "Annual AIDS deaths",            "Number AIDS Related Deaths",
               "INC%",                                                            "Incidence",                 "Incidence (per 1,000)",

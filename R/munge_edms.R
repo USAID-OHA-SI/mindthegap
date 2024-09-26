@@ -24,6 +24,8 @@ munge_edms <- function(path, epi_95s_flag = TRUE){
 
   df <- spread_values(df)
 
+  df <- convert_numeric_string(df)
+
   df <- clean_cols(df)
 
   df <- flag_95s(df, epi_95s_flag)
@@ -105,10 +107,7 @@ munge_components <- function(df, epi_95s_flag = TRUE){
   df <- map_indicator(df)
 
   #add indicator type
-  df <- df %>%
-    dplyr::mutate(indicator_type = ifelse(stringr::str_detect(indicator, "Percent") | indicator == "Incidence (per 1,000)",
-                                          "Percent", "Integer"),
-                  .after = indicator)
+  df <- apply_indicator_type(df)
 
   return(df)
 
@@ -174,6 +173,25 @@ map_indicator <- function(df){
 }
 
 
+#' Apply Indicator Type
+#'
+#' Specify if the indicator's value is a percent, integer, or rate
+#'
+#' @param df dataframe
+#' @keywords internal
+#'
+apply_indicator_type <- function(df){
+  df %>%
+    dplyr::mutate(indicator_type =
+                    dplyr::case_when(stringr::str_detect(indicator, "Incidence|(P|p)revalence") ~ "Rate",
+                                     stringr::str_detect(indicator, "Percent") ~ "Percent",
+                                     stringr::str_detect(indicator, "Number") ~ "Integer",
+                                     TRUE ~ "Unknown"),
+                  .after = indicator)
+}
+
+
+
 #' Munge PEPFAR country
 #'
 #' Apply PEPFAR naming conventions where applicable and flag the countries that
@@ -206,6 +224,9 @@ munge_country <- function(df){
 #' @keywords internal
 spread_values <- function(df){
 
+  #validate non-numeric characters are not outside those that will be handled
+  validate_numeric_string(df)
+
   #spread estimate and bounds to own columns
   df <- df %>%
     dplyr::mutate(other = dplyr::case_match(other,
@@ -215,19 +236,56 @@ spread_values <- function(df){
     tidyr::pivot_wider(names_from = other,
                        values_from = formatted)
 
-  #add flag and clean up characters in numeric columns
-  df <- df %>%
-    dplyr::mutate(estimate_flag = ifelse(stringr::str_detect(estimate, "<|>"), TRUE, FALSE)) %>% #estimate flag
-    dplyr::mutate(dplyr::across(c(estimate:upper_bound), ~ gsub(" |<|>", "", .x))) %>% #replace special characters
-    dplyr::mutate(dplyr::across(c(estimate:upper_bound), ~ gsub("m","00000", .x))) %>% #replace unit values
-    dplyr::mutate(dplyr::across(c(estimate:upper_bound), ~ ifelse(grepl("\\.\\d+00000$", .x), gsub("\\.", "", .x), .x)))
+
+  #check if bounds exist in dataframe
+  missing_bounds <- setdiff(c("lower_bound", "upper_bound"), names(df))
+
+  #create new columns if bounds don't exist
+  df[missing_bounds] <- NA_character_
+
+  return(df)
+}
 
 
-  #convert values to numeric (handling percent and integers differently)
+#' Convert Numeric Values stored as string
+#'
+#' @param df dataframe
+#' @keywords internal
+#'
+convert_numeric_string <- function(df){
+
+  #numeric columns
+  num_cols <- c("estimate", "lower_bound", "upper_bound")
+
+  #add flag where there there is a < or > sign
   df <- df %>%
-    dplyr::mutate(dplyr::across(estimate:upper_bound, as.numeric),
-                  dplyr::across(estimate:upper_bound, ~dplyr::case_when(indicator_type == "Integer" ~ round(.x),
-                                                                        indicator_type == "Percent" ~ .x))
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols),
+                                \(x) x %>%
+                                  stringr::str_extract("<|>") %>%
+                                  dplyr::case_match("<" ~ "less than",
+                                                    ">" ~ "greater than"),
+                                .names = "{.col}_flag"))
+
+  #remove special characters (spaces and less/greater than) in numeric columns
+  df <- df %>%
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), \(x) stringr::str_remove(x, " |<|>")))
+
+  #convert units from string with m/k to numeric)
+  df <- df %>%
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), ~ dplyr::case_when(stringr::str_detect(.x, "m") ~ 1e6,
+                                                                            stringr::str_detect(.x, "k") ~ 1e3,
+                                                                            TRUE ~ 1),
+                                .names = "{.col}_units"),
+                  dplyr::across(dplyr::all_of(num_cols), ~ stringr::str_remove_all(.x, "m|k")),
+                  dplyr::across(dplyr::all_of(num_cols), ~ as.numeric(.x) * get(paste0(dplyr::cur_column(), "_units")),
+                                .names = "{.col}")
+                  ) %>%
+    dplyr::select(-dplyr::ends_with("_units"))
+
+  #round integers to whole numbers but not percents or rates
+  df <- df %>%
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), ~ dplyr::case_when(indicator_type == "Integer" ~ round(.x),
+                                                                         TRUE ~ .x))
     )
 
   return(df)

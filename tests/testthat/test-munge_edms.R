@@ -1,4 +1,5 @@
-# Test for age and sex standarization
+# Test for age and sex standardization ------------------------------------
+
 test_that("standarize_agesex produces correct set of age/sex combinations", {
 
 
@@ -38,14 +39,15 @@ test_that("parse_indicator correctly removes extraneous front and back matter fr
 
 
 
-  expect_true(parse_indicator(df_ind) %>%
-                dplyr::mutate(correct = indicator_edms == expected) %>%
-                dplyr::pull() %>%
-                all())
+  df_result <- parse_indicator(df_ind)
+  expect_equal(df_result$expected, df_result$indicator_edms)
 
 }
 )
 
+
+
+# Check map_indicator -----------------------------------------------------
 
 
 # Mock the indicator_map dataframe from the CSV
@@ -95,4 +97,55 @@ test_that("map_indicator places indicator column before indicator_edms", {
   expect_equal(which(names(mapped_df) == "indicator"), 1)
 })
 
+
+
+# Test apply_indicator_type -----------------------------------------------
+
+#dataset
+df_expected_type <- tibble::tribble(
+                               ~indicator, ~expected_type,
+             "Number AIDS Related Deaths",      "Integer",
+               "Number PMTCT Needing ART",      "Integer",
+              "Number New HIV Infections",      "Integer",
+  "Number Total Deaths to HIV Population",      "Integer",
+             "Number PMTCT Receiving ART",      "Integer",
+           "Number Deaths Averted by ART",      "Integer",
+     "Number Infections Averted by PMTCT",      "Integer",
+                           "Number PLHIV",      "Integer",
+                 "Number on ART of PLHIV",      "Integer",
+           "Number Known Status of PLHIV",      "Integer",
+                    "Number VLS of PLHIV",      "Integer",
+                "Percent on ART of PLHIV",      "Percent",
+          "Percent Known Status of PLHIV",      "Percent",
+       "Percent on ART with Known Status",      "Percent",
+                   "Percent VLS of PLHIV",      "Percent",
+                     "Percent VLS on ART",      "Percent",
+                     "Percent Prevalence",         "Rate",
+                  "Incidence (per 1,000)",         "Rate"
+  )
+
+
+# Test for correct mapping of indicator_type
+test_that("apply_indicator_type correctly assigns indicator types", {
+  # Apply the function
+  df_result <- apply_indicator_type(df_expected_type)
+
+  # Check that the resulting indicator_type matches the expected type from the CSV
+  expect_equal(df_result$indicator_type, df_result$expected_type)
+})
+
+# Test for handling of unknown indicators
+test_that("apply_indicator_type assigns 'Unknown' for unrecognized indicators", {
+  # Create a test dataframe with both known and unknown indicators
+  df_test <- data.frame(
+    indicator = c("New Indicator", "Percent on ART", "Number on ART", "Another Unknown"),
+    stringsAsFactors = FALSE
+  )
+
+  # Apply the function
+  df_result <- apply_indicator_type(df_test)
+
+  # Expected output for unknown indicators should be "Unknown"
+  expect_equal(df_result$indicator_type, c("Unknown", "Percent", "Integer", "Unknown"))
+})
 
