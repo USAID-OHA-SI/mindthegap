@@ -51,8 +51,7 @@ epi_plot <- function(sel_cntry = c("All PEPFAR")){
                   fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim)) #add colors to indicate flip axis
 
   # OU list to check entries
-  #ou_list <- glamr::pepfar_country_list %>% dplyr::distinct(country) %>% dplyr::pull()
-  ou_list <- df_epi_pepfar %>% dplyr::distinct(country) %>% dplyr::pull()
+  ou_list <- pepfar %>% dplyr::pull(country_pepfar)
 
   # Check if each value is valid
   is_valid <- all(sel_cntry %in% ou_list)

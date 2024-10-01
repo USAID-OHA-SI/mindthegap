@@ -17,6 +17,10 @@
 #'
 munge_unaids <- function(return_type, indicator_type) {
 
+
+  if (!requireNamespace('googlesheets4', quietly = TRUE))
+    cli::cli_abort("{.pkg googlesheets4} needed for this function to work. Please install it.")
+
   # Google Sheet ID to original
   #sheet_id <- googledrive::as_id("1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs")
 
@@ -79,9 +83,8 @@ munge_unaids <- function(return_type, indicator_type) {
            upper_bound = high)
 
   #add PEPFAR grouping category
-  gdrive_df_clean <-  glamr::pepfar_country_list %>%
-    dplyr::select(country, iso = country_iso) %>%
-    dplyr::rename(countryname = country) %>%
+  gdrive_df_clean <-  pepfar %>%
+    dplyr::select(countryname = country_pepfar, iso = iso3) %>%
     dplyr::left_join(gdrive_df_clean, ., by = "iso") %>%
     dplyr::mutate(country = ifelse(is.na(countryname), country, countryname),
                   pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>%
