@@ -5,7 +5,7 @@ Authors@R: c(
     person(given = "Aaron",
            family = "Chafetz",
            role = c("aut"),
-           email = "achafetz@usaid.ogv"),
+           email = "achafetz@usaid.gov"),
     person(given = "Karishma",
          family = "Srikanth",
          role = c("aut", "cre"),
@@ -33,7 +33,6 @@ Imports:
     dplyr,
     tidyr,
     glue,
-    googlesheets4,
     readr,
     forcats,
     scales,
@@ -50,6 +49,7 @@ Imports:
     stats
 Suggests:
     googledrive,
+    googlesheets4,
     gridExtra,
     devtools,
     knitr,
