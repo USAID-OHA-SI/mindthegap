@@ -1,3 +1,19 @@
+#' Year UNAIDS data are released through
+#'
+#' @keywords internal
+#'
+unaids_year <- 2023
+
+#' UNAIDS Source Info
+#'
+#' Returns UNAIDS Source info for consistent sourcing notes
+#'
+#' @export
+#'
+
+source_note <- glue::glue("Source: UNAIDS AIDSinfo Global Data {unaids_year + 1} Release") %>% as.character()
+
+
 #' Check if package exists
 #'
 #' @param pkg package name
@@ -68,6 +84,23 @@ validate_cols <- function(df, return_type) {
 
 }
 
+
+#' UN Defined Regions
+#'
+#' This list is used to filter the UN regions
+#'
+#' @export
+#' @keywords internal
+#'
+regions <- c("Global",
+             "Asia and the Pacific",
+             "Caribbean",
+             "Eastern and southern Africa",
+             "Eastern Europe and central Asia",
+             "Latin America",
+             "Middle East and North Africa",
+             "Western and central Africa",
+             "Western and central Europe and North America")
 
 #' Start up message
 #' @keywords internal
