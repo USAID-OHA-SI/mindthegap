@@ -184,6 +184,7 @@ apply_indicator_type <- function(df){
   df %>%
     dplyr::mutate(indicator_type =
                     dplyr::case_when(stringr::str_detect(indicator, "Incidence|(P|p)revalence") ~ "Rate",
+                                     stringr::str_detect(indicator, "IMR") ~ "Ratio",
                                      stringr::str_detect(indicator, "Percent") ~ "Percent",
                                      stringr::str_detect(indicator, "Number") ~ "Integer",
                                      TRUE ~ "Unknown"),
@@ -284,8 +285,9 @@ convert_numeric_string <- function(df){
 
   #round integers to whole numbers but not percents or rates
   df <- df %>%
-    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), ~ dplyr::case_when(indicator_type == "Integer" ~ round(.x),
-                                                                         TRUE ~ .x))
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), ~ dplyr::case_when(indicator_type == "Integer" ~ round(.x)
+                                                                            indicator_type == "Ratio"~ round(.x, 2),
+                                                                            TRUE ~ .x))
     )
 
   return(df)
@@ -345,6 +347,20 @@ flag_95s <- function(df, epi_95s_flag = TRUE){
                    "Percent on ART with Known Status",
                    "Percent VLS on ART")
 
+  #exit if all are missing
+  missing <- setdiff(key_ind_95s, unique(df$indicator))
+  if(length(missing) == length(key_ind_95s)){
+      cli::cli_warn(c(x = "95s target achievement flags cannot be created.",
+                      i = "The dataset is missing: {.val {missing}}"))
+      return(df)
+  }
+
+  #warn if some are missing
+  if(length(missing) > 0){
+    cli::cli_warn(c("{length(missing)} out of {length(key_ind_95s)} indicators are missing for calculating 95s achievement",
+                    i = "The dataset is missing: {.val {missing}}"))
+  }
+
   #subset dataset to what is needed
   df_achv <- df %>%
     dplyr::filter(indicator %in% key_ind_95s) %>%
@@ -367,10 +383,8 @@ flag_95s <- function(df, epi_95s_flag = TRUE){
   #full achievement?
   df_achv <- df_achv %>%
     dplyr::group_by(year, iso, age, sex) %>%
-    dplyr::mutate(#n_achv_plhiv = sum(achv_plhiv, na.rm = TRUE),
-      #n_achv_relative = sum(achv_relative, na.rm = TRUE),
-      achv_95_plhiv = sum(achv_plhiv, na.rm = TRUE) == 3,
-      achv_95_relative = sum(achv_relative, na.rm = TRUE) == 3) %>%
+    dplyr::mutate(achv_95_plhiv = sum(achv_plhiv, na.rm = TRUE) == 3,
+                  achv_95_relative = sum(achv_relative, na.rm = TRUE) == 3) %>%
     dplyr::ungroup()
 
   #clean up dataset
@@ -404,17 +418,29 @@ flag_epi <- function(df, epi_95s_flag = TRUE){
   if(epi_95s_flag == FALSE)
     return(df)
 
+  #indicators needed
+  key_ind_epi <- c("Number Total Deaths to HIV Population",
+                   "Number New HIV Infections",
+                   "Incidence mortality ratio (IMR)")
+
+  #exit if any are missing
+  missing <- setdiff(key_ind_epi, unique(df$indicator))
+  if(length(missing) > 0){
+    cli::cli_warn(c(x = "Epi Control flags cannot be created.",
+                    i = "The dataset is missing: {.val {missing}}"))
+    return(df)
+  }
+
   # subset dataset to indicator and columns needed
   df_epi <- df %>%
-    dplyr::filter(indicator %in% c("Number Total Deaths to HIV Population",
-                                   "Number New HIV Infections"),
+    dplyr::filter(indicator %in% key_ind_epi,
                   age == "All",
                   sex == "All") %>%
-    dplyr::select(iso, year, indicator, estimate)
+    dplyr::select(iso, year, indicator, age, sex, estimate)
 
   #clean up indicator name to make easier when reshaped to column
   df_epi <- df_epi %>%
-    dplyr::mutate(indicator = stringr::str_extract(indicator, "Infections|Deaths") %>% tolower)
+    dplyr::mutate(indicator = stringr::str_extract(indicator, "Infections|Deaths|IMR") %>% tolower)
 
   #spread to calculate epi control
   df_epi <- df_epi %>%
@@ -432,20 +458,20 @@ flag_epi <- function(df, epi_95s_flag = TRUE){
 
   #calculate epi control
   df_epi <- df_epi %>%
-    dplyr::mutate(infections_below_deaths = infections < deaths,
-                  epi_ratio = infections / deaths,
+    dplyr::mutate(infections_below_deaths = imr < 1, #infections < deaths,
+                  imr = round(imr, 2), #infections / deaths,
                   # direction_streak = sequence(rle(declining_deaths)$lengths),
-                  epi_control = (declining_deaths == TRUE & declining_infections == TRUE & infections_below_deaths == TRUE))
-  # epi_control = all(declining_deaths, declining_infections, infections_below_deaths))
+                  achv_epi_control = (declining_deaths == TRUE & declining_infections == TRUE & infections_below_deaths == TRUE))
+
   #subset
   df_epi <- df_epi %>%
-    dplyr::filter(year != min(year), !is.na(epi_control)) %>%
-    dplyr::select(year, iso, epi_ratio, epi_control)
+    dplyr::filter(year != min(year), !is.na(achv_epi_control)) %>%
+    dplyr::select(year, iso, age, sex, achv_epi_control)
 
-  #join onto main dataframe (will not join with Age/Sex pairs that don't exist for the 95s)
+  #join onto main dataframe (will not join with Age/Sex pairs that don't exist for the IMR)
   df_j <- dplyr::left_join(df,
                            df_epi,
-                           by = dplyr::join_by(year, iso))
+                           by = dplyr::join_by(year, iso, age, sex))
 
   return(df_j)
 

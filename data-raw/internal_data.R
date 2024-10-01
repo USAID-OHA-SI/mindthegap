@@ -14,7 +14,7 @@ usethis::use_data(pepfar, overwrite = TRUE)
 
 # INDICATOR MAPPING AND VALIDATION ----------------------------------------
 
-path <- "../../../Downloads/DataList_9_19_2024-3_30_17-PM.csv"
+path <- "../../../Downloads/DataList_10_1_2024-7_42_27-PM.csv"
 
 df_ind <- path %>%
   read_edms() %>%
@@ -42,7 +42,7 @@ indicator_map <-
               "Prev",                                                     "Adult prevalence",                            "Prevalence",
                 "AM",                                                          "AIDS deaths",            "Number AIDS Related Deaths",
                 "AM",                                                   "Annual AIDS deaths",            "Number AIDS Related Deaths",
-              "INC%",                                                            "Incidence",                 "Incidence (per 1,000)",
+            # "INC%",                                                            "Incidence",                 "Incidence (per 1,000)",
           "INCper1k",                                                   "Incidence per 1000",                 "Incidence (per 1,000)",
          "PMTCTneed",                                                "Mothers needing PMTCT",              "Number PMTCT Needing ART",
                 "NI",                                                   "New HIV infections",             "Number New HIV Infections",
@@ -58,7 +58,9 @@ indicator_map <-
              "kos-D",                                     "Number who know their HIV status",          "Number Known Status of PLHIV",
              "vls-D",                                    "Number with suppressed viral load",                   "Number VLS of PLHIV",
              "3rd73", "Among people living with HIV- the percent with suppressed viral load",                  "Percent VLS of PLHIV",
-             "3rd90",          "Among people on ART- the percent with suppressed viral load",                    "Percent VLS on ART"
+             "3rd90",          "Among people on ART- the percent with suppressed viral load",                    "Percent VLS on ART",
+               "IMR",                                      "Incidence mortality ratio (IMR)",       "Incidence mortality ratio (IMR)"
     )
+
 
 usethis::use_data(indicator_map, overwrite = TRUE)
