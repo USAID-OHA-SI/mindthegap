@@ -13,6 +13,7 @@ pull_testtreat(pepfar_only = TRUE)
 df
 }
 \description{
+Deprecated.
 Pull clean UNAIDS 2022 (1990-2022) HIV Test & Treat data. Wrapper around
 \code{pull_unaids}.
 }

@@ -16,7 +16,7 @@ eg "HIV Estimates", "HIV Test & Treat" (or both if missing)}
 df
 }
 \description{
-Pull clean UNAIDS estimates
+Deprecated. Pull clean UNAIDS estimates
 }
 \examples{
  \dontrun{

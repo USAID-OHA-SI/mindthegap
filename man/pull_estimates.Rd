@@ -13,6 +13,7 @@ pull_estimates(pepfar_only = TRUE)
 df
 }
 \description{
+Deprecated.
 Pull clean UNAIDS estimates data. Wrapper around
 \code{pull_unaids}.
 }
