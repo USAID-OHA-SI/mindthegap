@@ -285,7 +285,7 @@ convert_numeric_string <- function(df){
 
   #round integers to whole numbers but not percents or rates
   df <- df %>%
-    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), ~ dplyr::case_when(indicator_type == "Integer" ~ round(.x)
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), ~ dplyr::case_when(indicator_type == "Integer" ~ round(.x),
                                                                             indicator_type == "Ratio"~ round(.x, 2),
                                                                             TRUE ~ .x))
     )
