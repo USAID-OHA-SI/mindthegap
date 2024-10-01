@@ -1,7 +1,7 @@
 # mindthegap 2.0
 * Include Incidence-Mortality Ration (IMR) to expected output from EDMS and used the IMR to calculate epi control [2024-10-01]
 * Excluded  Incidence 15-49 (INC%) from expected output from EDMS due to the data from EDMS being off by a decimal place from what exists on AIDInfo [2024-10-01]
-* Remove long depricated function `load_data()` [2024-10-01]
+* Remove long depricated functions: `load_data()` and `unaids_hdrs` [2024-10-01]
 * Replace `tidyselect`, `glamr`, and `googlesheet4` references/Imports [2024-10-01]
 * Develop unit tests for `munge_edms` help ensures the code is performing as expected with annual updates and make updating/catching errors easier [2024-09-24]
 * Create `munge_edms` (and internal sub functions + data) for handing UNAIDS data directly out of the EDMS database [2024-09-23]
