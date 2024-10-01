@@ -85,7 +85,7 @@
       if (return_type == "HIV Test & Treat") {
         gdrive_df <-  suppressWarnings(
           gdrive_df %>%
-            dplyr::mutate(across(tidyselect::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
+            dplyr::mutate(across(dplyr::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
             dplyr::slice(-c(1,2))
         )
       }
@@ -129,10 +129,10 @@
       #Munge
       gdrive_df_clean <-
         gdrive_df %>%
-        #dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
-        #dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("m","00000", .x)))%>% #replace unit values - matches uses regular expression
-        #dplyr::mutate(dplyr::across(tidyselect::matches("\\_"), ~gsub("\\.","",.x))) %>%
-        #dplyr::mutate(dplyr::across(tidyselect::contains("_"),~ as.numeric(.x)))%>% #indicator columns into numeric
+        #dplyr::mutate(dplyr::across(dplyr::contains("_"), ~gsub(" |<|>", "", .))) %>% #replace special characters
+        #dplyr::mutate(dplyr::across(dplyr::matches("\\_"), ~gsub("m","00000", .x)))%>% #replace unit values - matches uses regular expression
+        #dplyr::mutate(dplyr::across(dplyr::matches("\\_"), ~gsub("\\.","",.x))) %>%
+        #dplyr::mutate(dplyr::across(dplyr::contains("_"),~ as.numeric(.x)))%>% #indicator columns into numeric
         dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
         tidyr::fill(region) %>% #get regions column
         tidyr::pivot_longer(-c(year, iso, country, region),

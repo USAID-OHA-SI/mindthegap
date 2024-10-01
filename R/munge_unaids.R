@@ -32,8 +32,8 @@ munge_unaids <- function(return_type, indicator_type) {
   #Munge
   gdrive_df_clean <-
     gdrive_df %>%
-    #dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
-    #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
+    #dplyr::mutate(dplyr::across(dplyr::contains("_"), ~gsub(" |<|>", "", .))) %>%
+    #dplyr::mutate(dplyr::across( dplyr::contains("_"), as.numeric)) %>%
     dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
     tidyr::fill(region) %>% #get regions column
     tidyr::pivot_longer(-c(year, iso, country, region),

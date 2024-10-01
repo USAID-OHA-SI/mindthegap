@@ -38,7 +38,6 @@ Imports:
     scales,
     ggplot2,
     stringr,
-    tidyselect,
     piggyback,
     lifecycle,
     ggtext,
