@@ -48,8 +48,14 @@ reference:
   - source_note
 - title: Developer Tools
   contents:
+  - munge_edms
   - munge_unaids
-
+- title: Developer Reference Data
+  contents:
+  - expected_ind
+  - indicator_map
+  - pepfar
+  - req_cols
 - title: Deprecated functions
   contents:
   - load_data
