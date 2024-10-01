@@ -25,7 +25,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Aaron Chafetz \email{achafetz@usaid.ogv}
+  \item Aaron Chafetz \email{achafetz@usaid.gov}
   \item Lemlem Baraki \email{lbaraki@usaid.gov}
   \item Tim Essam \email{tessam@usaid.gov}
 }
