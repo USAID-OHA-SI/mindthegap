@@ -25,7 +25,7 @@ validate_ind_disaggs <- function(df, epi_95s_flag = TRUE){
                       stats::setNames(included, rep("*", length(included)))
                       ))
 
-    invisible()
+    return(NULL)
   }
 
   #join list to see what is missing/additional
