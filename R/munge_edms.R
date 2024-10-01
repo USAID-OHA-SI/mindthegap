@@ -438,14 +438,11 @@ flag_epi <- function(df, epi_95s_flag = TRUE){
                   sex == "All") %>%
     dplyr::select(iso, year, indicator, age, sex, estimate)
 
-  #clean up indicator name to make easier when reshaped to column
-  df_epi <- df_epi %>%
-    dplyr::mutate(indicator = stringr::str_extract(indicator, "Infections|Deaths|IMR") %>% tolower)
-
   #spread to calculate epi control
   df_epi <- df_epi %>%
     tidyr::pivot_wider(names_from = indicator,
-                       values_from = estimate) %>%
+                       values_from = estimate,
+                       names_glue = "{stringr::str_extract_all(tolower(indicator), 'deaths|infections|imr')}") %>% #clean up indicator name to make easier when reshaped to column
     dplyr::arrange(iso, year)
 
   #by country, check if deaths and infections are declining YoY
