@@ -1,5 +1,7 @@
 #' Epidemic Control Plot
 #' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
+#'
+#' @param df UNAIDS data frame loaded from `load_unaids()`
 #' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
 #'
 #' @return Epidemic control plot showing trends in new infections and total deaths to HIV population
@@ -7,100 +9,109 @@
 #'
 #' @examples
 #'  \dontrun{
-#'    epi_plot()
-#'    epi_plot(sel_cntry = "Lesotho")
-#'    epi_plot(sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
-#'    epi_plot(sel_cntry = "USA") #breaks with non-PEPFAR countries
+#'    df_unaids <- load_unaids(pepfar_only = FALSE)
+#'    epi_plot(df_unaids)
+#'    epi_plot(df_unaids, sel_cntry = "Lesotho")
+#'    epi_plot(df_unaids, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+#'    epi_plot(df_unaids, sel_cntry = "USA") #breaks with non-PEPFAR countries
 #' }
 #'
 
-epi_plot <- function(sel_cntry = c("All PEPFAR")){
+epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 
-  df_epi <- mindthegap::pull_unaids(data_type = "HIV Estimates",pepfar_only = TRUE) %>% #pull from PEPFAR Only estimates
-    dplyr::filter(age == "All", sex == "All",
-                  indicator %in% c("Total deaths to HIV Population", "Number New HIV Infections")) %>% #grab indicators
-    dplyr::select(year, country,indicator, estimate) %>%
-    dplyr::arrange(country, indicator, year) #order rows by these variables
+  #subset to PEPFAR
+    # df <- dplyr::filter(df, pepfar == TRUE)
 
-  # Perform necessary munging
-  df_epi_ous <- df_epi %>%
-    #dplyr::mutate(indicator = stringr::word(indicator, -1) %>% tolower) %>% #filters indicator name to last word
-    tidyr::pivot_wider(names_from = indicator, #pivots data wide into deaths and infections column
-                       values_from = estimate,
-                       names_glue = "{indicator %>% stringr::str_extract_all('deaths|Infections') %>% tolower}") #new death indicator
+  #subset to epi indicators
+  df_epi <- df %>%
+    dplyr::filter(indicator %in% c("Number Total Deaths to HIV Population",
+                                   "Number New HIV Infections"),
+                  age == "All",
+                  sex == "All") %>%
+    dplyr::select(year, country, indicator, estimate) %>%
+    dplyr::arrange(country, indicator, year)
 
-  # Add in ALL PEPFAR data
-  df_epi_pepfar <- df_epi_ous %>%
-    dplyr::bind_rows(df_epi_ous %>%
-                       dplyr::mutate(country = "All PEPFAR") %>%
-                       dplyr::group_by(country, year) %>%
-                       dplyr::summarise(across(where(is.numeric),
-                                               \(x) sum(x,na.rm = TRUE)),
-                                        .groups = "drop")) #sums PEPFAR country estimates
+  #include pepfar roll up if user specifies
+  if("All PEPFAR" %in% sel_cntry)
+    df_epi <- df_epi %>%
+      dplyr::bind_rows(df_epi %>%
+                         dplyr::filter(indicator != "Incidence mortality ratio (IMR)") %>%
+                         dplyr::mutate(country = "All PEPFAR") %>%
+                         dplyr::group_by(country, year, indicator) %>%
+                         dplyr::summarise(estimate =  sum(estimate,na.rm = TRUE),
+                                          .groups = "drop")) #sums PEPFAR country estimates
 
-  # Create epi control flag
-  df_epi_pepfar <- df_epi_pepfar %>%
-    dplyr::mutate(declining_deaths = deaths - dplyr::lag(deaths, order_by = year) <= 0, by = c(country)) %>% #TRUE/FALSE declining
-    dplyr::mutate(infections_below_deaths = infections < deaths,
-                  ratio = infections / deaths,
-                  direction_streak = sequence(rle(declining_deaths)$lengths),
-                  epi_control = declining_deaths == TRUE & infections_below_deaths == TRUE) %>%
-    tidyr::pivot_longer(c(infections, deaths), names_to = "indicator") %>% #put back indicators in column
-    dplyr::arrange(country, indicator, year) %>%
-    dplyr::mutate(val_mod = ifelse(indicator == "deaths", -value, value), #create dual-axis
-                  fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim)) #add colors to indicate flip axis
+  #subset to only selected countries
+  df_epi <- dplyr::filter(df_epi, country %in% sel_cntry)
 
-  # OU list to check entries
-  ou_list <- pepfar %>% dplyr::pull(country_pepfar)
-
-  # Check if each value is valid
-  is_valid <- all(sel_cntry %in% ou_list)
-
-  # Output the result
-  stopifnot("Please enter PEPFAR supported countries only" = is_valid != FALSE)
-
-  df_viz <- df_epi_pepfar %>%
-    dplyr::filter(country %in% sel_cntry) %>% #change to listed countries
-    dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~
-                                               scales::number(value, 1, scale = 0.001, suffix = "k")),
-                  max_plot_pt = max(value),
-                  min_plot_pt = min(val_mod),
+  #create viz df, including point labels and colors
+  df_viz <- df_epi %>%
+    dplyr::group_by(country) %>%
+    dplyr::mutate(plot_max = max(estimate, na.rm = TRUE)) %>% #equal bounds above/below axis
+    dplyr::group_by(country, indicator) %>%
+    dplyr::mutate(peak_val = max(estimate, na.rm = TRUE)) %>% #position of the indicator label
+    dplyr::ungroup() %>%
+    dplyr::mutate(val_mod = estimate,
+                  dplyr::across(c(val_mod, peak_val, plot_max), \(x) ifelse(indicator == "Number Total Deaths to HIV Population", -x, x)),
+                  peak_val = dplyr::case_when(year == 2005 ~ peak_val),
+                  # fill_color = ifelse(indicator == "Number Total Deaths to HIV Population", glitr::old_rose, glitr::denim),
+                  fill_color = ifelse(indicator == "Number Total Deaths to HIV Population", glitr::orchid_bloom, glitr::electric_indigo),
+                  indicator = stringr::str_remove(indicator, "Number "), #creating labels
+                  ind_label = dplyr::case_when(year == 2005 ~ indicator),  #assigning label location to min/max
+                  val_lab = dplyr::case_when(year == max(year) ~
+                                               scales::number(estimate, 1, scale_cut = scales::cut_si("")) %>% stringr::str_remove(" ")),
                   lab_pt = dplyr::case_when(year == max(year) ~ val_mod),
-                  indicator = ifelse(indicator == "deaths", "Total Deaths to HIV Population", "New HIV Infections"), #creating labels
-                  new_hiv_label = dplyr::case_when(value == max_plot_pt ~ indicator),  #assigning label location to min/max
-                  tot_death_label = dplyr::case_when(val_mod == min_plot_pt ~ indicator)) %>%
-    dplyr::mutate(cntry_order = max(value, na.rm = T), .by = country) %>%
-    dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
+                  cntry_lab = country
+    )
 
-  suppressWarnings(df_viz %>%
-                     ggplot2::ggplot(ggplot2::aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
-                     ggplot2::geom_blank(ggplot2::aes(y = max_plot_pt)) + #sets max y-axis above
-                     ggplot2::geom_blank(ggplot2::aes(y = -max_plot_pt)) + #sets max y-axis below
-                     ggplot2::geom_area(alpha = 0.25) +
-                     ggplot2::geom_hline(yintercept = 0,color = glitr::grey80k) +
-                     ggplot2::geom_line() +
-                     ggplot2::geom_point(ggplot2::aes(y = lab_pt), na.rm = TRUE, shape = 21, color = "white", size = 3) +
-                     ggplot2::geom_text(ggplot2::aes(label = val_lab), na.rm = TRUE, #value label text
-                                        hjust = -0.3,
-                                        family = "Source Sans Pro Light") +
-                     ggplot2::facet_wrap(~country) + #small multiples of countries
-                     #scale_y_continuous(labels = ~(scales::label_number_si())(abs(.))) + #deprecated - use 'scale_cut'
-                     ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
-                                                 expand = c(0, 0)) +
-                     ggplot2::scale_x_continuous(breaks = seq(min(df_epi$year), max(df_epi$year),5)) + #automatic x-axis min/max
-                     #ggplot2::scale_x_continuous(breaks = seq(1990, 2025, 5)) + #manual x-axis breaks
-                     ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
-                     geom_text(aes(label = new_hiv_label, x = 2005, y = (max_plot_pt)), na.rm = TRUE,
-                               hjust = -0.3, family = "Source Sans Pro Light") +
-                     geom_text(aes(label = tot_death_label, x = 2005, y = (min_plot_pt)), na.rm = TRUE,
-                               hjust = -0.3, family = "Source Sans Pro Light") +
-                     #ggplot2::annotate(geom = "text", x = 2008, y = 2.8e6, label = c("New HIV Infections"), hjust = 0,
-                     #      family = "Source Sans Pro Light", color = glitr::denim) +  #add labels to plot
-                     #ggplot2::annotate(geom = "text", x = 2008, y = -1.5e6, label = c("Total Deaths to HIV Population"), hjust = 0,
-                     #               family = "Source Sans Pro Light", color = glitr::old_rose) +
-                     ggplot2::labs(x = NULL, y = NULL) + ggplot2::coord_cartesian(expand = T, clip = "off") +
-                     glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing with facet_space
-                     ggplot2::theme(axis.text.y = ggtext::element_markdown()) +
-                     ggplot2::labs(caption = source_note))
+  #include IMR with country name for countries that have it
+  if("Incidence mortality ratio (IMR)" %in% unique(df$indicator)){
+    df_imr <- df %>%
+      dplyr::filter(indicator == "Incidence mortality ratio (IMR)",
+                    age == "All",
+                    sex == "All",
+                    country %in% sel_cntry,
+                    year == max(year)) %>%
+      dplyr::select(year, country, imr = estimate) %>%
+      dplyr::mutate(cntry_lab_imr = stringr::str_glue("{country}\n({year} IMR = {round(imr, 1)})")) %>%
+      dplyr::select(country, cntry_lab_imr)
+
+    df_viz <- df_viz %>%
+      dplyr::left_join(df_imr, by = "country") %>%
+      dplyr::mutate(cntry_lab = ifelse(is.na(cntry_lab_imr), cntry_lab, cntry_lab_imr)) %>%
+      dplyr::select(-cntry_lab_imr)
+  }
+
+  #order countries desc (for if there is more than one)
+  df_viz <- df_viz %>%
+    dplyr::mutate(cntry_order = max(estimate, na.rm = T), .by = country) %>%
+    dplyr::mutate(cntry_lab = forcats::fct_reorder(cntry_lab, cntry_order, .desc = T))
+
+  #plot
+  suppressWarnings(
+    df_viz %>%
+      ggplot2::ggplot(ggplot2::aes(year, val_mod,
+                                   group = indicator,
+                                   fill = fill_color,
+                                   color = fill_color)) +
+      ggplot2::geom_blank(ggplot2::aes(y = plot_max)) + #sets max y-axis above/below
+      ggplot2::geom_area(alpha = 0.25) +
+      ggplot2::geom_hline(yintercept = 0, color = glitr::grey80k) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point(ggplot2::aes(y = lab_pt), na.rm = TRUE,
+                          shape = 21, color = "white", size = 3) +
+      ggplot2::geom_text(ggplot2::aes(label = val_lab), na.rm = TRUE, #value label text
+                         hjust = -0.3, family = "Source Sans Pro Light") +
+      geom_text(aes(label = ind_label, y = peak_val), na.rm = TRUE,
+                hjust = -0.3, family = "Source Sans Pro Light") +
+      ggplot2::facet_wrap(~cntry_lab) + #small multiples of countries
+      ggplot2::labs(x = NULL, y = NULL, caption = source_note) +
+      ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
+                                  expand = c(0, 0)) +
+      ggplot2::scale_x_continuous(breaks = seq(min(df_viz$year), max(df_viz$year),5)) + #automatic x-axis min/max
+      ggplot2::scale_fill_identity(aesthetics = c("fill", "color")) +
+      ggplot2::coord_cartesian(expand = TRUE, clip = "off") + #keeps value labels from being cut off at right
+      glitr::si_style_ygrid(facet_space = 0.75) #adjusted y-axis grid spacing with facet_space
+  )
 
 }
