@@ -1,4 +1,5 @@
 # mindthegap 2.0
+* Improve performance of `plot_epi` and force user to provide the dataframe [2024-10-02]
 * Include Incidence-Mortality Ration (IMR) to expected output from EDMS and used the IMR to calculate epi control [2024-10-01]
 * Excluded  Incidence 15-49 (INC%) from expected output from EDMS due to the data from EDMS being off by a decimal place from what exists on AIDInfo [2024-10-01]
 * Remove long depricated functions: `load_data()` and `unaids_hdrs` [2024-10-01]
