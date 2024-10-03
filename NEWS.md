@@ -1,4 +1,5 @@
 # mindthegap 2.0
+* Add `publish_release` to standardize update to GH for developers [2024-10-03]
 * Deprecate `munge_unaids` as it will not be maintained (now using `munge_edms`) and may yeild incorrect results [2024-10-03]
 * Improve performance of `plot_epi` and force user to provide the dataframe [2024-10-02]
 * Include Incidence-Mortality Ration (IMR) to expected output from EDMS and used the IMR to calculate epi control [2024-10-01]
