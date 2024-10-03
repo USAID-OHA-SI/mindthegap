@@ -1,4 +1,6 @@
 # mindthegap 2.0
+* Allow `base_plot` to provide achievement across different age/sex groups  [2024-10-03]
+* Updated `base_plot` to handle new data structure and reduce redundancy  [2024-10-03]
 * Add `publish_release` to standardize update to GH for developers [2024-10-03]
 * Deprecate `munge_unaids` as it will not be maintained (now using `munge_edms`) and may yeild incorrect results [2024-10-03]
 * Improve performance of `plot_epi` and force user to provide the dataframe [2024-10-02]
