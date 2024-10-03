@@ -9,7 +9,7 @@ test_that("validate_columns passes when all required columns are present", {
   )
 
   # Expect no error when all required columns are present
-  expect_no_error(validate_columns(df))
+  expect_no_error(validate_columns(df, req_cols))
 })
 
 test_that("validate_columns throws error when required columns are missing", {
@@ -21,7 +21,7 @@ test_that("validate_columns throws error when required columns are missing", {
   )
 
   # Expect an error specifying the missing column(s)
-  expect_error(validate_columns(df), "missing 1 key column")
+  expect_error(validate_columns(df, req_cols), "missing 1 key column")
 })
 
 test_that("validate_columns throws error when multiple required columns are missing", {
@@ -33,7 +33,7 @@ test_that("validate_columns throws error when multiple required columns are miss
   )
 
   # Expect an error specifying multiple missing columns
-  expect_error(validate_columns(df), "missing 2 key columns")
+  expect_error(validate_columns(df, req_cols), "missing 2 key columns")
 })
 
 test_that("validate_columns throws error for an empty dataframe", {
@@ -54,5 +54,5 @@ test_that("validate_columns passes with additional columns present", {
   )
 
   # Expect no error since all required columns are present
-  expect_no_error(validate_columns(df))
+  expect_no_error(validate_columns(df, req_cols))
 })

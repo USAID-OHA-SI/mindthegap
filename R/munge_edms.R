@@ -76,7 +76,7 @@ read_edms <- function(path){
 subset_cols <- function(df){
 
   #validate structure/columns
-  validate_columns(df)
+  validate_columns(df, req_cols)
 
   #subset dataset to just key columns
   df <- dplyr::select(df, dplyr::all_of(req_cols))

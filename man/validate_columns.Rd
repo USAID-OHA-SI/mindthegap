@@ -4,10 +4,13 @@
 \alias{validate_columns}
 \title{Validate Columns}
 \usage{
-validate_columns(df)
+validate_columns(df, expected_cols)
 }
 \arguments{
 \item{df}{imported dataframe}
+
+\item{expected_cols}{a string vector of the expected columns that should be
+in the dataframe}
 }
 \description{
 Ensure that all the columns that are needed exists in the import
