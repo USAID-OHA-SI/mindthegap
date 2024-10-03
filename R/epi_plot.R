@@ -24,7 +24,7 @@ epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 
   df_epi <- add_pepfar_rollup(df_epi, sel_cntry)
 
-  df_viz <- prepare_viz_data(df_epi, df_edms = df, sel_cntry)
+  df_viz <- prepare_viz_data(df_epi, sel_cntry)
 
   viz_epi(df_viz)
 
@@ -44,10 +44,11 @@ subset_epi_data <- function(df) {
 
   df_epi <- df %>%
     dplyr::filter(indicator %in% c("Number Total Deaths to HIV Population",
+                                   "Incidence mortality ratio (IMR)",
                                    "Number New HIV Infections"),
                   age == "All",
                   sex == "All") %>%
-    dplyr::select(year, country, indicator, estimate) %>%
+    dplyr::select(year, country, indicator, age, sex, estimate) %>%
     dplyr::arrange(country, indicator, year)
 
   return(df_epi)
@@ -62,7 +63,7 @@ subset_epi_data <- function(df) {
 validate_epi_disaggs <- function(df){
 
   df_exp <- tibble::tibble(indicator = c("Number Total Deaths to HIV Population",
-                                  "Number New HIV Infections"),
+                                         "Number New HIV Infections"),
                  age = "All",
                  sex = "All") %>%
     dplyr::mutate(ind_combo = stringr::str_glue("{indicator}: {sex}|{age} [AIDS (AIM)]"))
@@ -74,8 +75,15 @@ validate_epi_disaggs <- function(df){
                      by = dplyr::join_by(indicator, age, sex)) %>%
     dplyr::pull()
 
-  if(length(missing) > 0){
+  if(length(missing) > 1){
     cli::cli_abort(c(
+      "The following {length(missing)} expected item{?s} {?is/are} missing from the EDMS output:",
+      stats::setNames(missing, rep("*", length(missing)))
+    ))
+  }
+
+  if(length(missing) > 0){
+    cli::cli_warn(c(
       "The following {length(missing)} expected item{?s} {?is/are} missing from the EDMS output:",
       stats::setNames(missing, rep("*", length(missing)))
     ))
@@ -115,15 +123,17 @@ add_pepfar_rollup <- function(df, sel_cntry) {
   if (!"All PEPFAR" %in% sel_cntry)
     return(df)
 
-  #add aggregation of PEPFAR countries
-  df <- df %>%
-    dplyr::bind_rows(df %>%
-                       dplyr::filter(indicator != "Incidence mortality ratio (IMR)",
-                                     pepar == TRUE) %>%
-                       dplyr::mutate(country = "All PEPFAR") %>%
-                       dplyr::group_by(country, year, indicator) %>%
-                       dplyr::summarise(estimate = sum(estimate, na.rm = TRUE),
-                                        .groups = "drop"))
+  #PEPFAR countries aggregation
+  df_pepfar <- df %>%
+    dplyr::filter(indicator != "Incidence mortality ratio (IMR)", #can't be summed
+                  pepar == TRUE) %>%
+    dplyr::mutate(country = "All PEPFAR") %>%
+    dplyr::group_by(country, year, indicator) %>%
+    dplyr::summarise(estimate = sum(estimate, na.rm = TRUE),
+                     .groups = "drop")
+
+  #add aggregation to dataset
+  df <- dplyr::bind_rows(df, df_pepfar)
 
   return(df)
 }
@@ -132,23 +142,28 @@ add_pepfar_rollup <- function(df, sel_cntry) {
 #' Prepare viz data
 #'
 #' @inheritParams epi_plot
-#' @param df_edms original df provided
 #' @keywords internal
 #'
-prepare_viz_data <- function(df, df_edms, sel_cntry) {
+prepare_viz_data <- function(df, sel_cntry) {
 
   #subset country/countries
   df_cntry <- dplyr::filter(df, country %in% sel_cntry)
 
+  if(nrow(df_cntry) == 0)
+    cli::cli_abort("No data available in dataset for {.value {sel_cntry}}.")
+
+  validate_epi_disaggs(df_cntry)
+
   #create viz df with equal plot bounds and position of indicator labels on plot
   df_viz <- df_cntry %>%
+    dplyr::filter(indicator != "Incidence mortality ratio (IMR)") %>%
     dplyr::group_by(country) %>%
     dplyr::mutate(plot_max = max(estimate, na.rm = TRUE)) %>% #equal bounds above/below axis
     dplyr::group_by(country, indicator) %>%
     dplyr::mutate(peak_val = max(estimate, na.rm = TRUE)) %>% #position of the indicator label
     dplyr::ungroup()
 
-  #format country label
+  #format country label with epi direction
   df_fmt_cntry <- df_viz %>%
     dplyr::select(year, country, indicator, estimate) %>%
     dplyr::group_by(country, indicator) %>%
@@ -161,8 +176,16 @@ prepare_viz_data <- function(df, df_edms, sel_cntry) {
     dplyr::select(-estimate) %>%
     tidyr::pivot_wider(names_from = indicator,
                        values_from = direction,
-                       names_glue = "{stringr::str_extract_all(tolower(indicator), 'deaths|infections')}") %>% #clean up indicator name to make easier when reshaped to column
-    dplyr::mutate(cntry_lab = stringr::str_glue("**{country}**<br>{year}: *Total Deaths {deaths} | New Infections {infections}*")) %>%
+                       names_glue = "{stringr::str_extract_all(tolower(indicator), 'deaths|infections')}")
+
+  #add in missing colums if needed
+  missing_epi <- setdiff(c("deaths", "infections"), names(df_fmt_cntry))
+
+  #create new columns if bounds don't exist
+  df_fmt_cntry[missing_epi] <-  NA_character_
+
+  df_fmt_cntry <- df_fmt_cntry %>% #clean up indicator name to make easier when reshaped to column
+    dplyr::mutate(cntry_lab = stringr::str_glue("**{country}**<br>*{year}: Total Deaths {deaths} | New Infections {infections}*")) %>%
     dplyr::select(country, cntry_lab)
 
   #add to viz df, including point labels and colors
@@ -179,8 +202,8 @@ prepare_viz_data <- function(df, df_edms, sel_cntry) {
                   lab_pt = dplyr::case_when(year == max(year) ~ val_mod))
 
   #include IMR with country name for countries that have it
-  if("Incidence mortality ratio (IMR)" %in% unique(df_edms$indicator)){
-    df_imr <- df_edms %>%
+  if("Incidence mortality ratio (IMR)" %in% unique(df_cntry$indicator)){
+    df_imr <- df_cntry %>%
       dplyr::filter(indicator == "Incidence mortality ratio (IMR)",
                     age == "All",
                     sex == "All",
@@ -212,7 +235,8 @@ viz_epi <- function(df){
 
   suppressWarnings(
     df %>%
-      ggplot2::ggplot(ggplot2::aes(year, val_mod,
+      ggplot2::ggplot(ggplot2::aes(x = year,
+                                   y = val_mod,
                                    group = indicator,
                                    fill = fill_color,
                                    color = fill_color)) +

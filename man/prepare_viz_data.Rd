@@ -4,12 +4,10 @@
 \alias{prepare_viz_data}
 \title{Prepare viz data}
 \usage{
-prepare_viz_data(df, df_edms, sel_cntry)
+prepare_viz_data(df, sel_cntry)
 }
 \arguments{
 \item{df}{UNAIDS data frame loaded from \code{load_unaids()}}
-
-\item{df_edms}{original df provided}
 
 \item{sel_cntry}{PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)}
 }

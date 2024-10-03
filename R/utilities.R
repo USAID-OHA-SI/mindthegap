@@ -11,7 +11,7 @@ unaids_year <- 2023
 #' @export
 #'
 
-source_note <- glue::glue("Source: UNAIDS AIDSinfo Global Data {unaids_year + 1} Release") %>% as.character()
+source_note <- glue::glue("Source: UNAIDS EDMS Global Data {unaids_year + 1} Release") %>% as.character()
 
 
 #' Check if package exists
