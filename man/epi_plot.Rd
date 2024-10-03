@@ -23,7 +23,6 @@ This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
    epi_plot(df_unaids)
    epi_plot(df_unaids, sel_cntry = "Lesotho")
    epi_plot(df_unaids, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
-   epi_plot(df_unaids, sel_cntry = "USA") #breaks with non-PEPFAR countries
 }
 
 }

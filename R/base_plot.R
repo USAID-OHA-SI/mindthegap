@@ -1,94 +1,82 @@
 #' @title 95's Table Plot
 #' @description This function creates a summary table showing OU progress toward the 95-95-95's
-#' @param sel_base Returns one of 2 table types eg "PLHIV", "Relative"
-#' @param sel_cntry  PEPFAR country to visualize (list OU name)
 #'
-#' @return df_tt
+#' @param df dataframe from `load_unaids`
+#' @param cntry  PEPFAR country to visualize (list OU name)
+#' @param base Returns one of 2 table types eg "PLHIV" (default), "Relative"
+#' @param grp age/sex group, c("All", "Female 15+", "Male 15+", "Peds <15")
+#' @param yr year in question, defaults to max year
+#'
+#' @return gt table
 #' @export
+#' @seealso [load_unaids()]
 #'
 #' @examples
 #'  \dontrun{
-#'    base_plot(sel_base = "PLHIV", sel_cntry = "Lesotho")
-#'    base_plot(sel_base = "Relative", sel_cntry = "Lesotho")
+#'   df_unaids <- load_unaids()
+#'    base_plot(df_unaids, "Kenya", denom = "PLHIV")
+#'    base_plot(df_unaids, "Kenya", denom = "Relative")
 #' }
 #'
 
-base_plot <- function(sel_base, sel_cntry){
+base_plot <- function(df, cntry,
+                      denom = c("PLHIV", "Relative"),
+                      grp = c("All", "Female 15+", "Male 15+", "Peds <15"),
+                      yr = NULL){
 
-  #Pull percent indicators from Test & Treat data
-  df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE) %>%
-    dplyr::filter(indic_type == "Percent")
-
-  goal <- 95
-
-  #PLHIV base
-  suppressWarnings({
-  if (sel_base == "PLHIV") {
-    df_tt <- df_tt %>%
-      dplyr::filter(year == max(year),
-             country == sel_cntry,
-             indicator %in% c("Percent Known Status of PLHIV",
-                              "Percent on ART of PLHIV",
-                              "Percent VLS of PLHIV"),
-             age == "All",
-             sex == "All") %>%
-      dplyr::mutate(set = dplyr::recode(indicator, "Percent Known Status of PLHIV" = 1,
-                          "Percent on ART of PLHIV" = 2,
-                          "Percent VLS of PLHIV" = 3),
-             goal_rate = round((goal/100)^set*100),
-             achieved = estimate >= goal_rate) %>%
-      dplyr::select(year, country, indicator, estimate, goal_rate, achieved) %>%
-      gt::gt() %>%
-      gt::cols_hide(c(year, country)) %>%
-      gt::fmt_percent(columns = c(estimate, goal_rate),
-                  decimals = 0, scale_values = FALSE) %>%
-      gt::cols_label(goal_rate = "goal") %>%
-      gtExtras::gt_theme_nytimes() %>%
-      gt::tab_source_note(source_note = gt::md(source_note)) %>%
-      gt::tab_options(source_notes.font.size = gt::px(8),
-                  data_row.padding = gt::px(1),
-                  table.font.size = gt::px(12)) %>%
-      #gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
-      gtExtras::gt_color_rows(achieved,
-                              palette = c(glitr::burnt_sienna, glitr::scooter), #change palette to raw values
-                              #palette = "ggthemes::Traffic",
-                              domain = c(0,1),
-                              pal_type = "discrete") %>%
-      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S {unaids_year} TREATMENT TARGET GOALS: PLHIV BASE"))
-
-    #Relative base
-  } else if (sel_base == "Relative") {
-    df_tt <- df_tt %>%
-      dplyr::filter(year == max(year),
-             country == sel_cntry,
-             indicator %in% c("Percent Known Status of PLHIV",
-                              "Percent on ART with Known Status",
-                              "Percent VLS on ART"),
-             age == "All",
-             sex == "All") %>%
-      dplyr::mutate(goal_rate = 95, # Use 95 as the goal metric for each indicator
-             achieved = estimate >= goal_rate) %>%
-      dplyr::select(year, country, indicator, estimate, goal_rate, achieved) %>%
-      gt::gt() %>%
-      gt::cols_hide(c(year, country)) %>%
-      gt::fmt_percent(columns = c(estimate, goal_rate),
-                  decimals = 0, scale_values = FALSE) %>%
-      gt::cols_label(goal_rate = "goal") %>%
-      gtExtras::gt_theme_nytimes() %>%
-      gt::tab_source_note(source_note = gt::md(source_note)) %>%
-      gt::tab_options(source_notes.font.size = gt::px(8),
-                  data_row.padding = gt::px(1),
-                  table.font.size = gt::px(12)) %>%
-      #gtExtras::gt_color_rows(achieved, palette = RColorBrewer::brewer.pal("Set1", n=3), domain = c(0,1)) %>%
-      gtExtras::gt_color_rows(achieved,
-                              palette = c(glitr::burnt_sienna, glitr::scooter), #change palette to raw values
-                              #palette = "ggthemes::Traffic",
-                              domain = c(0,1),
-                              pal_type = "discrete") %>%
-      gt::tab_header(title = glue::glue("{toupper(sel_cntry)}'S {unaids_year} TREATMENT TARGET GOALS: RELATIVE BASE"))
+  if(length(denom) > 1){
+    denom <- denom[1]
+    # cli::cli_warn("No selection was made for the {.arg denom}; choosing {.val {denom}}.")
   }
-  })
-  return(df_tt)
+
+
+  key_ind_95s <- c("Percent Known Status of PLHIV",
+                   "Percent on ART of PLHIV",
+                   "Percent VLS of PLHIV",
+                   "Percent on ART with Known Status",
+                   "Percent VLS on ART")
+
+  if(is.null(yr))
+    yr <- unaids_year
+
+  df_tt <- df %>%
+    dplyr::filter(year == {yr},
+                  country == cntry,
+                  indicator %in% key_ind_95s)
+
+
+  df_tt <- df_tt %>%
+    dplyr::select(year, country, indicator, age, sex, estimate) %>%
+    tidyr::unite(group, c(sex, age), sep = " ") %>%
+    dplyr::mutate(group = stringr::str_remove(group, "All "),
+                  group = ifelse(group == "0-14", "Peds <15", group),
+                  indicator = factor(indicator, key_ind_95s)) %>%
+    dplyr::filter(group %in% grp) %>%
+    dplyr::arrange(group, indicator) %>%
+    calc_95_goals()
+
+  df_viz <- df_tt %>%
+    dplyr::filter(base %in% c("Both", {denom})) %>%
+    dplyr::mutate(achieved = estimate >= goal_rate) %>%
+    dplyr::select(-c(set, base, achv_plhiv, achv_relative))
+
+  df_viz %>%
+    gt::gt(groupname_col = "group") %>%
+    gt::cols_hide(c(year, country)) %>%
+    gt::fmt_percent(columns = c(estimate, goal_rate),
+                    decimals = 0, scale_values = FALSE) %>%
+    gt::cols_label(goal_rate = "goal") %>%
+    gtExtras::gt_theme_nytimes() %>%
+    gt::tab_source_note(source_note = gt::md(source_note)) %>%
+    gt::tab_options(source_notes.font.size = gt::px(8),
+                    data_row.padding = gt::px(1),
+                    table.font.size = gt::px(12)) %>%
+    gtExtras::gt_color_rows(achieved,
+                            palette = c(glitr::si_palettes$tango_t[3], glitr::viking),
+                            domain = c(0,1),
+                            pal_type = "discrete") %>%
+    gt::tab_header(title = glue::glue("{toupper(cntry)}'S TREATMENT TARGET GOALS"),
+                   subtitle = glue::glue("{yr} | {denom} Base"))
 
 }
 

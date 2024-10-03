@@ -4,23 +4,39 @@
 \alias{base_plot}
 \title{95's Table Plot}
 \usage{
-base_plot(sel_base, sel_cntry)
+base_plot(
+  df,
+  cntry,
+  denom = c("PLHIV", "Relative"),
+  grp = c("All", "Female 15+", "Male 15+", "Peds <15"),
+  yr = NULL
+)
 }
 \arguments{
-\item{sel_base}{Returns one of 2 table types eg "PLHIV", "Relative"}
+\item{df}{dataframe from \code{load_unaids}}
 
-\item{sel_cntry}{PEPFAR country to visualize (list OU name)}
+\item{cntry}{PEPFAR country to visualize (list OU name)}
+
+\item{grp}{age/sex group, c("All", "Female 15+", "Male 15+", "Peds <15")}
+
+\item{yr}{year in question, defaults to max year}
+
+\item{base}{Returns one of 2 table types eg "PLHIV" (default), "Relative"}
 }
 \value{
-df_tt
+gt table
 }
 \description{
 This function creates a summary table showing OU progress toward the 95-95-95's
 }
 \examples{
  \dontrun{
-   base_plot(sel_base = "PLHIV", sel_cntry = "Lesotho")
-   base_plot(sel_base = "Relative", sel_cntry = "Lesotho")
+  df_unaids <- load_unaids()
+   base_plot(df_unaids, "Kenya", denom = "PLHIV")
+   base_plot(df_unaids, "Kenya", denom = "Relative")
 }
 
+}
+\seealso{
+\code{\link[=load_unaids]{load_unaids()}}
 }

@@ -334,9 +334,6 @@ flag_95s <- function(df, epi_95s_flag = TRUE){
   if(epi_95s_flag == FALSE)
     return(df)
 
-  #UNAIDS GOAL
-  goal <- 95
-
   #columns needed
   key_cols_95s <- c("year", "iso", "indicator", "age", "sex")
 
@@ -368,17 +365,7 @@ flag_95s <- function(df, epi_95s_flag = TRUE){
     dplyr::filter(!is.na(estimate))
 
   #create achievement goals for each indicator in both bases
-  df_achv <- df_achv %>%
-    dplyr::mutate(set = dplyr::case_match(indicator,
-                                          "Percent on ART of PLHIV" ~ 2,
-                                          "Percent VLS of PLHIV" ~ 3,
-                                          .default = 1),
-                  base = dplyr::case_when(indicator == "Percent Known Status of PLHIV" ~ "Both",
-                                          set == 1 ~ "Relative",
-                                          TRUE ~ "PLHIV"),
-                  goal_rate = (goal/100)^set*100,
-                  achv_plhiv = dplyr::case_when(base != "Relative" ~ estimate >= goal_rate),
-                  achv_relative = dplyr::case_when(base != "PLHIV" ~ estimate >= goal_rate))
+  df_achv <- calc_95_goals(df_achv)
 
   #full achievement?
   df_achv <- df_achv %>%
@@ -402,6 +389,30 @@ flag_95s <- function(df, epi_95s_flag = TRUE){
 
   return(df_j)
 
+}
+
+#' Calculate the 95 targets for relative/plhiv base
+#'
+#' @param df dataframe
+#' @keywords internal
+calc_95_goals <- function(df){
+
+  #UNAIDS GOAL
+  goal <- 95
+
+  df <- df %>%
+    dplyr::mutate(set = dplyr::case_match(indicator,
+                                          "Percent on ART of PLHIV" ~ 2,
+                                          "Percent VLS of PLHIV" ~ 3,
+                                          .default = 1),
+                  base = dplyr::case_when(indicator == "Percent Known Status of PLHIV" ~ "Both",
+                                          set == 1 ~ "Relative",
+                                          TRUE ~ "PLHIV"),
+                  goal_rate = (goal/100)^set*100,
+                  achv_plhiv = dplyr::case_when(base != "Relative" ~ estimate >= goal_rate),
+                  achv_relative = dplyr::case_when(base != "PLHIV" ~ estimate >= goal_rate))
+
+  return(df)
 }
 
 #' Flag Epi contol status
