@@ -1,9 +1,3 @@
-#' Year UNAIDS data are released through
-#'
-#' @keywords internal
-#'
-unaids_year <- 2023
-
 #' UNAIDS Source Info
 #'
 #' Returns UNAIDS Source info for consistent sourcing notes

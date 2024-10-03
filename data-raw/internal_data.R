@@ -1,3 +1,9 @@
+## UNAIDS Year
+#year published values are available through (needs to be updated annually)
+unaids_year <- 2023
+
+usethis::use_data(unaids_year, internal = TRUE)
+
 ## REQUIRED COLUMNS
 req_cols <- c("region", "e_count", "iso3", "e_cat", "e_ind", "acronym","age", "sex",  "other", "time", "formatted")
 
