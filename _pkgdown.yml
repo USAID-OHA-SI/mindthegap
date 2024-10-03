@@ -47,6 +47,7 @@ reference:
 - title: Developer Tools
   contents:
   - munge_edms
+  - publish_release
 - title: Developer Reference Data
   contents:
   - expected_ind

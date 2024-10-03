@@ -1,4 +1,4 @@
-#' @title Cleaning UNAIDS Data
+#' Cleaning UNAIDS Data
 #'
 #' Deprecated. This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 #'
