@@ -1,9 +1,7 @@
 #' @title Cleaning UNAIDS Data
-#' @description
-#' (Updated July 2023)
 #'
+#' Deprecated. This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 #'
-#' @description This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 #' @param return_type Returns either 'HIV Estimates' or 'HIV Test & Treat' Data
 #' @param indicator_type Returns either 'Integer' or 'Percent' indicator values
 
@@ -17,6 +15,8 @@
 #'
 munge_unaids <- function(return_type, indicator_type) {
 
+  lifecycle::deprecate_warn("2.0.0", "munge_unaids()", "munge_edms()",
+                             details = "Data should be pulled from the UNAIDS EDMS Database rather than the Excel file posted to AIDSInfo. This function has stopped being maintained and may not provide valid results.")
 
   if (!requireNamespace('googlesheets4', quietly = TRUE))
     cli::cli_abort("{.pkg googlesheets4} needed for this function to work. Please install it.")

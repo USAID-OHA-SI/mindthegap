@@ -47,7 +47,6 @@ reference:
 - title: Developer Tools
   contents:
   - munge_edms
-  - munge_unaids
 - title: Developer Reference Data
   contents:
   - expected_ind
@@ -56,6 +55,7 @@ reference:
   - req_cols
 - title: Deprecated functions
   contents:
+  - munge_unaids
   - pull_unaids
   - pull_estimates
   - pull_testtreat

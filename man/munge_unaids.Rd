@@ -2,7 +2,9 @@
 % Please edit documentation in R/munge_unaids.R
 \name{munge_unaids}
 \alias{munge_unaids}
-\title{Cleaning UNAIDS Data}
+\title{Cleaning UNAIDS Data
+
+Deprecated. This function fetches and cleans UNAIDS Estimates/Test and Treat Data}
 \usage{
 munge_unaids(return_type, indicator_type)
 }
@@ -15,9 +17,9 @@ munge_unaids(return_type, indicator_type)
 df
 }
 \description{
-(Updated July 2023)
+Cleaning UNAIDS Data
 
-This function fetches and cleans UNAIDS Estimates/Test and Treat Data
+Deprecated. This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 }
 \examples{
  \dontrun{
