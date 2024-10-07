@@ -24,8 +24,12 @@ base_plot <- function(df, cntry,
                       grp = c("All", "Female 15+", "Male 15+", "Peds <15"),
                       yr = NULL){
 
-  if(length(cntry) == 0 ){
+  if(length(cntry) == 0){
     cli::cli_abort("No country provided. Please specify the country using the {.arg cntry} param.")
+  }
+
+  if(length(cntry) > 1){
+    cli::cli_abort("Multiple countries provided. Please specify only one country using the {.arg cntry} param.")
   }
 
   if(length(denom) > 1){
