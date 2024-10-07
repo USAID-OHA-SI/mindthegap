@@ -10,7 +10,7 @@ handle_historic(df)
 \item{df}{dataframe}
 }
 \description{
-The structure adjusted in v2.0 \link{2024-10-01}. This function provides the
+The structure adjusted in v2.0 (after 2024-10-01). This function provides the
 handling of column names that have changed
 }
 \keyword{internal}

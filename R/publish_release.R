@@ -10,7 +10,7 @@
 #' @param df dataframe created by `munge_unaids`
 #' @export
 #'
-#' @seealso [munge_unaids(), load_unaids()]
+#' @seealso [munge_unaids()] and [load_unaids()]
 #'
 #' @examples
 #'  \dontrun{
@@ -55,7 +55,7 @@ publish_release <- function(df){
   piggyback::pb_upload(local_outputs, tag = new_tag)
 
   #upload multiple files to latest release for ease of access
-  pb_delete(
+  piggyback::pb_delete(
     file = NULL,
     repo = "USAID-OHA-SI/mindthegap",
     tag = "latest",

@@ -33,6 +33,7 @@ Imports:
     dplyr,
     tidyr,
     glue,
+    googledrive,
     readr,
     forcats,
     scales,
@@ -45,7 +46,6 @@ Imports:
     gtExtras,
     cli,
     tools,
-    googledrive,
     stats
 Suggests:
     googlesheets4,

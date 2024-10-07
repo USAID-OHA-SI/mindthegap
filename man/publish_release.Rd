@@ -25,5 +25,5 @@ as well as PEPFAR only countries in csv and rds formats.
 }
 }
 \seealso{
-\code{\link[=munge_unaids(), load_unaids]{munge_unaids(), load_unaids()}}
+\code{\link[=munge_unaids]{munge_unaids()}} and \code{\link[=load_unaids]{load_unaids()}}
 }

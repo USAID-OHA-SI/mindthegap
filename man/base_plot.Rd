@@ -17,11 +17,11 @@ base_plot(
 
 \item{cntry}{PEPFAR country to visualize (list OU name)}
 
+\item{denom}{which denominator/base to use, "PLHIV" (default) or "Relative"}
+
 \item{grp}{age/sex group, c("All", "Female 15+", "Male 15+", "Peds <15")}
 
 \item{yr}{year in question, defaults to max year}
-
-\item{base}{Returns one of 2 table types eg "PLHIV" (default), "Relative"}
 }
 \value{
 gt table
