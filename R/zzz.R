@@ -33,5 +33,7 @@ utils::globalVariables(c("where", "operatingunit",
                          "indicator_edms", "indicator_map", "indicator_type",
                          "indicator_validation", "iso3", "lower_bound",
                          "other", "req_cols", "status", "time", "expected_ind",
-                         "in_data", "expected"
+                         "in_data", "expected", "achv_epi_control", "base",
+                         "bounds", "cntry_lab", "direction", "epi_ratio_2023",
+                         "group", "imr", "ind_label", "peak_val", "plot_max"
 ))
