@@ -47,7 +47,7 @@ subset_epi_data <- function(df) {
                                    "Number New HIV Infections"),
                   age == "All",
                   sex == "All") %>%
-    dplyr::select(year, country, indicator, age, sex, estimate) %>%
+    dplyr::select(year, country, pepfar, indicator, age, sex, estimate) %>%
     dplyr::arrange(country, indicator, year)
 
   return(df_epi)
@@ -127,7 +127,7 @@ add_pepfar_rollup <- function(df, sel_cntry) {
     dplyr::filter(indicator != "Incidence mortality ratio (IMR)", #can't be summed
                   pepfar == TRUE) %>%
     dplyr::mutate(country = "All PEPFAR") %>%
-    dplyr::group_by(country, year, indicator) %>%
+    dplyr::group_by(year, country, pepfar, indicator, age, sex,) %>%
     dplyr::summarise(estimate = sum(estimate, na.rm = TRUE),
                      .groups = "drop")
 
