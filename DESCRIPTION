@@ -45,9 +45,9 @@ Imports:
     gtExtras,
     cli,
     tools,
+    googledrive,
     stats
 Suggests:
-    googledrive,
     googlesheets4,
     gridExtra,
     devtools,
