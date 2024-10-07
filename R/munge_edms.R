@@ -183,8 +183,8 @@ map_indicator <- function(df){
 apply_indicator_type <- function(df){
   df %>%
     dplyr::mutate(indicator_type =
-                    dplyr::case_when(stringr::str_detect(indicator, "Incidence|(P|p)revalence") ~ "Rate",
-                                     stringr::str_detect(indicator, "IMR") ~ "Ratio",
+                    dplyr::case_when(stringr::str_detect(indicator, "IMR") ~ "Ratio",
+                                     stringr::str_detect(indicator, "Incidence|(P|p)revalence") ~ "Rate",
                                      stringr::str_detect(indicator, "Percent") ~ "Percent",
                                      stringr::str_detect(indicator, "Number") ~ "Integer",
                                      TRUE ~ "Unknown"),

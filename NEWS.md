@@ -1,4 +1,5 @@
 # mindthegap 2.0
+* Update vignettes with the changed to the indicators and structure [2024-10-07]
 * Allow `base_plot` to provide achievement across different age/sex groups  [2024-10-03]
 * Updated `base_plot` to handle new data structure and reduce redundancy  [2024-10-03]
 * Add `publish_release` to standardize update to GH for developers [2024-10-03]

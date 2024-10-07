@@ -17,219 +17,76 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
-```{r, include=FALSE}
-install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
-```
-
 ## Introduction
 
-This vignette serves as a data dictionary for the UNAIDS 2022 Estimates Data. It will cover the data structure and variables, as well as provide an overview of the indicators across the `"HIV Estimates"` tab and the `"HIV Test & Treat"` tab. Finally, it will touch briefly on common use cases and which data tab to access for those analytics.
+This vignette serves as a data dictionary for the UNAIDS Estimates Data pulled from the [EDMS](https://edms.unaids.org/). It will cover the data structure and variables, as well as provide an overview of the indicators included. Finally, it will touch briefly on common use cases and which data tab to access for those analytics.
 
 ```{r setup, message = FALSE}
 library(mindthegap)
-library(knitr)
 library(dplyr)
-library(tidyr)
-library(tibble)
-library(knitr)
-library(kableExtra)
-library(glamr)
 ```
 
 ## UNAIDS Clean Data Structure
 
-Let's first take a look at the data structure, using the `HIV Estimates` tab as an example.
+Let's first take a look at the data structure.
 
 ```{r, message = FALSE}
-df_pct <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
-knitr::kable(head(df_pct, n = 6L), format = "html")
+df_unaids <- load_unaids(pepfar_only = TRUE)
+glimpse(df_unaids)
 
 ```
 
-Within each of the UNAIDS datasets, there are disaggregates by `age`, `sex`, and `indic_type`. Let's take a look at the disaggregates in the `"HIV Estimates"` tab.
+The data are a panel dataset of countries from 1990 to `r mindthegap:::unaids_year` reporting on `r unique(df_unaids$indicator) %>% length()` different indicators. Each of those indicators may be disaggregated by some combination of `age` and `sex` as seen in the table below. Its also important to mention that the values are provided as estimates, which have lower and upper bounds. 
+
+Estimates may be been reported with character values, e.g. "<100" or ">98". In order to analyst and plots these data, we have removed the character values and noted them iin teh `estimate_flag` column. 
+
+We have also provided a few additional columns to the dataset. 
+   - `pepfar`: a logical value that notes whether the country is a PEPFAR country or not
+   - `indicator_type`: a character value that tells you whether the estimate is an integer, percentage, rate, or ratio
+   - `achv_95_plhiv` and `achv_95_relativ`: a logical value that identifies whether the country in a given year has achieved all three 95 goal (with PLHIV or relative base, see \linkVignette{`relative-plhiv-base`}) with the point estimate. This achievement is broken down by each age and sex group (All, 0-15, 15+, Female/15+ Male/15+)
+   - `achv_epi_control`: a logical vlaue that indentifies whether a country in a given year has achieved all three requirements for epidemic control (IMR less than 1 and both new infections and deaths declining, see \linkVignette{`epi_control_plots`}).
 
 ```{r, message = FALSE, echo = FALSE}
-count_tbl <- df_pct %>% 
-  count(indicator, indic_type, age, sex) %>% 
-  distinct()
+tbl <- indicator_map %>% 
+  dplyr::full_join(expected_ind %>% 
+                     dplyr::mutate(indicator_edms = ifelse(indicator_edms == "Incidence mortality ratio",
+                                                           "Incidence mortality ratio (IMR)", indicator_edms)), 
+                   by = "indicator_edms") %>% 
+  mindthegap:::standarize_agesex() %>% 
+  mindthegap:::apply_indicator_type() %>% 
+  dplyr::arrange(indicator_type) %>% 
+  dplyr::distinct(indicator_type, indicator, age, sex)
 
-knitr::kable(count_tbl,
-             format = "html",
-             caption = "Indic_type/Age/Sex Count Table from the `HIV Estimates` tab") %>% 
-    kable_styling(bootstrap_options = c("hover"))
+
+tbl <- tbl %>% 
+  dplyr::mutate(disaggs = dplyr::case_when(age == "All" & sex == "All" ~ "All",
+                                     age == "All" ~ sex,
+                                     sex == "All" ~ age,
+                                     TRUE ~ stringr::str_glue("{sex}/{age}")),
+                disaggs = factor(disaggs, c("All", "0-14", "15+", "15-49", "Female/15+", "Male/15+", 
+                                "Female/15-49", "Female/15-24", "Male/15-24",
+                                "Female", "Male"))) %>% 
+  dplyr::arrange(indicator_type, indicator, disaggs) %>% 
+  dplyr::group_by(indicator_type, indicator) %>% 
+  dplyr::summarise(disaggs = paste(disaggs, collapse = ", "),
+                   .groups = "drop")
+
+type_cnt <- dplyr::count(tbl, indicator_type)
+
+
+tbl %>% 
+  dplyr::select(-indicator_type) %>% 
+  dplyr::mutate(indicator = stringr::str_glue("`{indicator}`")) %>% 
+  knitr::kable(format = "html",
+               col.names = c("", "")) %>% 
+  kableExtra::group_rows(index = c("Integer Indicators" = type_cnt$n[type_cnt$indicator_type=="Integer"], 
+                                   "Percent Indicators" = type_cnt$n[type_cnt$indicator_type=="Percent"],
+                                   "Rate Indicators" = type_cnt$n[type_cnt$indicator_type=="Rate"],
+                                   "Ratio Indicators" = type_cnt$n[type_cnt$indicator_type=="Ratio"]
+                                   )) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("hover"))
 ```
 
-As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at Percent Incidence (a percent indicator), there are age disaggregates for ages 15-49 and all ages, but no disaggregates for sex. If you were looking at Percent Prevalence, there are sex disaggregates for young adults (15-24), but no sex disaggregates for the age group 15-49.
+As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at "Number AIDS Related Deaths", there is total and age disaggregates for 0-14 and 15+, but its not broken down by sex.  
 
-As such, it is important to filter for the age/sex/indicator type disaggregates that are you interested in before diving further into your analytics.
-
-## HIV Estimates Indicators and Use Cases
-
-The `HIV Estimates` data covers epidemiological indicators, such as HIV prevalence/incidence, new infections, AIDS-related death, etc. There are 2 percent indicators (Percent Prevalence and Percent Incidence) and 7 integer indicators (Number PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number PMTCT Needing ART, Number New HIV Infections, Deaths averted by ART, and Infections averted by PMTCT).
-
-To pull the HIV Estimates indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)`.
-
-```{r, echo = FALSE, message = FALSE}
-hiv_est_info <- tribble(
-    ~ indicator, ~ description,
-  "`Percent Prevalence`",   "HIV Prevalence",
-  "`Percent Incidence`", "HIV Incidence (per 1,000 uninfected population)",
-  "`Number PLHIV`", "Estimated number people living with HIV",
-  "`Number AIDS Related Deaths`", "AIDS Related Deaths",
-  "`Total deaths to HIV Population`", "Estimated number of deaths from all causes among people living with HIV", 
-  "`Number PMTCT Needing ART`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
-  "`Number New HIV Infections`", "New HIV Infections",
-  "`Deaths averted by ART`", "Deaths averted by antiretroviral treatment",
-  "`Infections averted by PMTCT`", "Infections averted by preventing mother-to-child transmission",
-)
-
-kable(
-  hiv_est_info,
-  format = "html",
-  col.names = c("", "")
-) %>%
-  group_rows(index = c("Percent Indicators" = 2, "Integer Indicators" = 7)) %>%
-  kable_styling(bootstrap_options = c("hover"))
-```
-
-### Use Case #1: Epidemic Control Curves
-
-PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." The integer indicators in the HIV Estimates data can be used to analyze and plot these trends.
-
-To assess progress towards this definition of epidemic control, we will use the `"HIV Estimates"` data:
-
-```{r, message = FALSE}
-df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
-```
-
-```{r, echo = FALSE, message = FALSE}
-hiv_est_info <- tribble(
-    ~ indicator, ~ description,
-  "`PLHIV`", "Estimated people living with HIV",
-  "`Number AIDS Related Deaths`", "AIDS Related Deaths",
-  "`Total deaths to HIV Population`", "Estimated number of deaths from all causes among people living with HIV",
-  "`Number PMTCT Needing ART`", "Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
-  "`Number New HIV Infections`", "New HIV Infections",
-  "`Deaths averted by ART`", "Deaths averted by antiretroviral treatment",
-  "`Infections averted by PMTCT`", "Infections averted by preventing mother-to-child transmission",
-)
-
-kable(
-  hiv_est_info,
-  format = "html",
-  col.names = c("", "")
-) %>%
-  group_rows(index = c("Integer Indicators" = 7)) %>%
-  kable_styling(bootstrap_options = c("hover"))
-```
-
--   To create the epidemic control curves, you will need 2 indicators from the `HIV Estimates` dataset:
-    -   **`Number New HIV Infections`**
-    -   **`Total deaths to HIV Population`**
-
-For more information on how to create these plots, see the article `Epidemic Control Plots.`
-
-### Use Case #2: Incidence/Prevalence Curves
-
-To plot HIV Incidence and Prevalence curves with confidence intervals, we will use the percent indicators in the `"HIV Estimates"` data:
-
-```{r, message = FALSE}
-df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE) %>% 
-  filter(indic_type == "Percent")
-```
-
-```{r, echo = FALSE, message = FALSE}
-hiv_est_info <- tribble(
-    ~ indicator, ~ description,
-  "`Percent Prevalence`",   "HIV Prevalence",
-  "`Percent Incidence`", "HIV Incidence (per 1,000 uninfected population)",
-)
-
-kable(
-  hiv_est_info,
-  format = "html",
-  col.names = c("", "")
-) %>%
-  group_rows(index = c("Percent Indicators" = 2)) %>%
-  kable_styling(bootstrap_options = c("hover"))
-```
-
--   To create the incidence/prevalence curves, you will need 2 percent indicators from the `HIV Estimates` tab:
-    -   **`Percent Prevalence`**
-    -   **`Percent Incidence`**
-
-## HIV Test & Treat Indicators & Use Cases
-
-The `HIV Test & Treat` Data covers indicators in the clinical cascade, that can be used to track progress to the UNAIDS 95-95-95 targets. There are 6 percent indicators and 5 integer indicators.
-
-To pull the HIV Test & Treat indicators for PEPFAR countries, use `pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE)`.
-
-```{r,echo = FALSE}
-hiv_est_info <- tribble(
-    ~ indicator, ~ description,
-  "`Percent Known Status of PLHIV`",   "**Among PLHIV**, Percent who known their HIV status",
-  "`Percent on ART of PLHIV`", "**Among PLHIV**, Percent on ART",
-  "`Percent on ART with Known Status`", "**Among people who know their HIV status**, Percent of ART",
-  "`Percent VLS of PLHIV`", "**Among PLHIV**, Percent with Suppressed Viral Load",
-  "`Percent VLS on ART`", "**Among people on ART**, Percent with Suppressed Viral Load",
-  "`Percent PMTCT on ART`", "Estimated Percentage of Women Living with HIV on ART for preventing mother-to-child transmission",
-  
-  "`Number Known Status of PLHIV`", "Number who know their HIV status",
-  "`Number on ART of PLHIV`", "Number on ART",
-  "`Number VLS of PLHIV`", "Number with Suppressed Viral Load",
-  "`Number PMTCT Needing ART`", "Number of Pregnant women needing antiretrovirals for preventing mother-to-child transmission",
-  "`Number PMTCT on ART`", "Estimated Number of Women Living with HIV on ART for preventing mother-to-child transmission",
-)
-
-kable(
-  hiv_est_info,
-  format = "html",
-  col.names = c("", "")
-) %>%
-  group_rows(index = c("Percent Indicators" = 6, "Integer Indicators" = 5)) %>%
-  kable_styling(bootstrap_options = c("hover"))
-```
-
-### Use Case #3: Progress to 95-95-95 Targets
-
-The percent indicators in the `HIV Test & Treat` data can be used to assess progress to the UNAIDS 95-95-95 targets that are set to be achieved by 2030, where 95% of PLHIV know their status, 95% of those who know their status are accessing treatment, and 95% of those who are accessing treatment are virally suppressed. These can also be used to assess progress to the 90-90-90 goals, which were set to be achieved in 2020.
-
-To assess progress to 95-95-95 targets, we will use the percent indicators in the `"HIV Test & Treat"` data:
-
-```{r, message = FALSE}
-df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE) %>%
-  filter(indic_type == "Percent")
-```
-
-```{r, echo = FALSE}
-hiv_est_info <- tribble(
-    ~ indicator, ~ description,
-"`Percent Known Status of PLHIV`",   "**Among PLHIV**, Percent who known their HIV status",
-  "`Percent on ART of PLHIV`", "**Among PLHIV**, Percent on ART",
-  "`Percent on ART with Known Status`", "**Among people who know their HIV status**, Percent of ART",
-  "`Percent VLS of PLHIV`", "**Among PLHIV**, Percent with Suppressed Viral Load",
-  "`Percent VLS on ART`", "**Among people on ART**, Percent with Suppressed Viral Load",
-  "`Percent PMTCT on ART`", "Estimated Percentage of Women Living with HIV on ART for preventing mother-to-child transmission"
-)
-
-kable(
-  hiv_est_info,
-  format = "html",
-  col.names = c("", "")
-) %>%
-  group_rows(index = c("Percent Indicators" = 6)) %>%
-  kable_styling(bootstrap_options = c("hover"))
-```
-
-As you may notice, there are multiple test & treat percent indicators for the clinical cascade. This is because there are 2 types of metrics that can be used to calculate progress to 95-95-95 targets - the **relative base/conditional denominator** or the **PLHIV base/denominator**.
-
--   If you are using the **relative base** to track 95-95-95 progress, use the following percent indicators from the `"HIV Test & Treat"` data tab.
-    -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
-    -   **`Percent on ART with Known Status`**: Among those who know their status, percent on ART
-    -   **`Percent VLS on ART`**: Among those who are on ART, percent virally suppressed
--   If you are using the **PLHIV base**, use the following percent indicators from the `"HIV Test & Treat"` data tab.
-    -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
-    -   **`Percent on ART of PLHIV`**: Among PLHVIV, percent on ART
-    -   **`Percent VLS of PLHIV`**: Among PLHIV, percent virally suppressed
-
-For more information about the distinction between relative/PLHIV base and how to assess 95-95-95 progress, see the article `95-95-95 Target Progress: Relative Base vs. PLHIV Base`.
+As such, it is important to filter for the age/sex/indicator type disaggregates that are you interested in before diving further into your analytics to avoid any potential double counting.

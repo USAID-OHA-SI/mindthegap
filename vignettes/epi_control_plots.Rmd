@@ -19,9 +19,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## Introduction
 
-PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." The integer indicators in the HIV Estimates data can be used to analyze and plot these trends.
-
-To assess progress towards this definition of epidemic control, we can use the `"HIV Estimates"` tab of the UNAIDS data. This vignette will walk through how to use the `epi_plot` function in the MindTheGap package to generate plots.
+PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." UNAIDS estimates this point using the Incidence-Mortality Ration (IMR). Epidemic control indicators are all available from the data available in `load_unaids`, which also includes a column called `achv_epi_control` which is a logical variable about wether the country had met these three epidemic control criteria in a given year (for all age and sex). This information can be plotted with a built in function, `epi_plot`, which we will demonstrate below.
 
 ### Load dependencies
 
@@ -31,238 +29,31 @@ install.packages(c('glamr','glitr'), repos = c('https://usaid-oha-si.r-universe.
 
 ```{r setup, include = TRUE, message = FALSE}
 library(mindthegap)
-library(knitr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(ggplot2)
-library(kableExtra)
-library(glamr) #install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
-library(glitr)  #install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
-library(systemfonts)
-library(ggtext)
-
 ```
 
 ### Epidemic Control Plotting Function
 
-First, let's take a look at the `epi_plot` function in action: to use this function, first load the `mindthegap` package and specify your PEPFAR country of interest in the `sel_cntry` parameter of the `epi_plot` function.
+First, let's take a look at the `epi_plot` function in action: to use this function, first load the estimates data from the `mindthegap` package and specify your PEPFAR country of interest in the `sel_cntry` parameter of the `epi_plot` function.
+
+```{r, load_data}
+df_unaids <- load_unaids()
+```
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-epi_plot(sel_cntry = "Kenya")
+epi_plot(df_unaids, sel_cntry = "Kenya")
 ```
+The subtitle includes the epi control information for a given year - the direction of total death and new infections, both of which should be declining, and the IMR, which should be below 1.
 
 In case you want to compare epidemic control across countries, the `epi_plot` function allows for you to list several countries of interest in the `sel_cntry` parameter as well.
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-epi_plot(sel_cntry = c("Kenya","Tanzania"))
+epi_plot(df_unaids, c("Kenya","Tanzania"))
 ```
 
-In addition to looking at epidemic control at the country level, we can also see trends across all of PEPFAR by just using the `epi_plot()` function, as "ALL PEPFAR" is the default country in the `sel_cntry` parameter.
+In addition to looking at epidemic control at the country level, we can also see trends across all of PEPFAR by just using the `epi_plot()` function, as "ALL PEPFAR" is the default country in the `sel_cntry` parameter. Be aware that we are summing up point estimates across all PEPFAR countries and these data points have not be estimated and released by UNAIDS.
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-epi_plot()
+epi_plot(df_unaids)
 ```
 
-This function makes it really easy to generate plots on your own for countries of interest. Let's peek under the hood and see how the function works to munge the data and create the plots.
-
-### Reshaping epidemic control data
-
-First, let's load all the other libraries that we need to generate these plots and load the `HIV Estimates` data.
-
-```{r, message= FALSE}
-
-df_epi <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
- 
-```
-
--   To create the epidemic control curves, you will need 2 indicators from the `HIV Estimates` tab:
-    -   **`Number New HIV Infections`**
-    -   **`Total deaths to HIV Population`**
-
-Let's first filter the 2 datasets down to the indicators that we need, and filter for all sexes and all ages.
-
-```{r}
-#Filter down to the estimate and all ages, and the indicators you need
-
-#Pull indicators 
-df_epi_pepfar <- df_epi %>%
-  dplyr::filter(age == "All", sex == "All",
-                indicator %in% c("Total deaths to HIV Population", "Number New HIV Infections")) %>% #grab indicators 
-  dplyr::select(year, country,indicator, estimate) %>% 
-  dplyr::arrange(country, indicator, year) #order rows by these variables 
-
-df_epi_pepfar
-
-```
-
--   Let's now merge the datasets and perform some munging to easily identify some metrics that we care about for the PEPFAR definition of epidemic control.
-    -   **Declining deaths**: use `dplyr::lag()` function to create a `value = TRUE` if deaths are declining
-    -   **Infections below deaths**: `TRUE` wherever infections \< deaths
-    -   **Ratio of infections / deaths**
-    -   **Epi_control**: `TRUE` if declining deaths and infections below deaths are both true
-
-```{r}
-#Create the merged data frame  
-
-#Perform necessary munging
-df_epi_pepfar <- df_epi_pepfar %>% 
-  tidyr::pivot_wider(names_from = "indicator", 
-                     values_from = "estimate", #pivots data wide into infections column
-                     names_glue = "{indicator %>% stringr::str_extract_all('deaths|Infections') %>% tolower}") 
-
-#Add in ALL PEPFAR data
-df_epi_pepfar <-
-  df_epi_pepfar %>%
-  dplyr::bind_rows(df_epi_pepfar %>%
-                     dplyr::mutate(country = "All PEPFAR") %>%
-                     dplyr::group_by(country, year) %>%
-                     dplyr::summarise(across(where(is.numeric), \(x) sum(x,na.rm = TRUE)), .groups = "drop")) #sums PEPFAR country estimates 
-
-#Create epi control flag
-df_epi_pepfar <-
-  df_epi_pepfar %>%
-  dplyr::mutate(declining_deaths = deaths - dplyr::lag(deaths, order_by = year) <= 0, by = c(country)) %>% #TRUE/FALSE declining 
-  dplyr::mutate(infections_below_deaths = infections < deaths,
-                ratio = infections / deaths,
-                direction_streak = sequence(rle(declining_deaths)$lengths),
-                epi_control = declining_deaths == TRUE & infections_below_deaths == TRUE) #epi control definition 
-
-
-df_epi_pepfar
-```
-
-Now that we have a workable data frame, we can start to add color and style elements. Using `ifelse()` statements, we can create the `fill_color` variable to indicate the colors of each indicator (drawing color inspiration from OHA's [Data Visualization Style Guide]((https://usaid-oha-si.github.io/styleguide/))). We can also create the `val_mod` variable to add negative values for total deaths in order to create the dual-axis.
-
-```{r}
-#Add colors to indicators and flip axis
-df_epi_pepfar <- df_epi_pepfar %>% 
-  tidyr::pivot_longer(c(infections, deaths), names_to = "indicator") %>% #put back indicators in column
-  dplyr::arrange(country, indicator, year) %>%
-  dplyr::mutate(val_mod = ifelse(indicator == "deaths", -value, value), #create dual-axis
-                fill_color = ifelse(indicator == "deaths", glitr::old_rose, glitr::denim)) #add colors to indicate flip axis
-
-df_epi_pepfar
-```
-
-Let's filter our country down to Kenya now for a country-level epidemic control curve.
-
--   We are also going to specify a couple more style elements to call on when we create our plot:
-    -   `val_lab`: adding a value label for the most recent year of data. We can use the `scales::number()` function to standardize the number format.
-    -   `max_plot_pt` & `min_plot_pt`: define a max and min for the dual-axis
-    -   `lab_pt`: add a point at the most recent year's value
-    -   `new_hiv_label` & `tot_death_label`: create labels for the indicators and place them at the max/min y-axis point
-
-```{r}
-#COUNTRY
-df_viz_cntry <- df_epi_pepfar %>%
-  dplyr::filter(country %in% "Kenya") %>%
-  dplyr::mutate(val_lab = dplyr::case_when(year == max(year) ~ 
-                                             scales::number(value, 1, scale = 1e-3, suffix = "k")), #standardize number format
-                max_plot_pt = max(value),
-                min_plot_pt = min(val_mod),
-                lab_pt = dplyr::case_when(year == max(year) ~ val_mod),
-                indicator = ifelse(indicator == "deaths", "Total Deaths to HIV Population", "New HIV Infections"), #creating labels
-                new_hiv_label = dplyr::case_when(value == max_plot_pt ~ indicator),  #assigning label location to min/max
-                tot_death_label = dplyr::case_when(val_mod == min_plot_pt ~ indicator)) %>%
-  dplyr::mutate(cntry_order = max(value, na.rm = T), .by = country) %>%
-  dplyr::mutate(country = forcats::fct_reorder(country, cntry_order, .desc = T))
-    
-```
-
-### Plotting the epidemic control curves
-
--   Our data frame is ready to go! Let's get started with the viz. We'll start by getting our framework down:
-    -   `ggplot()`: to define our aesthetics (x = `year`, y = `val_mod`, group by the indicator, and add fill and color as `fill_color`)
-    -   `geom_blank()`: defines a max point on the y-axis
-    -   `geom_area()`: creates the area graph
-    -   `geom_line()`: creates the line border on the area graph
-    -   `geom_hline()`: adds a horizontal line at the x-axis
-
-```{r}
-df_viz_cntry %>%
-  ggplot(aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
-  geom_blank(aes(y = max_plot_pt)) + #sets max y-axis above
-  geom_blank(aes(y = -max_plot_pt)) + #sets max y-axis below 
-  geom_area(alpha = .25) +
-  geom_hline(yintercept = 0, color = glitr::grey80k) +
-  geom_line() 
-
-```
-
--   This is a good start. Let's continue to add style elements, adjust the scales, and add annotations
-    -   `geom_point()`: adds a point at `lab_pt` that we specified earlier
-    -   `geom_text()`: adds the annotation `val_lab` that we specified earlier
-    -   `scale_y_continuous()`: cleans up the y-axis with `scales::label_number()`and `expand`
-    -   `scale_x_continuous()`: takes the max and min year and breaks the x-axis year markings into 5 year increments.
-
-```{r}
-df_viz_cntry %>%
-  ggplot(aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
-  geom_blank(aes(y = max_plot_pt)) + #sets max y-axis above
-  geom_blank(aes(y = -max_plot_pt)) + #sets max y-axis below 
-  geom_area(alpha = .25) +
-  geom_hline(yintercept = 0, color = glitr::grey80k) +
-  geom_line()+
-  geom_point(aes(y = lab_pt), na.rm = TRUE, shape = 21, color = "white", size = 3) +
-  geom_text(aes(label = val_lab), na.rm = TRUE,
-            hjust = -0.3,
-            family = "Source Sans Pro Light") + #value label text
-  scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
-                     expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(min(df_epi_pepfar$year), max(df_epi_pepfar$year),5))#automatic x-axis min/max
-
-```
-
-We're almost there! Let's tackle the issue of color - even though we specified the color of the indicators in our aesthetics earlier, it still doesn't seem to be registering our `fill_color.` To solve this issue, we have to use the function `scale_fill_identity()` to tell ggplot to use our pre-specified fill_color column as the color identity.
-
-```{r}
-df_viz_cntry %>%
-  ggplot(aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
-  geom_area(alpha = .25) +
-  geom_hline(yintercept = 0, color = glitr::grey80k) +
-  geom_line() +
-  geom_point(aes(y = lab_pt), na.rm = TRUE,
-             shape = 21, color = "white", size = 3) +
-  geom_text(aes(label = val_lab), na.rm = TRUE,
-            hjust = -0.3,
-            family = "Source Sans Pro Light") +
-  scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
-                     expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(min(df_epi_pepfar$year), max(df_epi_pepfar$year),5))+    
-  scale_fill_identity(aesthetics = c("fill", "color"))
-
-```
-
--   Much better - we're almost there! Let's finish off our plot with some themes and styles.
-    -   `geom_text`: adds the annotation for the `new_hiv_label` and `tot_death_label` we created earlier
-    -   `labs()`: By specifying x and y as `NULL`, we are removing the labels on the axis. Here is where you can add additional annotations such as titles, subtitles, captions, etc.
-    -   `coord_cartesian()`: changing cartesian plot and clipping preferences
-    -   `glitr::si_style_ygrid()`: uses standard SI style format from the `glitr` package and `facet_space` adjusts the spacing of the y-axis grid
-    -   `theme()`: allows you to customize components of the plot with `axis.text.y` focusing on the y-axis text
-
-```{r}
-df_viz_cntry %>%
-  ggplot(aes(year, val_mod, group = indicator, fill = fill_color, color = fill_color)) +
-  geom_area(alpha = .25) +
-  geom_hline(yintercept = 0, color = glitr::grey80k) +
-  geom_line() +
-  geom_point(aes(y = lab_pt), na.rm = TRUE,
-             shape = 21, color = "white", size = 3) +
-  geom_text(aes(label = val_lab), na.rm = TRUE,
-            hjust = -0.3,
-            family = "Source Sans Pro Light") +
-  scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
-                     expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(min(df_epi_pepfar$year), max(df_epi_pepfar$year),5))+ 
-  scale_fill_identity(aesthetics = c("fill", "color")) +
-  ggplot2::facet_wrap(~country) + #small multiples of countries
-  geom_text(aes(label = new_hiv_label, x = 2005, y = (max_plot_pt)), na.rm = TRUE,
-            hjust = -0.3, family = "Source Sans Pro Light") +
-  geom_text(aes(label = tot_death_label, x = 2005, y = (min_plot_pt)), na.rm = TRUE,
-            hjust = -0.3, family = "Source Sans Pro Light") +
-  labs(x = NULL, y = NULL) + coord_cartesian(expand = T, clip = "off") +
-  glitr::si_style_ygrid(facet_space = 0.75) + #adjusted y-axis grid spacing 
-  theme(axis.text.y = ggtext::element_markdown()) +
-  labs(caption = source_note)
-```
+This function makes it easy to generate plots on your own for countries of interest. Let's peek under the hood and see how the function works to munge the data and create the plots.
