@@ -3,7 +3,7 @@
 #'
 #' @param df dataframe from `load_unaids`
 #' @param cntry  PEPFAR country to visualize (list OU name)
-#' @param base Returns one of 2 table types eg "PLHIV" (default), "Relative"
+#' @param denom which denominator/base to use, "PLHIV" (default) or "Relative"
 #' @param grp age/sex group, c("All", "Female 15+", "Male 15+", "Peds <15")
 #' @param yr year in question, defaults to max year
 #'
