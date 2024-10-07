@@ -24,11 +24,17 @@ base_plot <- function(df, cntry,
                       grp = c("All", "Female 15+", "Male 15+", "Peds <15"),
                       yr = NULL){
 
+  if(length(cntry) == 0 ){
+    cli::cli_abort("No country provided. Please specify the country using the {.arg cntry} param.")
+  }
+
   if(length(denom) > 1){
     denom <- denom[1]
     # cli::cli_warn("No selection was made for the {.arg denom}; choosing {.val {denom}}.")
   }
 
+  if(is.null(yr))
+    yr <- unaids_year
 
   key_ind_95s <- c("Percent Known Status of PLHIV",
                    "Percent on ART of PLHIV",
@@ -36,21 +42,22 @@ base_plot <- function(df, cntry,
                    "Percent on ART with Known Status",
                    "Percent VLS on ART")
 
-  if(is.null(yr))
-    yr <- unaids_year
-
   df_tt <- df %>%
     dplyr::filter(year == {yr},
-                  country == cntry,
+                  country == {cntry},
                   indicator %in% key_ind_95s)
 
+  if(nrow(df_tt) == 0)
+    cli::cli_abort("No data available in dataset for {.code cntry = {cntry}}.")
 
   df_tt <- df_tt %>%
-    dplyr::select(year, country, indicator, age, sex, estimate) %>%
+    dplyr::select(year, country, indicator, age, sex, estimate, lower_bound, upper_bound) %>%
     tidyr::unite(group, c(sex, age), sep = " ") %>%
     dplyr::mutate(group = stringr::str_remove(group, "All "),
                   group = ifelse(group == "0-14", "Peds <15", group),
-                  indicator = factor(indicator, key_ind_95s)) %>%
+                  indicator = factor(indicator, key_ind_95s),
+                  bounds = glue::glue("[{lower_bound}%-{upper_bound}%]")) %>%
+    dplyr::relocate(bounds, .after = estimate) %>%
     dplyr::filter(group %in% grp) %>%
     dplyr::arrange(group, indicator) %>%
     calc_95_goals()
@@ -58,7 +65,7 @@ base_plot <- function(df, cntry,
   df_viz <- df_tt %>%
     dplyr::filter(base %in% c("Both", {denom})) %>%
     dplyr::mutate(achieved = estimate >= goal_rate) %>%
-    dplyr::select(-c(set, base, achv_plhiv, achv_relative))
+    dplyr::select(-c(set, base, achv_plhiv, achv_relative, lower_bound, upper_bound))
 
   df_viz %>%
     gt::gt(groupname_col = "group") %>%
@@ -66,6 +73,7 @@ base_plot <- function(df, cntry,
     gt::fmt_percent(columns = c(estimate, goal_rate),
                     decimals = 0, scale_values = FALSE) %>%
     gt::cols_label(goal_rate = "goal") %>%
+    gt::cols_align("left", indicator) %>%
     gtExtras::gt_theme_nytimes() %>%
     gt::tab_source_note(source_note = gt::md(source_note)) %>%
     gt::tab_options(source_notes.font.size = gt::px(8),
