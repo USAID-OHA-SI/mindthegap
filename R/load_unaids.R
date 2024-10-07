@@ -21,9 +21,9 @@ load_unaids <- function(pepfar_only = TRUE){
   temp_folder <- tempdir()
 
   #file name to match release (PEPFAR only or all)
-  filename <- glue::glue("UNAIDS_{unaids_year+1}_Clean_Estimates_PEPFAR-only.csv.gz")
+  filename <- glue::glue("UNAIDS_{unaids_year+1}_Clean_Estimates_PEPFAR-only.rds")
   if (pepfar_only == FALSE)
-    filename <- glue::glue("UNAIDS_{unaids_year+1}_Clean_Estimates.csv.gz")
+    filename <- glue::glue("UNAIDS_{unaids_year+1}_Clean_Estimates.rds")
 
   #download a specific file
   piggyback::pb_download(file = filename,
@@ -33,19 +33,7 @@ load_unaids <- function(pepfar_only = TRUE){
                          show_progress = FALSE)
 
   #read in data
-  df <- readr::read_csv(file = file.path(temp_folder, filename),
-                        col_types = list(
-                          year = "d",
-                          estimate = "d",
-                          lower_bound = "d",
-                          upper_bound = "d",
-                          estimate_flag = "l",
-                          pepfar = "l",
-                          achv_95_plhiv = "l",
-                          achv_95_relative = "l",
-                          .default = "c"),
-                        progress = FALSE
-  )
+  df <- readr::read_rds(file.path(temp_folder, filename))
 
   #account for structural change post v2.0
   df <- handle_historic(df)
@@ -65,11 +53,12 @@ load_unaids <- function(pepfar_only = TRUE){
 handle_historic <- function(df){
 
   #handing to account for data structure prior to v2.0 (2024-10-01)
-  if("achv_epi_control" %in% names(df))
-    df <- dplyr::mutate(df, achv_epi_control = as.logical(achv_epi_control))
+  # if("achv_epi_control" %in% names(df))
+  #   df <- dplyr::mutate(df, achv_epi_control = as.logical(achv_epi_control))
+  #
+  # if("epi_control" %in% names(df))
+  #   df <- dplyr::mutate(df, epi_control = as.logical(epi_control))
 
-  if("epi_control" %in% names(df))
-    df <- dplyr::mutate(df, epi_control = as.logical(epi_control))
   if("epi_ratio_2023" %in% names(df))
     df <- dplyr::mutate(df, epi_ratio_2023 = as.double(epi_ratio_2023))
 
