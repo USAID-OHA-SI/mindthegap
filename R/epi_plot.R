@@ -125,7 +125,7 @@ add_pepfar_rollup <- function(df, sel_cntry) {
   #PEPFAR countries aggregation
   df_pepfar <- df %>%
     dplyr::filter(indicator != "Incidence mortality ratio (IMR)", #can't be summed
-                  pepar == TRUE) %>%
+                  pepfar == TRUE) %>%
     dplyr::mutate(country = "All PEPFAR") %>%
     dplyr::group_by(country, year, indicator) %>%
     dplyr::summarise(estimate = sum(estimate, na.rm = TRUE),
