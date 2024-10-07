@@ -41,7 +41,7 @@ test_that("validate_columns throws error for an empty dataframe", {
   df <- data.frame()
 
   # Expect an error due to all columns being missing
-  expect_error(validate_columns(df), "missing 11 key columns")
+  expect_error(validate_columns(df, req_cols), "missing 11 key columns")
 })
 
 test_that("validate_columns passes with additional columns present", {
