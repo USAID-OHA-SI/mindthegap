@@ -23,8 +23,10 @@ PEPFAR defines HIV epidemic control as the "point at which the total number of n
 
 ### Load dependencies
 
-```{r, include=FALSE}
-install.packages(c('glamr','glitr'), repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+In addition to `mindthegap` make sure you have `glitr` installed. This does not need to be loaded into your session, but is needed to run the plots. Dependent packages are typically installed from CRAN, but since our packages are on rOpenSci, they are not installed.
+
+```{r glitr}
+install.packages('glitr', repos = c('https://usaid-oha-si.r-universe.dev', 'https://cran.r-project.org/'))
 ```
 
 ```{r setup, include = TRUE, message = FALSE}

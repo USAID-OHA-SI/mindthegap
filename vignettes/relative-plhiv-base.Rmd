@@ -23,6 +23,14 @@ In 2020, UNAIDS updated their Fast Track targets (90-90-90) for 2024 to become t
 
 Importantly, there are two types of metrics to measure 95-95-95 target progress by: **the PLHIV base** and the **relative/conditional denominator** base. This vignette will outline the key differences between the two metrics, which UNAIDS indicators to use for each, and how to interpret the different parameters.
 
+### Load dependencies
+
+In addition to `mindthegap` make sure you have `glitr` installed. This does not need to be loaded into your session, but is needed to run the plots. Dependent packages are typically installed from CRAN, but since our packages are on rOpenSci, they are not installed.
+
+```{r glitr}
+install.packages('glitr', repos = c('https://usaid-oha-si.r-universe.dev', 'https://cran.r-project.org/'))
+```
+
 ```{r setup, message = FALSE}
 library(mindthegap)
 ```

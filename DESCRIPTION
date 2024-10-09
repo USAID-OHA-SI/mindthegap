@@ -60,8 +60,6 @@ Suggests:
     testthat (>= 3.0.0),
     withr
 Remotes: 
-    USAID-OHA-SI/gophr,
-    USAID-OHA-SI/glamr,
     USAID-OHA-SI/glitr,
     USAID-OHA-SI/gagglr
 VignetteBuilder: knitr
