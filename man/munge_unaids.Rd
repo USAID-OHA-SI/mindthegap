@@ -15,9 +15,7 @@ munge_unaids(return_type, indicator_type)
 df
 }
 \description{
-(Updated July 2023)
-
-This function fetches and cleans UNAIDS Estimates/Test and Treat Data
+Deprecated. This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 }
 \examples{
  \dontrun{

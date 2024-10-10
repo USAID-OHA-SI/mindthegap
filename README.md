@@ -18,11 +18,12 @@ mindthegap was developed in 2019 in preparation for agency self assessments and 
 ## SETUP
 
   #install from rOpenSci
-    install.packages('mindthegap', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
+    install.packages(c('mindthegap', 'glitr'), repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
     
   #alt: install from GitHub using pak
     #install.packages("pak")
     #pak::pak("USAID-OHA-SI/mindthegap")
+    #pak::pak("USAID-OHA-SI/glitr")
     
   #load the package
     library(mindthegap)
@@ -34,7 +35,7 @@ mindthegap was developed in 2019 in preparation for agency self assessments and 
 
 ## Example
 
-The [UNAIDS data](aidsinfo.unaids.org/) reports on HIV estimates with uncertainty bounds from 1990 onward, and includes both epidemic control indicators and indicators that show progress to the 95s. The data is sourced from the UNAIDS AIDSInfo database, making it publicly accessible data. UNAIDS releases new estimates each July.
+The UNAIDS data reports on HIV estimates with uncertainty bounds from 1990 onward, and includes both epidemic control indicators and indicators that show progress to the 95s. The data are sourced from [UNAIDS  EDMS](https://edms.unaids.org/), originally from the [UNAIDS data](aidsinfo.unaids.org/) database. Data available here are updated in July when UNAIDS issues a new releases.
 
 To access the core set of UNAIDS Data see the below example using `pull_unaids()`.
 
@@ -48,8 +49,18 @@ This is a basic example of how to load the data using `pull_unaids()`.
 ```{r}
 library(mindthegap)
 
-df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
-df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE)
+#load data
+df_unaids <- load_unaids(pepfar_only = TRUE)
+
+#review structure
+str(df_unaids)
+
+#plot epi curve
+epi_plot(df_unaids, sel_cntry = "Kenya")
+
+#plot UNAIDS 95 target achievement
+base_plot(df_unaids, "Namibia", denom = "PLHIV", grp = "All")
+
 
 ```
 Additionally, data can be manually downloaded from the [GitHub Releases page](https://github.com/USAID-OHA-SI/mindthegap/releases).

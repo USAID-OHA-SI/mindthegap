@@ -4,11 +4,11 @@
 \name{mindthegap-package}
 \alias{mindthegap}
 \alias{mindthegap-package}
-\title{mindthegap: Mind the Gap: 90-90-90 Trends and ART Coverage Gaps}
+\title{mindthegap: Mind the Gap}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Package to pull UNAIDS estimates as well as plot trends in UNAIDS 90-90-90 goals and ART coverage gap by country.
+Package to tidy UNAIDS estimates (from the EDMS database) as well as plot trends in UNAIDS 95 goals and ART coverage gap by country.
 }
 \seealso{
 Useful links:
@@ -25,7 +25,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Aaron Chafetz \email{achafetz@usaid.ogv}
+  \item Aaron Chafetz \email{achafetz@usaid.gov}
   \item Lemlem Baraki \email{lbaraki@usaid.gov}
   \item Tim Essam \email{tessam@usaid.gov}
 }

@@ -1,3 +1,19 @@
+#' Year UNAIDS data are released through
+#'
+#' @keywords internal
+#'
+unaids_year <- 2023
+
+#' UNAIDS Source Info
+#'
+#' Returns UNAIDS Source info for consistent sourcing notes
+#'
+#' @export
+#'
+
+source_note <- glue::glue("Source: UNAIDS EDMS Global Data {unaids_year + 1} Release") %>% as.character()
+
+
 #' Check if package exists
 #'
 #' @param pkg package name
@@ -38,7 +54,7 @@ read_rename <- function(return_type) {
   if (return_type == "HIV Test & Treat") {
     gdrive_df <-  suppressWarnings(
       gdrive_df %>%
-        dplyr::mutate(across(tidyselect::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
+        dplyr::mutate(across(dplyr::where(is.list), ~dplyr::na_if(., "NULL"))) %>%
         dplyr::slice(-c(1,2))
     )
   }
@@ -69,11 +85,28 @@ validate_cols <- function(df, return_type) {
 }
 
 
+#' UN Defined Regions
+#'
+#' This list is used to filter the UN regions
+#'
+#' @export
+#' @keywords internal
+#'
+regions <- c("Global",
+             "Asia and the Pacific",
+             "Caribbean",
+             "Eastern and southern Africa",
+             "Eastern Europe and central Asia",
+             "Latin America",
+             "Middle East and North Africa",
+             "Western and central Africa",
+             "Western and central Europe and North America")
+
 #' Start up message
 #' @keywords internal
 
 startup_msg <- function() {
-  cli::cli_inform("To pull UNAIDS time series estimates, use {.fun pull_unaids}. See function documentation ({.code ?pull_unaids}) for further information.",
+  cli::cli_inform("To pull UNAIDS time series estimates, use {.fun load_unaids}. See function documentation ({.code ?load_unaids}) for further information.",
                   class = "packageStartupMessage")
 
 }

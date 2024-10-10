@@ -35,12 +35,12 @@ navbar:
         href: articles/relative-plhiv-base.html
       - text: Data Dictionary & Use Cases
         href: articles/unaids-data-dictionary.html
+      - text: Extracting and Processing Data from EDMS
+        href: articles/edms-pull.html
 reference:
 - title: Accessing Clean UNAIDS Estimates
   contents:
-  - pull_unaids
-  - pull_estimates
-  - pull_testtreat
+  - load_unaids
 - title: Plotting UNAIDS Estimates
   contents:
   - epi_plot
@@ -48,10 +48,18 @@ reference:
   - source_note
 - title: Developer Tools
   contents:
-  - munge_unaids
-
+  - munge_edms
+  - publish_release
+- title: Developer Reference Data
+  contents:
+  - expected_ind
+  - indicator_map
+  - pepfar
+  - req_cols
 - title: Deprecated functions
   contents:
-  - load_data
-  - unaids_hdrs
+  - munge_unaids
+  - pull_unaids
+  - pull_estimates
+  - pull_testtreat
 

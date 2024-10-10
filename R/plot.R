@@ -122,3 +122,45 @@ viz_impatt <- function(ctry_sel){
     theme(panel.grid.major.x = element_line(color = grid_gray))
 
 }
+
+#' Mind The Gap Plot Theme
+#'
+#' @return theme
+#' @keywords internal
+#'
+mtg_theme <- function(){
+  ggplot2::theme(text = element_text(family = "GillSans", color = base_gray, size = 12),
+                 axis.ticks = element_blank(),
+                 legend.position = "none",
+                 panel.background = element_blank(),
+                 strip.background = element_blank(),
+                 strip.text = element_text(face = "bold", size = 11, color = base_gray),
+                 plot.title = element_text(size = 15, face = "bold", color = "black"),
+                 plot.subtitle =element_text(size = 15, color = base_gray),
+                 plot.caption = element_text(size = 8,  color = caption_gray))
+}
+
+#' @title Base gray for plot elements
+#' @keywords internal
+#' @description color used for plot elements
+#'
+base_gray <- "#595959"
+
+#' @title Text gray for plot caption
+#' @keywords internal
+#' @description color used for plot caption
+#'
+caption_gray <- "#909090"
+
+#' @title Grid gray for plot
+#' @keywords internal
+#' @description color used for plot grid
+#'
+grid_gray <- "#ebebeb"
+
+
+#' @title Blue palette
+#' @keywords internal
+#' @description color used for dots/lines/bars
+#'
+blue_palette <- c("#26456a", "#335B8E", "#739bcc")
