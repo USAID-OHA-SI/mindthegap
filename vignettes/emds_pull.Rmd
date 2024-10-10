@@ -104,8 +104,8 @@ tbl <- expected_ind %>%
 Next up, you will need to navigate to the Regions/Countries tab and select the relevant geographies. For the annual pull, we select the following geographies, which includes all the regions at the top of the list in the first section  (Global - Western and central Eurpoe and North America) and then the countries (Afghanistan - Saint Lucia, preceeding the non-Spectrum list),
 
 ```{r cntry_lst, message = FALSE, echo = FALSE}
-path <- "C:/Users/achafetz/Downloads/DataList_9_19_2024-3_30_17-PM.csv"
-df <- mindthegap:::read_edms(path)
+# path <- "C:/Users/achafetz/Downloads/DataList_9_19_2024-3_30_17-PM.csv"
+# df <- mindthegap:::read_edms(path)
 
 # df %>% 
 #   dplyr::distinct(type, country = e_count) %>% 
