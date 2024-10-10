@@ -1,0 +1,359 @@
+---
+title: "Extracting and Processing Data from EDMS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Extracting and Processing Data from EDMS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+## Introduction
+
+This vignette is designed for the package developers to document what and how data are extracted from the UNAIDS Estimates Data pulled from the [EDMS](https://edms.unaids.org/). This process is conducted annually around July when UNAIDS publishes new estimates. The data extracted from the system are largely what exist in the Excel file made available on AIDSInfo, but also have a few extra indicators such as 'Total deaths to HIV Population' and the calculated 'Incidence mortality ratio (IMR)'
+
+```{r setup, include = FALSE, message = FALSE}
+library(mindthegap)
+library(knitr)
+library(kableExtra)
+```
+
+## Extracting Data from EDMS
+
+### Access
+
+In order to get access to the EDMS, you will need to be provisioned an account. The UNAIDS point of contact in OHA/SIEI will be able to make submit this request on your behalf. 
+
+### Home
+Once logged into the system, you will first need to select the Module for the given year, which runs vertically along the left hand side of the page. For example, the 2024 update is titled "O- HIV estimates - 2024 - Spectrum 6.35". 
+
+### Statistics/Indicators
+From there, you will follow the blue tabs at the top of the screen, starting with "Statistics/Indicators". Indicators are divided up into different categories, which can be selected from the drop down. With the category selected, you will then need to select a "Sub-category", typically age groups or PMTCT. Finally you will need to select the relevant indicators from the list and move them over using the select arrow ('>'). By default, when you select an indicator, it will also include the uncertainty bounds.
+
+The table below details the full list of data elements you will need to include (the modual prefix has been removed):
+
+```{r elements, message = FALSE, echo = FALSE}
+
+tbl <- expected_ind %>% 
+  dplyr::select(-expected) %>% 
+  dplyr::relocate(source, .before = 1) %>%
+  dplyr::mutate(subcategory = dplyr::case_when(stringr::str_detect(indicator_edms, "PMTCT") ~ "PMTCT", 
+                                               source == "Derived" & stringr::str_detect(indicator_edms, "Number") ~ "95-95-95 (#)",
+                                               source == "Derived" ~ "95-95-95 (%) And 95-90-86 (%)",
+                                               age ==  "allAges" ~ "Total Population",
+                                               age == "15-24" ~ "Young People (15-24)",
+                                               age %in% c("15-49", "15+") ~ glue::glue("Adults ({age})"),
+                                               age == "0-14" ~ "Children (0-14)"),
+                .after = source,
+                age = ifelse(age == "allAges", "", age)) %>% 
+  dplyr::rename(category = source,
+                indicator = indicator_edms) %>% 
+  dplyr::arrange(category,  subcategory, indicator, age, sex)
+
+  tbl <- tbl %>% tidyr::unite(grp, c(category, subcategory), sep = ": ")
+  
+  # tbl %>% 
+  #   dplyr::distinct(grp) %>% 
+  #   clipr::write_clip() %>% 
+  #   datapasta::vector_paste_vertical()
+  
+  order <-  c("AIDS (AIM): Total Population",
+              "AIDS (AIM): Adults (15-49)",
+              "AIDS (AIM): Adults (15+)",
+              "AIDS (AIM): Young People (15-24)",
+              "AIDS (AIM): Children (0-14)",
+              "AIDS (AIM): PMTCT",
+              "Derived: 95-95-95 (#)",
+              "Derived: 95-95-95 (%) And 95-90-86 (%)")
+
+  tbl <- tbl %>% 
+    dplyr::mutate(grp = factor(grp, order)) %>% 
+    dplyr::arrange(grp, indicator, age, sex)
+  
+  type_cnt <- dplyr::count(tbl, grp)
+
+  tbl %>% 
+    dplyr::select(-grp) %>% 
+    # dplyr::mutate(indicator = stringr::str_glue("`{indicator}`")) %>% 
+    knitr::kable(format = "html",
+                 col.names = c("", "", "")) %>% 
+    kableExtra::group_rows(index = 
+                             c("AIDS (AIM): Total Population" = type_cnt$n[type_cnt$grp=="AIDS (AIM): Total Population"],
+                               "AIDS (AIM): Adults (15-49)" = type_cnt$n[type_cnt$grp=="AIDS (AIM): Adults (15-49)"],
+                               "AIDS (AIM): Adults (15+)" = type_cnt$n[type_cnt$grp=="AIDS (AIM): Adults (15+)"],
+                               "AIDS (AIM): Young People (15-24)" = type_cnt$n[type_cnt$grp=="AIDS (AIM): Young People (15-24)"],
+                               "AIDS (AIM): Children (0-14)" = type_cnt$n[type_cnt$grp=="AIDS (AIM): Children (0-14)"],
+                               "AIDS (AIM): PMTCT" = type_cnt$n[type_cnt$grp=="AIDS (AIM): PMTCT"],
+                               "Derived: 95-95-95 (#)" = type_cnt$n[type_cnt$grp=="Derived: 95-95-95 (#)"],
+                               "Derived: 95-95-95 (%) And 95-90-86 (%)" = type_cnt$n[type_cnt$grp=="Derived: 95-95-95 (%) And 95-90-86 (%)"]
+                             )
+    ) %>% 
+    kableExtra::kable_styling(bootstrap_options = c("hover"))
+  
+```
+
+###  Select Regions/Countries
+
+Next up, you will need to navigate to the Regions/Countries tab and select the relevant geographies. For the annual pull, we select the following geographies, which includes all the regions at the top of the list in the first section  (Global - Western and central Eurpoe and North America) and then the countries (Afghanistan - Saint Lucia, preceeding the non-Spectrum list),
+
+```{r cntry_lst, message = FALSE, echo = FALSE}
+path <- "C:/Users/achafetz/Downloads/DataList_9_19_2024-3_30_17-PM.csv"
+df <- mindthegap:::read_edms(path)
+
+# df %>% 
+#   dplyr::distinct(type, country = e_count) %>% 
+#   dplyr::arrange(desc(type), country) %>% 
+#   dplyr::mutate(country = forcats::fct_inorder(country),
+#                 country = forcats::fct_relevel(country, "Global")) %>% 
+#   dplyr::arrange(country) %>% 
+#   clipr::write_clip() %>% 
+#   datapasta::tribble_paste()
+
+
+df_cntry <- tibble::tribble(
+         ~type,                                       ~country,
+       "Group",                                       "Global",
+       "Group",                         "Asia and the Pacific",
+       "Group",                                    "Caribbean",
+       "Group",              "Eastern Europe and central Asia",
+       "Group",                  "Eastern and southern Africa",
+       "Group",                                "Latin America",
+       "Group",                 "Middle East and North Africa",
+       "Group",                   "Western and central Africa",
+       "Group", "Western and central Europe and North America",
+     "Country",                                  "Afghanistan",
+     "Country",                                      "Albania",
+     "Country",                                      "Algeria",
+     "Country",                                       "Angola",
+     "Country",                                    "Argentina",
+     "Country",                                      "Armenia",
+     "Country",                                    "Australia",
+     "Country",                                      "Austria",
+     "Country",                                   "Azerbaijan",
+     "Country",                                      "Bahamas",
+     "Country",                                      "Bahrain",
+     "Country",                                   "Bangladesh",
+     "Country",                                     "Barbados",
+     "Country",                                      "Belarus",
+     "Country",                                      "Belgium",
+     "Country",                                       "Belize",
+     "Country",                                        "Benin",
+     "Country",                                       "Bhutan",
+     "Country",                                      "Bolivia",
+     "Country",                       "Bosnia and Herzegovina",
+     "Country",                                     "Botswana",
+     "Country",                                       "Brazil",
+     "Country",                                     "Bulgaria",
+     "Country",                                 "Burkina Faso",
+     "Country",                                      "Burundi",
+     "Country",                                     "Cambodia",
+     "Country",                                       "Canada",
+     "Country",                                   "Cape Verde",
+     "Country",                     "Central African Republic",
+     "Country",                                         "Chad",
+     "Country",                                        "Chile",
+     "Country",                                        "China",
+     "Country",                                     "Colombia",
+     "Country",                                      "Comoros",
+     "Country",                                        "Congo",
+     "Country",                                   "Costa Rica",
+     "Country",                                 "Cote dIvoire",
+     "Country",                                      "Croatia",
+     "Country",                                         "Cuba",
+     "Country",                                       "Cyprus",
+     "Country",                               "Czech Republic",
+     "Country",             "Democratic Republic of the Congo",
+     "Country",                                      "Denmark",
+     "Country",                                     "Djibouti",
+     "Country",                           "Dominican Republic",
+     "Country",                                      "Ecuador",
+     "Country",                                        "Egypt",
+     "Country",                                  "El Salvador",
+     "Country",                            "Equatorial Guinea",
+     "Country",                                      "Eritrea",
+     "Country",                                      "Estonia",
+     "Country",                                     "Eswatini",
+     "Country",                                     "Ethiopia",
+     "Country",                                         "Fiji",
+     "Country",                                      "Finland",
+     "Country",                                       "France",
+     "Country",                                        "Gabon",
+     "Country",                                       "Gambia",
+     "Country",                                      "Georgia",
+     "Country",                                      "Germany",
+     "Country",                                        "Ghana",
+     "Country",                                       "Greece",
+     "Country",                                    "Guatemala",
+     "Country",                                       "Guinea",
+     "Country",                                "Guinea-Bissau",
+     "Country",                                       "Guyana",
+     "Country",                                        "Haiti",
+     "Country",                                     "Honduras",
+     "Country",                                      "Hungary",
+     "Country",                                      "Iceland",
+     "Country",                                        "India",
+     "Country",                                    "Indonesia",
+     "Country",                   "Iran (Islamic Republic of)",
+     "Country",                                         "Iraq",
+     "Country",                                      "Ireland",
+     "Country",                                       "Israel",
+     "Country",                                        "Italy",
+     "Country",                                      "Jamaica",
+     "Country",                                        "Japan",
+     "Country",                                       "Jordan",
+     "Country",                                   "Kazakhstan",
+     "Country",                                        "Kenya",
+     "Country",                                       "Kuwait",
+     "Country",                                   "Kyrgyzstan",
+     "Country",               "Lao People Democratic Republic",
+     "Country",                                       "Latvia",
+     "Country",                                      "Lebanon",
+     "Country",                                      "Lesotho",
+     "Country",                                      "Liberia",
+     "Country",                                        "Libya",
+     "Country",                                    "Lithuania",
+     "Country",                                   "Luxembourg",
+     "Country",                                   "Madagascar",
+     "Country",                                       "Malawi",
+     "Country",                                     "Malaysia",
+     "Country",                                         "Mali",
+     "Country",                                        "Malta",
+     "Country",                                   "Mauritania",
+     "Country",                                    "Mauritius",
+     "Country",                                       "Mexico",
+     "Country",                                     "Mongolia",
+     "Country",                                   "Montenegro",
+     "Country",                                      "Morocco",
+     "Country",                                   "Mozambique",
+     "Country",                                      "Myanmar",
+     "Country",                                      "Namibia",
+     "Country",                                        "Nepal",
+     "Country",                                  "Netherlands",
+     "Country",                                  "New Zealand",
+     "Country",                                    "Nicaragua",
+     "Country",                                        "Niger",
+     "Country",                                      "Nigeria",
+     "Country",                              "North Macedonia",
+     "Country",                                       "Norway",
+     "Country",                                         "Oman",
+     "Country",                                     "Pakistan",
+     "Country",                                       "Panama",
+     "Country",                             "Papua New Guinea",
+     "Country",                                     "Paraguay",
+     "Country",                                         "Peru",
+     "Country",                                  "Philippines",
+     "Country",                                       "Poland",
+     "Country",                                     "Portugal",
+     "Country",                                        "Qatar",
+     "Country",                            "Republic of Korea",
+     "Country",                          "Republic of Moldova",
+     "Country",                                      "Romania",
+     "Country",                                       "Rwanda",
+     "Country",                        "Saint Kitts and Nevis",
+     "Country",                                  "Saint Lucia",
+     "Country",                                 "Saudi Arabia",
+     "Country",                                      "Senegal",
+     "Country",                                       "Serbia",
+     "Country",                                 "Sierra Leone",
+     "Country",                                    "Singapore",
+     "Country",                                     "Slovakia",
+     "Country",                                     "Slovenia",
+     "Country",                                      "Somalia",
+     "Country",                                 "South Africa",
+     "Country",                                  "South Sudan",
+     "Country",                                        "Spain",
+     "Country",                                    "Sri Lanka",
+     "Country",                                        "Sudan",
+     "Country",                                     "Suriname",
+     "Country",                                  "Switzerland",
+     "Country",                         "Syrian Arab Republic",
+     "Country",                                   "Tajikistan",
+     "Country",                                     "Thailand",
+     "Country",                                  "Timor-Leste",
+     "Country",                                         "Togo",
+     "Country",                                      "Tunisia",
+     "Country",                                 "Turkmenistan",
+     "Country",                                      "Türkiye",
+     "Country",                                       "Uganda",
+     "Country",                                      "Ukraine",
+     "Country",                         "United Arab Emirates",
+     "Country",                               "United Kingdom",
+     "Country",                  "United Republic of Tanzania",
+     "Country",                     "United States of America",
+     "Country",                                      "Uruguay",
+     "Country",                                   "Uzbekistan",
+     "Country",                                    "Venezuela",
+     "Country",                                     "Viet Nam",
+     "Country",                                        "Yemen",
+     "Country",                                       "Zambia",
+     "Country",                                     "Zimbabwe"
+     )
+
+
+  cntry_cnt <- dplyr::count(df_cntry, type)
+
+  
+  df_cntry %>% 
+    dplyr::select(-type) %>% 
+    # dplyr::mutate(indicator = stringr::str_glue("`{indicator}`")) %>% 
+    knitr::kable(format = "html",
+                 col.names = c("")) %>% 
+    kableExtra::group_rows(index = 
+                             c("Region" = cntry_cnt$n[cntry_cnt$type=="Group"],
+                             "Country" = cntry_cnt$n[cntry_cnt$type=="Country"]
+                             )
+    ) %>% 
+    kableExtra::kable_styling(bootstrap_options = c("hover"))
+
+```
+
+### Years
+
+For the last selection, you will need to pick the years running from 1990 to the present. Note that the most recent year in the UNAIDS dataset is the year prior to the release. For example, the release in 2024 will cover data through 2023. We do not pull the projections for our annual pull. 
+
+
+### Data/Information
+
+At this point, you have done all the work and now it is time to export it. To do so, you will need to sleect the button the far right that is labeled "Data list" which will allow you to download the file as a csv. 
+
+It's important while here to to also save your query, by clicking the button labeled "Save query". You will enter a title and subject and then can access the again in the future (and amend if needed) from the "My Queries" tab.
+
+### My queries 
+
+This is the location of previously saved tabs. From here, you can click on the bottom right tab, "Copy chosen query to the next round" which will allow you to perform the same query for a future year/module. 
+
+
+## Processing EDMS Output
+
+With the dataset output from EDMS, you can process the csv file using `munge_edms`. This function will run throught a series of steps from importing to munging and summarizing. With the `epi_95s_flag = TRUE`, the function also added a number of additional columns to flag epidemic control status as well as achievement of the 95 targets.  The `mundge_edms` can be used to process ad hoc outputs from the database
+
+```{r process, eval=FALSE}
+library(mindthegap)
+
+edms_path <- "Data/DataList_9_19_2024-3_30_17-PM.csv"
+
+df_unaids <- munge_edms(edms_path, epi_95s_flag = TRUE)
+
+```
+
+The processing of the dataset will go through a number validations as well which will flag any errors or warnings along the way with informative messages to help identify if something is missing from your pull or something is amiss. 
+
+Once the dataset has been processed, it can be uploaded as a [GitHub release](https://github.com/USAID-OHA-SI/mindthegap/releases) using the `publish_release`. This only needs to be preformed once a year when the new data are made available. 
+
+```{r, eval=FALSE}
+publish_release(df_unaids)
+```
+
+Users will now be able to access the tidied data from the release using `load_unaids`
+
+```{r, eval=FALSE}
+df <- load_unaids()
+```
+
