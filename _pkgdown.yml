@@ -35,6 +35,8 @@ navbar:
         href: articles/relative-plhiv-base.html
       - text: Data Dictionary & Use Cases
         href: articles/unaids-data-dictionary.html
+      - text: Extracting and Processing Data from EDMS
+        href: articles/edms-pull.html
 reference:
 - title: Accessing Clean UNAIDS Estimates
   contents:
