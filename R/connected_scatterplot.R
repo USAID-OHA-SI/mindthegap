@@ -9,7 +9,7 @@
 #'         and estimates of deaths and new infections.
 #' @export
 prep_epi_data <- function() {
-  df <- pull_unaids %>%
+  df <- load_unaids() %>%
     dplyr::filter(
       indicator %in% c("Number Total Deaths to HIV Population", "Number New HIV Infections"),
       age == "All",
