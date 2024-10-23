@@ -168,7 +168,7 @@ construct_epi_plot <- function(filtered_data, min_max_year, axis_limits) {
 #' @param year_range Numeric vector of years to include. Default is \code{2010:2023}.
 #' @return A ggplot2 plot object.
 #' @export
-plot_epi_cntrl <- function(.data, country, year_range = 2010:2023) {
+plot_connected_scatter <- function(.data, country, year_range = 2010:2023) {
 
   # Data Preparation
   data_list <- prepare_plot_data(.data, country, year_range)
