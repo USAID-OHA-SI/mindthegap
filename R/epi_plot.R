@@ -1,6 +1,6 @@
 #' Epidemic Control Plot
 #' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
-#'
+#' @deprecated Use `plot_epi_trends()` instead.
 #' @param df UNAIDS data frame loaded from `load_unaids()`
 #' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
 #'
@@ -19,6 +19,8 @@
 
 epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 
+  lifecycle::deprecate_warn(, "epi_plot()", "plot_epi_trends()")
+
   df_epi <- subset_epi_data(df)
 
   df_epi <- add_pepfar_rollup(df_epi, sel_cntry)
@@ -28,6 +30,41 @@ epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
   viz_epi(df_viz)
 
 }
+
+#' Epidemic Control Plot
+#' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
+#'
+#' @param df UNAIDS data frame loaded from `load_unaids()`
+#' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
+#'
+#' @return Epidemic control plot showing trends in new infections and total deaths to HIV population
+#' @export
+#' @seealso [load_unaids()]
+#'
+#' @examples
+#'  \dontrun{
+#'    df_unaids <- load_unaids(pepfar_only = FALSE)
+#'    plot_epi_trends(df_unaids)
+#'    plot_epi_trends(df_unaids, sel_cntry = "Lesotho")
+#'    plot_epi_trends(df_unaids, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+#' }
+#'
+
+plot_epi_trends <- function(df, sel_cntry = c("All PEPFAR")){
+
+  df_epi <- subset_epi_data(df)
+
+  df_epi <- add_pepfar_rollup(df_epi, sel_cntry)
+
+  df_viz <- prepare_viz_data(df_epi, sel_cntry)
+
+  viz_epi(df_viz)
+
+}
+
+
+
+
 
 #' Subset data to select indicators needed
 #'

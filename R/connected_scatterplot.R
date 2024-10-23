@@ -65,7 +65,7 @@ adorn_annotation <- function(p, annotation_label = "<-- Epidemic control",
   return(p)
 }
 
-# Broken down into bite-sized nuggets
+
 #' Prepare Data for Plotting
 #'
 #' Filters data based on country and year range and identifies min and max years.
@@ -161,7 +161,7 @@ construct_epi_plot <- function(filtered_data, min_max_year, axis_limits) {
 
 #' Plot Epidemic Control Trajectories
 #'
-#' Generates a plot showing trajectories of deaths and new infections over time for specified countries.
+#' Generates a connected scatterplot of trajectories for deaths and new infections for specified countries.
 #'
 #' @param .data Data frame containing the data.
 #' @param country Character vector of countries to include.
