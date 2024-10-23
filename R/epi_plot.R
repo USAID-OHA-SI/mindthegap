@@ -19,7 +19,7 @@
 
 epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 
-  lifecycle::deprecate_warn(, "epi_plot()", "plot_epi_trends()")
+  lifecycle::deprecate_warn("2.0.0", "epi_plot()", "plot_epi_trends()")
 
   df_epi <- subset_epi_data(df)
 
@@ -70,7 +70,7 @@ plot_epi_trends <- function(df, sel_cntry = c("All PEPFAR")){
 #'
 #' Filter down data to only what is needed for the epi control plots
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 subset_epi_data <- function(df) {
 
@@ -93,7 +93,7 @@ subset_epi_data <- function(df) {
 
 #' Validate Epi indicator/disaggs
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 #'
 validate_epi_disaggs <- function(df){
@@ -151,7 +151,7 @@ validate_epi_disaggs <- function(df){
 #'
 #' If desired by user, add in a PEPFAR roll up
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 add_pepfar_rollup <- function(df, sel_cntry) {
 
@@ -177,7 +177,7 @@ add_pepfar_rollup <- function(df, sel_cntry) {
 
 #' Prepare viz data
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 #'
 prepare_viz_data <- function(df, sel_cntry) {
@@ -264,7 +264,7 @@ prepare_viz_data <- function(df, sel_cntry) {
 
 #' Standard Epi plot
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 #'
 viz_epi <- function(df){
