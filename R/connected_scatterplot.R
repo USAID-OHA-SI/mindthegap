@@ -1,3 +1,29 @@
+#' Prepare UNAIDS epidemiological data for analysis
+#'
+#' This function processes UNAIDS data by filtering for relevant indicators
+#' (HIV total deaths and new infections), selects specific columns, and reshapes
+#' the data into a wide format. The resulting dataset has renamed columns for
+#' deaths and infections.
+#'
+#' @return A data frame with columns for region, country, year, iso code, PEPFAR status,
+#'         and estimates of deaths and new infections.
+#' @export
+prep_epi_data <- function() {
+  df <- pull_unaids %>%
+    dplyr::filter(
+      indicator %in% c("Number Total Deaths to HIV Population", "Number New HIV Infections"),
+      age == "All",
+      sex == "All"
+    ) %>%
+    dplyr::select(region, country, year, iso, indicator, estimate, pepfar) %>%
+    tidyr::pivot_wider(names_from = "indicator", values_from = estimate) %>%
+    dplyr::rename_with(~ stringr::str_replace(., ".*Deaths.*", "deaths"), tidyselect::contains("Deaths")) %>%
+    dplyr::rename_with(~ stringr::str_replace(., ".*Infections.*", "infections"), tidyselect::contains("Infections"))
+
+  return(df)
+}
+
+
 #' Add Annotation to a ggplot
 #'
 #' Adds an angled text annotation to a ggplot at a specified position.
