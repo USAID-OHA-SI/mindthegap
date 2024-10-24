@@ -44,9 +44,9 @@ epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 #' @examples
 #'  \dontrun{
 #'    df_unaids <- load_unaids(pepfar_only = FALSE)
-#'    plot_epi_trends(load_unaids())
-#'    plot_epi_trends(load_unaids(), sel_cntry = "Lesotho")
-#'    plot_epi_trends(load_unaids(), sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+#'    plot_epi_trends(df_unaids)
+#'    plot_epi_trends(df_unaids, sel_cntry = "Lesotho")
+#'    plot_epi_trends(df_unaids, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
 #' }
 #'
 

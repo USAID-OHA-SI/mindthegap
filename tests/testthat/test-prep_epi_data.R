@@ -1,20 +1,25 @@
-test_that("prep_epi_data returns the expected dataframe structure", {
-  result <- prep_epi_data()
+test_that("prep_epi_data processes data correctly", {
+  # Mock dataset
+  mock_data <- data.frame(
+    region = c("Africa", "Asia"),
+    country = c("CountryA", "CountryB"),
+    year = c(2020L, 2020L),
+    iso = c("A", "B"),
+    indicator = c("Number Total Deaths to HIV Population", "Number New HIV Infections"),
+    estimate = c(1000, 2000),
+    age = c("All", "All"),
+    sex = c("All", "All"),
+    pepfar = c("Yes", "No")
+  )
 
-  # Check if the output is a dataframe
+  # Run the function
+  result <- prep_epi_data(mock_data)
+
+  # Check if the result is a dataframe with expected columns
   expect_s3_class(result, "data.frame")
+  expect_setequal(names(result), c("region", "country", "year", "iso", "pepfar", "deaths", "infections"))
 
-  # Check if the correct columns are present
-  expected_columns <- c("region", "country", "year", "iso", "pepfar", "deaths", "infections")
-  expect_setequal(names(result), expected_columns)
-
-  # Check if columns have the expected types
-  expect_type(result$region, "character")
-  expect_type(result$year, "integer")
-  expect_type(result$deaths, "double")
-  expect_type(result$infections, "double")
-
-  # Test filtering on the "indicator" column
-  expect_true(all(result$deaths >= 0, na.rm = TRUE))
-  expect_true(all(result$infections >= 0, na.rm = TRUE))
+  # Check values are correctly transformed
+  expect_equal(result$deaths[1], 1000)
+  expect_equal(result$infections[2], 2000)
 })
