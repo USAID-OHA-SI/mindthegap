@@ -1,16 +1,16 @@
 #' Publish Tidy UNAIDS Data as a GitHub Release
 #'
 #' This is a developer's tool to take the output from EDMS that has been
-#' tidied via `munge_unaids` and push it to GitHub as a
+#' tidied via `munge_edms` and push it to GitHub as a
 #' [Release](https://github.com/USAID-OHA-SI/mindthegap/releases). This is
 #' performed once annually when the data are updated and then users will
 #' access via `load_unaids`. This function posts versions for all countries
 #' as well as PEPFAR only countries in csv and rds formats.
 #'
-#' @param df dataframe created by `munge_unaids`
+#' @param df dataframe created by `munge_edms`
 #' @export
 #'
-#' @seealso [munge_unaids()] and [load_unaids()]
+#' @seealso [munge_edms()] and [load_unaids()]
 #'
 #' @examples
 #'  \dontrun{
