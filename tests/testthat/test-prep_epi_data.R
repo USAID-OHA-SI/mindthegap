@@ -1,25 +1,29 @@
-test_that("prep_epi_data processes data correctly", {
-  # Mock dataset
-  mock_data <- data.frame(
-    region = c("Africa", "Asia"),
-    country = c("CountryA", "CountryB"),
-    year = c(2020L, 2020L),
-    iso = c("A", "B"),
-    indicator = c("Number Total Deaths to HIV Population", "Number New HIV Infections"),
-    estimate = c(1000, 2000),
-    age = c("All", "All"),
-    sex = c("All", "All"),
-    pepfar = c("Yes", "No")
-  )
+# Sample data frame for testing
+test_data <- data.frame(
+  region = rep(c("Region1", "Region2"), each = 4),
+  country = rep(c("CountryA", "CountryB"), each = 4),
+  year = rep(c(2015, 2020), each = 2, times = 2),
+  iso = rep(c("CYA", "CYB"), each = 4),
+  indicator = rep(c("Number Total Deaths to HIV Population", "Number New HIV Infections"), times = 4),
+  estimate = c(1000, 1500, 1200, 1800, 1100, 1400, 1300, 1600),
+  age = rep("All", 8),
+  sex = rep("All", 8),
+  pepfar = rep(c(TRUE, FALSE), times = 4)
+)
 
-  # Run the function
-  result <- prep_epi_data(mock_data)
+# Unit tests for prep_epi_data function
+test_that("prep_epi_data filters by country and year", {
+  result <- prep_epi_data(test_data, sel_cntry = "CountryA", year_range = 2015:2020)
+  expect_equal(unique(result$country), "CountryA")
+  expect_equal(sort(unique(result$year)), c(2015, 2020))
+})
 
-  # Check if the result is a dataframe with expected columns
-  expect_s3_class(result, "data.frame")
-  expect_setequal(names(result), c("region", "country", "year", "iso", "pepfar", "deaths", "infections"))
+test_that("prep_epi_data returns error for missing country", {
+  expect_error(prep_epi_data(test_data, sel_cntry = "NonExistentCountry", year_range = 2015:2020))
+})
 
-  # Check values are correctly transformed
-  expect_equal(result$deaths[1], 1000)
-  expect_equal(result$infections[2], 2000)
+test_that("prep_epi_data renames columns correctly", {
+  result <- prep_epi_data(test_data, sel_cntry = "CountryA", year_range = 2015:2020)
+  expect_true(all(c("deaths", "infections") %in% colnames(result)))
+  expect_false("indicator" %in% colnames(result))
 })
