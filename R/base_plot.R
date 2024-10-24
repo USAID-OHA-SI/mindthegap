@@ -102,8 +102,8 @@ tab_95s <- function(df, cntry,
 
 
 #' @title 95's Table Plot
-#' @description This function creates a summary table showing OU progress toward the 95-95-95's
-#' @deprecated Use `tab_95s_progress` instead.
+#' @description This function creates a summary table showing OU progress toward the 95-95-95's (Deprecated)
+#' @details Use `tab_95s_progress` instead.
 #' @param df dataframe from `load_unaids`
 #' @param cntry  PEPFAR country to visualize (list OU name)
 #' @param denom which denominator/base to use, "PLHIV" (default) or "Relative"

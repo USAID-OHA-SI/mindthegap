@@ -1,6 +1,6 @@
 #' Epidemic Control Plot
 #' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
-#' @deprecated Use `plot_epi_trends()` instead.
+#' @details Use `plot_epi_trends()` instead.
 #' @param df UNAIDS data frame loaded from `load_unaids()`
 #' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
 #'

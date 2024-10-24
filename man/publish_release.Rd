@@ -7,11 +7,11 @@
 publish_release(df)
 }
 \arguments{
-\item{df}{dataframe created by \code{munge_unaids}}
+\item{df}{dataframe created by \code{munge_edms}}
 }
 \description{
 This is a developer's tool to take the output from EDMS that has been
-tidied via \code{munge_unaids} and push it to GitHub as a
+tidied via \code{munge_edms} and push it to GitHub as a
 \href{https://github.com/USAID-OHA-SI/mindthegap/releases}{Release}. This is
 performed once annually when the data are updated and then users will
 access via \code{load_unaids}. This function posts versions for all countries
@@ -25,5 +25,5 @@ as well as PEPFAR only countries in csv and rds formats.
 }
 }
 \seealso{
-\code{\link[=munge_unaids]{munge_unaids()}} and \code{\link[=load_unaids]{load_unaids()}}
+\code{\link[=munge_edms]{munge_edms()}} and \code{\link[=load_unaids]{load_unaids()}}
 }
