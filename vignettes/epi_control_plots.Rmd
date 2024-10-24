@@ -19,7 +19,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## Introduction
 
-PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." UNAIDS estimates this point using the Incidence-Mortality Ration (IMR). Epidemic control indicators are all available from the data available in `load_unaids`, which also includes a column called `achv_epi_control` which is a logical variable about wether the country had met these three epidemic control criteria in a given year (for all age and sex). This information can be plotted with a built in function, `epi_plot`, which we will demonstrate below.
+PEPFAR defines HIV epidemic control as the "point at which the total number of new HIV infections falls below the total number of deaths from all causes among HIV-infected individuals, with both declining." UNAIDS estimates this point using the Incidence-Mortality Ration (IMR). Epidemic control indicators are all available from the data available in `load_unaids`, which also includes a column called `achv_epi_control` which is a logical variable about wether the country had met these three epidemic control criteria in a given year (for all age and sex). This information can be plotted with a built in function, `plot_epi_trends`, which we will demonstrate below.
 
 ### Load dependencies
 
@@ -35,27 +35,27 @@ library(mindthegap)
 
 ### Epidemic Control Plotting Function
 
-First, let's take a look at the `epi_plot` function in action: to use this function, first load the estimates data from the `mindthegap` package and specify your PEPFAR country of interest in the `sel_cntry` parameter of the `epi_plot` function.
+First, let's take a look at the `plot_epi_trends` function in action: to use this function, first load the estimates data from the `mindthegap` package and specify your PEPFAR country of interest in the `sel_cntry` parameter of the `plot_epi_trends` function.
 
 ```{r, load_data}
 df_unaids <- load_unaids()
 ```
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-epi_plot(df_unaids, sel_cntry = "Kenya")
+plot_epi_trends(df_unaids, sel_cntry = "Kenya")
 ```
 The subtitle includes the epi control information for a given year - the direction of total death and new infections, both of which should be declining, and the IMR, which should be below 1.
 
-In case you want to compare epidemic control across countries, the `epi_plot` function allows for you to list several countries of interest in the `sel_cntry` parameter as well.
+In case you want to compare epidemic control across countries, the `plot_epi_trends` function allows for you to list several countries of interest in the `sel_cntry` parameter as well.
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-epi_plot(df_unaids, c("Kenya","Tanzania"))
+plot_epi_trends(df_unaids, c("Kenya","Tanzania"))
 ```
 
-In addition to looking at epidemic control at the country level, we can also see trends across all of PEPFAR by just using the `epi_plot()` function, as "ALL PEPFAR" is the default country in the `sel_cntry` parameter. Be aware that we are summing up point estimates across all PEPFAR countries and these data points have not be estimated and released by UNAIDS.
+In addition to looking at epidemic control at the country level, we can also see trends across all of PEPFAR by just using the `plot_epi_trends()` function, as "ALL PEPFAR" is the default country in the `sel_cntry` parameter. Be aware that we are summing up point estimates across all PEPFAR countries and these data points have not be estimated and released by UNAIDS.
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-epi_plot(df_unaids)
+plot_epi_trends(df_unaids)
 ```
 
 This function makes it easy to generate plots on your own for countries of interest. Let's peek under the hood and see how the function works to munge the data and create the plots.
