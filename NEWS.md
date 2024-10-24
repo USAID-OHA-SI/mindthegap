@@ -1,4 +1,5 @@
 # mindthegap 2.0
+* Updated vignettes to include new plotting functions and a short section on `plot_connected_scatter` functionality [2024-10-24]
 * Renamed `base_plot` to `tab_95s` to better reflect it's purpose [2024-10-24]
 * Renamed `epi_plot` to `plot_epi_trends` to better reflect it's purpose and standardize plot function names [2024-10-24]
 * Enhanced plotting options with `plot_connected_scatter` -- a function to create a race to the bottom connected scatterplot [2024-10-24]
