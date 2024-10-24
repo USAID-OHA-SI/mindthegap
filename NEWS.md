@@ -1,5 +1,8 @@
 # mindthegap 2.0
-* Add new vignette for developrs on how to extract and process EDMS output [2024-10-07]
+* Renamed `base_plot` to `tab_95s` to better reflect it's purpose [2024-10-24]
+* Renamed `epi_plot` to `plot_epi_trends` to better reflect it's purpose and standardize plot function names [2024-10-24]
+* Enhanced plotting options with `plot_connected_scatter` -- a function to create a race to the bottom connected scatterplot [2024-10-24]
+* Add new vignette for developers on how to extract and process EDMS output [2024-10-07]
 * Update vignettes with the changed to the indicators and structure [2024-10-07]
 * Allow `base_plot` to provide achievement across different age/sex groups  [2024-10-03]
 * Updated `base_plot` to handle new data structure and reduce redundancy  [2024-10-03]
