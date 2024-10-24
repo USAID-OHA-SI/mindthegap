@@ -147,13 +147,17 @@ calculate_axis_limits <- function(filtered_data) {
 #' @param filtered_data A data frame containing the filtered data with columns `deaths`, `infections`, and `country`.
 #' @param min_max_year A data frame containing the data points for the minimum and maximum years for each country.
 #' @param axis_limits A numeric vector of length two containing the global minimum and maximum values for the axes.
+#' @param year_limits A numeric vector of length two containing the global min and max of the year ranges
 #'
 #' @return A ggplot2 plot object that visualizes the epidemic control trajectories.
 #'
 #' @keywords internal
-construct_epi_plot <- function(filtered_data, min_max_year, axis_limits) {
+construct_epi_plot <- function(filtered_data, min_max_year, axis_limits, year_limits) {
   global_min <- axis_limits[1]
   global_max <- axis_limits[2]
+
+  year_min <- year_limits[1]
+  year_max <- year_limits[2]
 
   ggplot2::ggplot(data = filtered_data, ggplot2::aes(x = deaths, y = infections, group = country)) +
     ggplot2::geom_path(
@@ -190,7 +194,8 @@ construct_epi_plot <- function(filtered_data, min_max_year, axis_limits) {
     ggplot2::labs(
       x = "<-- Total Deaths -->", y = "<-- New Infections -->",
       color = "Group",
-      caption = mindthegap::source_note
+      caption = mindthegap::source_note,
+      subtitle = glue::glue("Epidemic control from {year_min}:{year_max}")
     ) +
     ggplot2::coord_fixed(ratio = 1)
 }
@@ -227,9 +232,10 @@ plot_connected_scatter <- function(.data, sel_cntry, year_range = 2010:2023) {
 
   # Axis Limits Calculation
   axis_limits <- calculate_axis_limits(filtered_data)
+  year_limits <- range(year_range)
 
   # Plot Construction
-  plot <- construct_epi_plot(filtered_data, min_max_year, axis_limits)
+  plot <- construct_epi_plot(filtered_data, min_max_year, axis_limits, year_limits)
 
   # Add Annotation
   p <- adorn_annotation(plot)
