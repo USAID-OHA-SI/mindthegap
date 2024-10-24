@@ -7,8 +7,9 @@ test_that("construct_epi_plot creates a ggplot object without errors", {
   )
   min_max_year <- faux_data[c(1, 4), ]
   axis_limits <- calculate_axis_limits(faux_data)
+  year_limits <- range(faux_data$year)
 
-  plot <- construct_epi_plot(faux_data, min_max_year, axis_limits)
+  plot <- construct_epi_plot(faux_data, min_max_year, axis_limits, year_limits)
 
   # Check if the returned object is a ggplot
   expect_s3_class(plot, "ggplot")
