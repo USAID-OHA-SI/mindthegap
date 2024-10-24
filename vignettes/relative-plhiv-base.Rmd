@@ -60,7 +60,7 @@ To assess progress to 95-95-95 targets, we can use the indicators available from
     -   **`Percent on ART of PLHIV`**: Among PLHVIV, percent on ART
     -   **`Percent VLS of PLHIV`**: Among PLHIV, percent virally suppressed
 
-The package has a built in function, `base_plot`, to generate this as a datatable for you.
+The package has a built in function, `tab_95s`, to generate this as a datatable for you.
 
 Let's take a deep dive into Namibia's progress to the 95's using the PLHIV base.
 
@@ -69,7 +69,7 @@ df_unaids <- load_unaids()
 ```
 
 ```{r}
-v_plhiv <- base_plot(df_unaids, "Namibia", denom = "PLHIV", grp = "All")
+v_plhiv <- tab_95s(df_unaids, "Namibia", denom = "PLHIV", grp = "All")
 v_plhiv
 ```
 
@@ -97,7 +97,7 @@ What happens if we use the relative base?
 
 
 ```{r}
-v_relative <- base_plot(df_unaids, "Namibia", denom = "Relative", grp = "All")
+v_relative <- tab_95s(df_unaids, "Namibia", denom = "Relative", grp = "All")
 v_relative
 ```
 

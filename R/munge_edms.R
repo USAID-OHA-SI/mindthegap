@@ -50,8 +50,9 @@ read_edms <- function(path){
   validate_path(path)
 
   #import csv with column specifications
+  #Changing time to an integer for MSD consistency
   df <- readr::read_csv(path,
-                        col_types = list(Time = "d",
+                        col_types = list(Time = "i",
                                          Value = "d",
                                          Rounded = "d",
                                          .default = "c"),
