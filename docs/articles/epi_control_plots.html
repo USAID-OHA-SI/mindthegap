@@ -96,12 +96,12 @@ typically installed from CRAN, but since our packages are on rOpenSci,
 they are not installed.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'glitr'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://usaid-oha-si.r-universe.dev'</span>, <span class="st">'https://cran.r-project.org/'</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Installing package into 'C:/Users/tessam/AppData/Local/Temp/1/Rtmp88rAXS/temp_libpath26481e6d7c70'</span></span>
+<span><span class="co">#&gt; Installing package into 'C:/Users/tessam/AppData/Local/Temp/1/RtmpUhbj6T/temp_libpath1c1c78b06442'</span></span>
 <span><span class="co">#&gt; (as 'lib' is unspecified)</span></span>
 <span><span class="co">#&gt; package 'glitr' successfully unpacked and MD5 sums checked</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The downloaded binary packages are in</span></span>
-<span><span class="co">#&gt;  C:\Users\tessam\AppData\Local\Temp\1\RtmpgtpPto\downloaded_packages</span></span></code></pre></div>
+<span><span class="co">#&gt;  C:\Users\tessam\AppData\Local\Temp\1\RtmpeMKQmt\downloaded_packages</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/mindthegap" class="external-link">mindthegap</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -168,19 +168,18 @@ towards epi control.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_connected_scatter.html">plot_connected_scatter</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="st">"Zambia"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="st">"Zambia reached epidemic control in 2023"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="epi_control_plots_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;">
 The <code><a href="../reference/plot_connected_scatter.html">plot_connected_scatter()</a></code> can also take multiple country
-arguments at once to make comparison plots. While the function will
-automatically scale the axes for you, it is recommending comparing
-countries with similar mangitudes of epidemic control metrics. Comparing
-South Africa to Rwanda will result in a graphic that is not ideal for
-comparing the two countries – unless the goal is to show the magnitude
-of the epidemic in South Africa. Below, we show the progress of
-Mozambique, Tanzania and Malawi. Coincidentally, each country appears to
-be</p>
+arguments to make comparison plots. While the function will
+automatically scale the axes for you, it is recommended comparing
+countries with similar mangitude of epidemic control metrics. Comparing
+South Africa to Rwanda will result in a graphic that is dominated by the
+sheer size of the epidemic in South Africa. Below, we show the progress
+of Mozambique, Tanzania and Malawi. Coincidentally, each country appears
+to be on similar paths, but at different points in time.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_connected_scatter.html">plot_connected_scatter</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Malawi"</span>, <span class="st">"Mozambique"</span>, <span class="st">"Tanzania"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="st">"Zambia reached epidemic control in 2023"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="epi_control_plots_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>The race to the bottom plots can also be combined together if groups
-of countries naturally fall into different classes. Below, countries are
+<p>The race to the bottom plots can also be combined together if
+countries naturally fall into different classes. Below, countries are
 sorted into large and small groups to depict epidemic control
 conditioned on a country’s progress to the 95s.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
