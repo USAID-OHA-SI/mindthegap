@@ -27,7 +27,7 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: Accesing Clean UNAIDS Data
+      - text: Accessing Clean UNAIDS Data
         href: articles/accessing-clean-unaids.html
       - text: Epidemic Control Plots
         href: articles/epi_control_plots.html
@@ -43,8 +43,11 @@ reference:
   - load_unaids
 - title: Plotting UNAIDS Estimates
   contents:
-  - epi_plot
-  - base_plot
+  - adorn_annotation
+  - plot_connected_scatter
+  - plot_epi_trends
+  - prep_epi_data
+  - tab_95s
   - source_note
 - title: Developer Tools
   contents:
@@ -58,6 +61,8 @@ reference:
   - req_cols
 - title: Deprecated functions
   contents:
+  - base_plot
+  - epi_plot
   - munge_unaids
   - pull_unaids
   - pull_estimates

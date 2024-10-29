@@ -1,111 +1,89 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/404.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/01_accessing-clean-unaids.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/02_unaids-data-dictionary.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/03_relative-plhiv-base.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/accessing-clean-unaids.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/epi_control_plots.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/my-vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/relative-plhiv-base.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/articles/unaids-data-dictionary.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/index.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/base_gray.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/blue_palette.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/caption_gray.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/combo_plot.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/epi_plot.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/grid_gray.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/load_data.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/mindthegap-package.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/mtg_theme.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/munge_unaids.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/package_check.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_unaids.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/regions.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/source_note.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/unaids_hdrs.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/update_impatt.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/update_unaids.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/viz_impatt.html</loc>
-  </url>
-  <url>
-    <loc>https://usaid-oha-si.github.io/mindthegap/reference/viz_unaids.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/404.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/01_accessing-clean-unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/02_unaids-data-dictionary.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/03_relative-plhiv-base.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/accessing-clean-unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/emds_pull.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/epi_control_plots.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/index.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/my-vignette.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/relative-plhiv-base.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/articles/unaids-data-dictionary.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/authors.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/index.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/LICENSE-text.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/LICENSE.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/news/index.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/add_pepfar_rollup.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/adorn_annotation.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/apply_indicator_type.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/base_gray.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/base_plot.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/blue_palette.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/calculate_axis_limits.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/calc_95_goals.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/caption_gray.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/clean_cols.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/combo_plot.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/construct_epi_plot.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/convert_numeric_string.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/epi_plot.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/expected_ind.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/flag_95s.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/flag_epi.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/grid_gray.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id_names.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/gs_id_unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/handle_historic.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/index.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/indicator_map.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/load_data.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/load_unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/map_indicator.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/mindthegap-package.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/mtg_theme.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/munge_components.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/munge_country.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/munge_edms.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/munge_unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/package_check.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/parse_indicator.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/pepfar.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/pipe.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/plot_connected_scatter.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/plot_epi_trends.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/prepare_plot_data.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/prepare_viz_data.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/prep_epi_data.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/publish_release.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_estimates.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_testtreat.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/pull_unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/read_edms.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/read_rename.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/regions.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/req_cols.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/source_note.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/spread_values.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/standarize_agesex.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/startup_msg.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/subset_cols.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/subset_epi_data.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/tab_95s.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/unaids_hdrs.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/unaids_year.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/update_impatt.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/update_unaids.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/validate_columns.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/validate_countries.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/validate_epi_disaggs.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/validate_ind_disaggs.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/validate_numeric_string.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/validate_path.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/viz_epi.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/viz_impatt.html</loc></url>
+<url><loc>https://usaid-oha-si.github.io/mindthegap/reference/viz_unaids.html</loc></url>
 </urlset>
+

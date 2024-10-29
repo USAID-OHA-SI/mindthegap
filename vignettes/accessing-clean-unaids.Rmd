@@ -1,5 +1,5 @@
 ---
-title: "Accesing Clean UNAIDS Data"
+title: "Accessing Clean UNAIDS Data"
 output: rmarkdown::html_vignette
 description: |
   This vignette addresses how to pull the clean 2020 UNAIDS Estimates from Google Drive to R.
@@ -12,9 +12,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-   eval=T, 
-  echo=T
+   comment = "#>",
+      eval = TRUE, 
+      echo = TRUE
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```

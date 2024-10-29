@@ -19,10 +19,11 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accesing Clean UNAIDS Data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accessing Clean UNAIDS Data</a></li>
     <li><a class="dropdown-item" href="../articles/epi_control_plots.html">Epidemic Control Plots</a></li>
     <li><a class="dropdown-item" href="../articles/relative-plhiv-base.html">95-95-95 Target Progress: Relative Base vs. PLHIV Base</a></li>
     <li><a class="dropdown-item" href="../articles/unaids-data-dictionary.html">Data Dictionary &amp; Use Cases</a></li>
+    <li><a class="dropdown-item" href="../articles/edms-pull.html">Extracting and Processing Data from EDMS</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/USAID-OHA-SI/mindthegap/"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -49,22 +50,10 @@
 
       <dl><dt>
 
-          <code><a href="pull_unaids.html">pull_unaids()</a></code>
+          <code><a href="load_unaids.html">load_unaids()</a></code>
 
         </dt>
-        <dd>Pull clean UNAIDS HIV Estimates and Test &amp; Treat Data</dd>
-      </dl><dl><dt>
-
-          <code><a href="pull_estimates.html">pull_estimates()</a></code>
-
-        </dt>
-        <dd>Pull clean UNAIDS HIV Estimates</dd>
-      </dl><dl><dt>
-
-          <code><a href="pull_testtreat.html">pull_testtreat()</a></code>
-
-        </dt>
-        <dd>Pull clean UNAIDS HIV Test &amp; Treat</dd>
+        <dd>Load tidy UNAIDS HIV Estimates and Test &amp; Treat Data</dd>
       </dl></div><div class="section level2">
       <h2 id="plotting-unaids-estimates">Plotting UNAIDS Estimates<a class="anchor" aria-label="anchor" href="#plotting-unaids-estimates"></a></h2>
 
@@ -78,13 +67,31 @@
 
       <dl><dt>
 
-          <code><a href="epi_plot.html">epi_plot()</a></code>
+          <code><a href="adorn_annotation.html">adorn_annotation()</a></code>
+
+        </dt>
+        <dd>Add Annotation to a ggplot Object</dd>
+      </dl><dl><dt>
+
+          <code><a href="plot_connected_scatter.html">plot_connected_scatter()</a></code>
+
+        </dt>
+        <dd>Plot Epidemic Control Trajectories</dd>
+      </dl><dl><dt>
+
+          <code><a href="plot_epi_trends.html">plot_epi_trends()</a></code>
 
         </dt>
         <dd>Epidemic Control Plot</dd>
       </dl><dl><dt>
 
-          <code><a href="base_plot.html">base_plot()</a></code>
+          <code><a href="prep_epi_data.html">prep_epi_data()</a></code>
+
+        </dt>
+        <dd>Prepare UNAIDS Epidemiological Data for Analysis</dd>
+      </dl><dl><dt>
+
+          <code><a href="tab_95s.html">tab_95s()</a></code>
 
         </dt>
         <dd>95's Table Plot</dd>
@@ -113,12 +120,12 @@
         <dd>Clean UNAIDS Data from EDMS</dd>
       </dl><dl><dt>
 
-          <code><a href="munge_unaids.html">munge_unaids()</a></code>
+          <code><a href="publish_release.html">publish_release()</a></code>
 
         </dt>
-        <dd>Cleaning UNAIDS Data</dd>
+        <dd>Publish Tidy UNAIDS Data as a GitHub Release</dd>
       </dl></div><div class="section level2">
-      <h2 id="reference-data">Reference Data<a class="anchor" aria-label="anchor" href="#reference-data"></a></h2>
+      <h2 id="developer-reference-data">Developer Reference Data<a class="anchor" aria-label="anchor" href="#developer-reference-data"></a></h2>
 
 
 
@@ -136,12 +143,6 @@
         <dd>Full list of expected indicators</dd>
       </dl><dl><dt>
 
-          <code><a href="req_cols.html">req_cols</a></code>
-
-        </dt>
-        <dd>EMDS Extract Required Columns</dd>
-      </dl><dl><dt>
-
           <code><a href="indicator_map.html">indicator_map</a></code>
 
         </dt>
@@ -152,6 +153,12 @@
 
         </dt>
         <dd>PEPFAR countries + ISO codes</dd>
+      </dl><dl><dt>
+
+          <code><a href="req_cols.html">req_cols</a></code>
+
+        </dt>
+        <dd>EMDS Extract Required Columns</dd>
       </dl></div><div class="section level2">
       <h2 id="deprecated-functions">Deprecated functions<a class="anchor" aria-label="anchor" href="#deprecated-functions"></a></h2>
 
@@ -165,16 +172,40 @@
 
       <dl><dt>
 
-          <code><a href="load_data.html">load_data()</a></code>
+          <code><a href="base_plot.html">base_plot()</a></code>
 
         </dt>
-        <dd>Load data for viz</dd>
+        <dd>95's Table Plot</dd>
       </dl><dl><dt>
 
-          <code><a href="unaids_hdrs.html">unaids_hdrs()</a></code>
+          <code><a href="epi_plot.html">epi_plot()</a></code>
 
         </dt>
-        <dd>Generate UNAIDS headers</dd>
+        <dd>Epidemic Control Plot</dd>
+      </dl><dl><dt>
+
+          <code><a href="munge_unaids.html">munge_unaids()</a></code>
+
+        </dt>
+        <dd>Cleaning UNAIDS Data</dd>
+      </dl><dl><dt>
+
+          <code><a href="pull_unaids.html">pull_unaids()</a></code>
+
+        </dt>
+        <dd>Pull clean UNAIDS HIV Estimates and Test &amp; Treat Data</dd>
+      </dl><dl><dt>
+
+          <code><a href="pull_estimates.html">pull_estimates()</a></code>
+
+        </dt>
+        <dd>Pull clean UNAIDS HIV Estimates</dd>
+      </dl><dl><dt>
+
+          <code><a href="pull_testtreat.html">pull_testtreat()</a></code>
+
+        </dt>
+        <dd>Pull clean UNAIDS HIV Test &amp; Treat</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -185,7 +216,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>

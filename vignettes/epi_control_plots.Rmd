@@ -10,9 +10,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-   eval=T, 
-  echo=T
+   comment = "#>",
+      eval = TRUE, 
+      echo = TRUE
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
@@ -71,15 +71,15 @@ The goal of epidemic control can be visualized as a 45-degree line, indicating b
 Points that fall closer to the total deaths axis indicate periods when epidemic control is being approached or maintained. Let’s take an example from Zambia to see this relationship in action. Using the `plot_connected_scatter()` we can visualize Zambia's progress towards epi control. 
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-plot_connected_scatter(df_unaids, sel_cntry = "Zambia") + labs(title = toupper("Zambia reached epidemic control in 2023"))
+plot_connected_scatter(df_unaids, sel_cntry = "Zambia") + ggplot2::labs(title = toupper("Zambia reached epidemic control in 2023"))
 ```
-The `plot_connected_scatter()` can also take multiple country arguments at once to make comparison plots. While the function will automatically scale the axes for you, it is recommending comparing countries with similar mangitudes of epidemic control metrics. Comparing South Africa to Rwanda will result in a graphic that is not ideal for comparing the two countries -- unless the goal is to show the magnitude of the epidemic in South Africa. Below, we show the progress of Mozambique, Tanzania and Malawi. Coincidentally, each country appears to be
+The `plot_connected_scatter()` can also take multiple country arguments to make comparison plots. While the function will automatically scale the axes for you, it is recommended comparing countries with similar mangitude of epidemic control metrics. Comparing South Africa to Rwanda will result in a graphic that is dominated by the sheer size of the epidemic in South Africa. Below, we show the progress of Mozambique, Tanzania and Malawi. Coincidentally, each country appears to be on similar paths, but at different points in time. 
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzania")) + labs(title = toupper("Zambia reached epidemic control in 2023"))
+plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzania")) + ggplot2::labs(title = toupper("Zambia reached epidemic control in 2023"))
 ```
 
-The race to the bottom plots can also be combined together if groups of countries naturally fall into different classes. Below, countries are sorted into large and small groups to depict epidemic control conditioned on a country's progress to the 95s. 
+The race to the bottom plots can also be combined together if countries naturally fall into different classes. Below, countries are sorted into large and small groups to depict epidemic control conditioned on a country's progress to the 95s. 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
   
   # Lump countries into buckets of progress and size of epidemic
@@ -101,7 +101,7 @@ The race to the bottom plots can also be combined together if groups of countrie
                   ))
   
   # Combine the plots into a 2-row, 3-column layout using patchwork
-  combined_plot <- patchwork::wrap_plots(plots, ncol = 2) + labs(caption = mindthegap::source_note)
+  combined_plot <- patchwork::wrap_plots(plots, ncol = 2) + ggplot2::labs(caption = mindthegap::source_note)
 
   # Display the final plot
   print(combined_plot)
