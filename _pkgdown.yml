@@ -41,12 +41,12 @@ reference:
 - title: Accessing Clean UNAIDS Estimates
   contents:
   - load_unaids
+  - prep_epi_data
 - title: Plotting UNAIDS Estimates
   contents:
   - adorn_annotation
   - plot_connected_scatter
   - plot_epi_trends
-  - prep_epi_data
   - tab_95s
   - source_note
 - title: Developer Tools
