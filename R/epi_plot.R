@@ -1,6 +1,6 @@
 #' Epidemic Control Plot
 #' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
-#'
+#' @details Use `plot_epi_trends()` instead.
 #' @param df UNAIDS data frame loaded from `load_unaids()`
 #' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
 #'
@@ -19,6 +19,8 @@
 
 epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 
+  lifecycle::deprecate_warn("2.0.0", "epi_plot()", "plot_epi_trends()")
+
   df_epi <- subset_epi_data(df)
 
   df_epi <- add_pepfar_rollup(df_epi, sel_cntry)
@@ -29,11 +31,46 @@ epi_plot <- function(df, sel_cntry = c("All PEPFAR")){
 
 }
 
+#' Epidemic Control Plot
+#' @description This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
+#'
+#' @param df UNAIDS data frame loaded from `load_unaids()`
+#' @param sel_cntry  PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)
+#'
+#' @return Epidemic control plot showing trends in new infections and total deaths to HIV population
+#' @export
+#' @seealso [load_unaids()]
+#'
+#' @examples
+#'  \dontrun{
+#'    df_unaids <- load_unaids(pepfar_only = FALSE)
+#'    plot_epi_trends(df_unaids)
+#'    plot_epi_trends(df_unaids, sel_cntry = "Lesotho")
+#'    plot_epi_trends(df_unaids, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
+#' }
+#'
+
+plot_epi_trends <- function(df, sel_cntry = c("All PEPFAR")){
+
+  df_epi <- subset_epi_data(df)
+
+  df_epi <- add_pepfar_rollup(df_epi, sel_cntry)
+
+  df_viz <- prepare_viz_data(df_epi, sel_cntry)
+
+  viz_epi(df_viz)
+
+}
+
+
+
+
+
 #' Subset data to select indicators needed
 #'
 #' Filter down data to only what is needed for the epi control plots
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 subset_epi_data <- function(df) {
 
@@ -56,7 +93,7 @@ subset_epi_data <- function(df) {
 
 #' Validate Epi indicator/disaggs
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 #'
 validate_epi_disaggs <- function(df){
@@ -114,7 +151,7 @@ validate_epi_disaggs <- function(df){
 #'
 #' If desired by user, add in a PEPFAR roll up
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 add_pepfar_rollup <- function(df, sel_cntry) {
 
@@ -140,7 +177,7 @@ add_pepfar_rollup <- function(df, sel_cntry) {
 
 #' Prepare viz data
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 #'
 prepare_viz_data <- function(df, sel_cntry) {
@@ -227,7 +264,7 @@ prepare_viz_data <- function(df, sel_cntry) {
 
 #' Standard Epi plot
 #'
-#' @inheritParams epi_plot
+#' @inheritParams plot_epi_trends
 #' @keywords internal
 #'
 viz_epi <- function(df){

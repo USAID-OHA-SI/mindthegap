@@ -43,10 +43,11 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/accessing-clean-unaids.html">Accesing Clean UNAIDS Data</a></li>
+<li><a class="dropdown-item" href="articles/accessing-clean-unaids.html">Accessing Clean UNAIDS Data</a></li>
     <li><a class="dropdown-item" href="articles/epi_control_plots.html">Epidemic Control Plots</a></li>
     <li><a class="dropdown-item" href="articles/relative-plhiv-base.html">95-95-95 Target Progress: Relative Base vs. PLHIV Base</a></li>
     <li><a class="dropdown-item" href="articles/unaids-data-dictionary.html">Data Dictionary &amp; Use Cases</a></li>
+    <li><a class="dropdown-item" href="articles/edms-pull.html">Extracting and Processing Data from EDMS</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -67,40 +68,62 @@
 </div>
 <!-- badges: start -->
 
-<p>mindthegap was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package to process, clean, and export tidy UNAIDS Estimates data for ease of access.</p>
+<!-- badges: end -->
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p><code>mindthegap</code> was developed in 2019 in preparation for agency self assessments and COP to show UNAIDS 90-90-90 Progress and ART Gap. It has been turned into a package to process, clean, and export tidy UNAIDS Estimates data for ease of access. Each year, the package has evolved to meet the needs of the Office of HIV/AIDS. The current release shifts emphasis to UNAIDS 95-95-95 goals. Please see the <a href="https://usaid-oha-si.github.io/mindthegap/articles/">Articles</a> section and <a href="https://usaid-oha-si.github.io/mindthegap/news/index.html">Changelog</a> for details.</p>
+</div>
 <div class="section level2">
 <h2 id="installing-mindthegap">Installing mindthegap<a class="anchor" aria-label="anchor" href="#installing-mindthegap"></a>
 </h2>
 <p><code>mindthegap</code> is not on CRAN, so you will have to install it directly from <a href="https://usaid-oha-si.r-universe.dev/packages" class="external-link">rOpenSci</a> or <a href="https://github.com/USAID-OHA-SI/" class="external-link">GitHub</a> using the code found below.</p>
-<p>```{r} ## SETUP</p>
-<p>#install from rOpenSci install.packages(‘mindthegap’, repos = c(‘<a href="https://usaid-oha-si.r-universe.dev" class="external-link uri">https://usaid-oha-si.r-universe.dev</a>’, getOption(“repos”)))</p>
-<p>#alt: install from GitHub using pak #install.packages(“pak”) #pak::pak(“USAID-OHA-SI/mindthegap”)</p>
-<p>#load the package library(mindthegap)</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## SETUP</span></span>
+<span></span>
+<span>  <span class="co">#install from rOpenSci</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mindthegap'</span>, <span class="st">'glitr'</span><span class="op">)</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://usaid-oha-si.r-universe.dev'</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    </span>
+<span>  <span class="co">#alt: install from GitHub using pak</span></span>
+<span>    <span class="co">#install.packages("pak")</span></span>
+<span>    <span class="co">#pak::pak("USAID-OHA-SI/mindthegap")</span></span>
+<span>    <span class="co">#pak::pak("USAID-OHA-SI/glitr")</span></span>
+<span>    </span>
+<span>  <span class="co">#load the package</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/mindthegap" class="external-link">mindthegap</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## LIST TYPES OF STYLES INCLUDED WITH PACKAGE</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="st">"package:mindthegap"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="list-types-of-styles-included-with-package">LIST TYPES OF STYLES INCLUDED WITH PACKAGE<a class="anchor" aria-label="anchor" href="#list-types-of-styles-included-with-package"></a>
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>ls(“package:mindthegap”)</p>
-<pre><code>
-## Example
-
-The [UNAIDS data](aidsinfo.unaids.org/) reports on HIV estimates with uncertainty bounds from 1990 onward, and includes both epidemic control indicators and indicators that show progress to the 95s. The data is sourced from the UNAIDS AIDSInfo database, making it publicly accessible data. UNAIDS releases new estimates each July.
-
-To access the core set of UNAIDS Data see the below example using `pull_unaids()`.
-
-- There are 2 main groups of data in this dataset:
-    - HIV/AIDS Estimates
-    - HIV Testing and Treatment Cascade Data
-
-This is a basic example of how to load the data using `pull_unaids()`.
-
-
-```{r}
-library(mindthegap)
-
-df_est &lt;- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
-df_tt &lt;- pull_unaids(data_type = "HIV Test &amp; Treat", pepfar_only = TRUE)
-</code></pre>
+<p>The UNAIDS data reports on HIV estimates with uncertainty bounds from 1990 onward, and includes both epidemic control indicators and indicators that show progress to the 95s. The data are sourced from <a href="https://edms.unaids.org/" class="external-link">UNAIDS EDMS</a>, originally from the <a href="aidsinfo.unaids.org/">UNAIDS data</a> database. Data available here are updated in July when UNAIDS issues a new releases.</p>
+<p>To access the core set of UNAIDS Data see the below example using <code><a href="reference/load_unaids.html">load_unaids()</a></code>.</p>
+<ul>
+<li>A core dataset contains both epidemic control and 95-95-95 goals indicators.</li>
+<li>To view the available indicators <code>count()</code> the indicator column in the dataset.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/mindthegap" class="external-link">mindthegap</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#load data</span></span>
+<span> <span class="va">df_unaids</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_unaids.html">load_unaids</a></span><span class="op">(</span>pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#review structure</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">df_unaids</span><span class="op">)</span></span>
+<span> </span>
+<span><span class="co">#review available indicators</span></span>
+<span> <span class="va">df_unaids</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">count</span><span class="op">(</span><span class="va">indicator</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#plot epi curve</span></span>
+<span> <span class="fu"><a href="reference/plot_epi_trends.html">plot_epi_trends</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="st">"Kenya"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#plot epi curve with a connected scatterplot</span></span>
+<span> <span class="fu"><a href="reference/plot_connected_scatter.html">plot_connected_scatter</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="st">"Zambia"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#plot UNAIDS 95 target achievement</span></span>
+<span> <span class="fu"><a href="reference/tab_95s.html">tab_95s</a></span><span class="op">(</span><span class="va">df_unaids</span>, <span class="st">"Namibia"</span>, denom <span class="op">=</span> <span class="st">"PLHIV"</span>, grp <span class="op">=</span> <span class="st">"All"</span><span class="op">)</span></span></code></pre></div>
 <p>Additionally, data can be manually downloaded from the <a href="https://github.com/USAID-OHA-SI/mindthegap/releases" class="external-link">GitHub Releases page</a>.</p>
 <hr>
 <p><em>Disclaimer: The findings, interpretation, and conclusions expressed herein are those of the authors and do not necessarily reflect the views of United States Agency for International Development. All errors remain our own.</em></p>
@@ -159,7 +182,7 @@ df_tt &lt;- pull_unaids(data_type = "HIV Test &amp; Treat", pepfar_only = TRUE)
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
