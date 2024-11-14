@@ -28,7 +28,7 @@ pull_unaids <- function(data_type, pepfar_only = TRUE) {
   #download a specific file - test
   piggyback::pb_download(file = filename,
               repo = "USAID-OHA-SI/mindthegap",
-              tag = "latest",
+              tag = "v2024.11.01", #sending to the latest release
               dest = temp_folder,
               show_progress = FALSE)
 
