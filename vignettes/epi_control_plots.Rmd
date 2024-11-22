@@ -25,12 +25,14 @@ PEPFAR defines HIV epidemic control as the "point at which the total number of n
 
 In addition to `mindthegap` make sure you have `glitr` installed. This does not need to be loaded into your session, but is needed to run the plots. Dependent packages are typically installed from CRAN, but since our packages are on rOpenSci, they are not installed.
 
-```{r glitr}
-install.packages('glitr', repos = c('https://usaid-oha-si.r-universe.dev', 'https://cran.r-project.org/'))
+```{r instl_missing}
+install.packages(c('glitr', 'patchwork'), repos = c('https://usaid-oha-si.r-universe.dev', 'https://cran.r-project.org/'))
 ```
 
 ```{r setup, include = TRUE, message = FALSE}
 library(mindthegap)
+library(ggplot2)
+library(patchwork)
 ```
 
 ### Epidemic Control Plotting Function
@@ -71,12 +73,14 @@ The goal of epidemic control can be visualized as a 45-degree line, indicating b
 Points that fall closer to the total deaths axis indicate periods when epidemic control is being approached or maintained. Let’s take an example from Zambia to see this relationship in action. Using the `plot_connected_scatter()` we can visualize Zambia's progress towards epi control. 
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-plot_connected_scatter(df_unaids, sel_cntry = "Zambia") + ggplot2::labs(title = toupper("Zambia reached epidemic control in 2023"))
+plot_connected_scatter(df_unaids, sel_cntry = "Zambia") + 
+  labs(title = toupper("Zambia reached epidemic control in 2023"))
 ```
 The `plot_connected_scatter()` can also take multiple country arguments to make comparison plots. While the function will automatically scale the axes for you, it is recommended comparing countries with similar mangitude of epidemic control metrics. Comparing South Africa to Rwanda will result in a graphic that is dominated by the sheer size of the epidemic in South Africa. Below, we show the progress of Mozambique, Tanzania and Malawi. Coincidentally, each country appears to be on similar paths, but at different points in time. 
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
-plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzania")) + ggplot2::labs(title = toupper("Zambia reached epidemic control in 2023"))
+plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzania")) +
+  labs(title = toupper("Zambia reached epidemic control in 2023"))
 ```
 
 The race to the bottom plots can also be combined together if countries naturally fall into different classes. Below, countries are sorted into large and small groups to depict epidemic control conditioned on a country's progress to the 95s. 
@@ -86,25 +90,24 @@ The race to the bottom plots can also be combined together if countries naturall
   near_95s_large <- c( "Zambia", "Kenya", "Zimbabwe", "Malawi")
   near_95s_small <- c("Eswatini", "Botswana", "Rwanda", "Namibia", "Lesotho")
   
-    # Store groups in a list with corresponding titles
+  # Store groups in a list with corresponding titles
   country_groups <- list(
     "Near 95s Large" = near_95s_large,
     "Near 95s Small" = near_95s_small
     )
   
-    # Create a plot for each group with the title as a label
-  # plots <- purrr::map2(country_groups, names(country_groups), 
-                # ~ plot_connected_scatter(df_unaids, sel_cntry = .x) + 
-                #   ggplot2::labs(title = .y, caption = NULL) +
-                #   ggplot2::theme(
-                #     legend.position = "none",
-                #   ))
+  # Create a plot for each group with the title as a label
+  plots <- purrr::map2(country_groups, names(country_groups),
+  ~ plot_connected_scatter(df_unaids, sel_cntry = .x) +
+    labs(title = .y, caption = NULL) +
+    theme(legend.position = "none"))
   
   # Combine the plots into a 2-row, 3-column layout using patchwork
-  # combined_plot <- patchwork::wrap_plots(plots, ncol = 2) + ggplot2::labs(caption = mindthegap::source_note)
+  combined_plot <- patchwork::wrap_plots(plots, ncol = 2) + 
+    labs(caption = source_note)
 
   # Display the final plot
-  # print(combined_plot)
+  print(combined_plot)
   
   
 ```
