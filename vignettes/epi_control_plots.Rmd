@@ -80,7 +80,7 @@ plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzani
 ```
 
 The race to the bottom plots can also be combined together if countries naturally fall into different classes. Below, countries are sorted into large and small groups to depict epidemic control conditioned on a country's progress to the 95s. 
-```{r, message = FALSE, warning=FALSE, fig.align="center"}
+```{r, message = FALSE, warning=FALSE, fig.align="center", include = FALSE}
   
   # Lump countries into buckets of progress and size of epidemic
   near_95s_large <- c( "Zambia", "Kenya", "Zimbabwe", "Malawi")
@@ -93,18 +93,18 @@ The race to the bottom plots can also be combined together if countries naturall
     )
   
     # Create a plot for each group with the title as a label
-  plots <- purrr::map2(country_groups, names(country_groups), 
-                ~ plot_connected_scatter(df_unaids, sel_cntry = .x) + 
-                  ggplot2::labs(title = .y, caption = NULL) +
-                  ggplot2::theme(
-                    legend.position = "none",
-                  ))
+  # plots <- purrr::map2(country_groups, names(country_groups), 
+                # ~ plot_connected_scatter(df_unaids, sel_cntry = .x) + 
+                #   ggplot2::labs(title = .y, caption = NULL) +
+                #   ggplot2::theme(
+                #     legend.position = "none",
+                #   ))
   
   # Combine the plots into a 2-row, 3-column layout using patchwork
-  combined_plot <- patchwork::wrap_plots(plots, ncol = 2) + ggplot2::labs(caption = mindthegap::source_note)
+  # combined_plot <- patchwork::wrap_plots(plots, ncol = 2) + ggplot2::labs(caption = mindthegap::source_note)
 
   # Display the final plot
-  print(combined_plot)
+  # print(combined_plot)
   
   
 ```
