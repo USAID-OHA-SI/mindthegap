@@ -36,15 +36,16 @@ glimpse(df_unaids)
 
 ```
 
-The data are a panel dataset of countries from 1990 to `r mindthegap:::unaids_year` reporting on `r unique(df_unaids$indicator) %>% length()` different indicators. Each of those indicators may be disaggregated by some combination of `age` and `sex` as seen in the table below. Its also important to mention that the values are provided as estimates, which have lower and upper bounds. 
+The data are a panel dataset of countries from 1990 to `r mindthegap:::unaids_year` reporting on `r unique(df_unaids$indicator) %>% length()` different indicators. Each of those indicators may be disaggregated by some combination of `age` and `sex` as seen in the table below. Its also important to mention that the values are provided as estimates, which have lower and upper bounds.
 
-Estimates may be been reported with character values, e.g. "<100" or ">98". In order to analyst and plots these data, we have removed the character values and noted them iin teh `estimate_flag` column. 
+Estimates may be been reported with character values, e.g. "\<100" or "\>98". In order to analyze and plot this data, we have removed the character values and noted them in the `estimate_flag` column.
 
-We have also provided a few additional columns to the dataset. 
-   - `pepfar`: a logical value that notes whether the country is a PEPFAR country or not
-   - `indicator_type`: a character value that tells you whether the estimate is an integer, percentage, rate, or ratio
-   - `achv_95_plhiv` and `achv_95_relativ`: a logical value that identifies whether the country in a given year has achieved all three 95 goal (with PLHIV or relative base, see \linkVignette{`relative-plhiv-base`}) with the point estimate. This achievement is broken down by each age and sex group (All, 0-15, 15+, Female/15+ Male/15+)
-   - `achv_epi_control`: a logical vlaue that indentifies whether a country in a given year has achieved all three requirements for epidemic control (IMR less than 1 and both new infections and deaths declining, see \linkVignette{`epi_control_plots`}).
+We have also provided a few additional columns to the dataset:
+
+-   `pepfar`: a logical value that notes whether the country is a PEPFAR country or not
+-   `indicator_type`: a character value that tells you whether the estimate is an integer, percentage, rate, or ratio
+-   `achv_95_plhiv` and `achv_95_relative`: a logical value that identifies whether the country in a given year has achieved all three 95 goals (with PLHIV or relative base, see \linkVignette{`relative-plhiv-base`}) with the point estimate. This achievement is broken down by each age and sex group (All, 0-15, 15+, Female/15+ Male/15+)
+-   `achv_epi_control`: a logical value that identifies whether a country in a given year has achieved all three requirements for epidemic control (IMR less than 1 and both new infections and deaths declining, see \linkVignette{`epi_control_plots`}).
 
 ```{r, message = FALSE, echo = FALSE}
 tbl <- indicator_map %>% 
@@ -87,6 +88,6 @@ tbl %>%
   kableExtra::kable_styling(bootstrap_options = c("hover"))
 ```
 
-As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at "Number AIDS Related Deaths", there is total and age disaggregates for 0-14 and 15+, but its not broken down by sex.  
+As you can see, there are multiple different disaggregates, especially across indicators. For instance, if you were looking at **"Number AIDS Related Deaths"**, there is total and age disaggregates for 0-14 and 15+, but its not broken down by sex.
 
 As such, it is important to filter for the age/sex/indicator type disaggregates that are you interested in before diving further into your analytics to avoid any potential double counting.
