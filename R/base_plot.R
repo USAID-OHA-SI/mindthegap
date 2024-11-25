@@ -127,7 +127,7 @@ base_plot <- function(df, cntry,
                       grp = c("All", "Female 15+", "Male 15+", "Peds <15"),
                       yr = NULL){
 
-  lifecycle::deprecate_warn("2.0.0", base_plot(), tab_95s())
+  lifecycle::deprecate_warn("2.0.0", "base_plot()", "tab_95s()")
 
   if(length(cntry) == 0){
     cli::cli_abort("No country provided. Please specify the country using the {.arg cntry} param.")
