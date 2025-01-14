@@ -180,6 +180,31 @@ to be on similar paths, but at different points in time.</p>
 countries naturally fall into different classes. Below, countries are
 sorted into large and small groups to depict epidemic control
 conditioned on a country’s progress to the 95s.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  </span>
+<span>  <span class="co"># Lump countries into buckets of progress and size of epidemic</span></span>
+<span>  <span class="va">near_95s_large</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"Zambia"</span>, <span class="st">"Kenya"</span>, <span class="st">"Zimbabwe"</span>, <span class="st">"Malawi"</span><span class="op">)</span></span>
+<span>  <span class="va">near_95s_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Eswatini"</span>, <span class="st">"Botswana"</span>, <span class="st">"Rwanda"</span>, <span class="st">"Namibia"</span>, <span class="st">"Lesotho"</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># Store groups in a list with corresponding titles</span></span>
+<span>  <span class="va">country_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Near 95s Large"</span> <span class="op">=</span> <span class="va">near_95s_large</span>,</span>
+<span>    <span class="st">"Near 95s Small"</span> <span class="op">=</span> <span class="va">near_95s_small</span></span>
+<span>    <span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># Create a plot for each group with the title as a label</span></span>
+<span>  <span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span><span class="va">country_groups</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">country_groups</span><span class="op">)</span>,</span>
+<span>  <span class="op">~</span> <span class="fu"><a href="../reference/plot_connected_scatter.html">plot_connected_scatter</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="va">.x</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="va">.y</span>, caption <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># Combine the plots into a 2-row, 3-column layout using patchwork</span></span>
+<span>  <span class="va">combined_plot</span> <span class="op">&lt;-</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">plots</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="va">source_note</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Display the final plot</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined_plot</span><span class="op">)</span></span></code></pre></div>
+<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-7-1.png" width="720" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
