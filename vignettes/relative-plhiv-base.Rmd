@@ -101,7 +101,7 @@ v_relative <- tab_95s(df_unaids, "Namibia", denom = "Relative", grp = "All")
 v_relative
 ```
 
-```{r, include=FALSE}
+```{r, include=T}
 d_relative <- v_relative$`_data`
 
 df_plhiv_alt <- d_plhiv %>% 
@@ -124,11 +124,11 @@ stats_relative <- d_relative %>%
 
 Using the relative base, we can see - `r stats_relative`. As such, Namibia meets the 2nd and 3rd 95 with the relative base, but does not reach the 1st 95.
 
-As a result of these differences between the 2 metrics, the number of PEPFAR countries that have reached all of the 95's can vary depending on the denominator.
+As a result of these differences between the two metrics, the number of PEPFAR countries that have reached all of the 95's can vary depending on the denominator selected. If we look at the results from 2022, we can see these differences at play. 
 
-```{r, include=FALSE}
+```{r, include=T}
 cntry_epi_plhiv <- df_unaids %>% 
-  dplyr::filter(year == max(year),
+  dplyr::filter(year == max(year)-1,
                 age == "All",
                 sex == "All",
                 achv_95_plhiv == TRUE
@@ -140,7 +140,7 @@ cntry_epi_plhiv <- df_unaids %>%
   
 
 cntry_epi_relative <- df_unaids %>% 
-  dplyr::filter(year == max(year),
+  dplyr::filter(year == max(year)-1,
                 age == "All",
                 sex == "All",
                 achv_95_relative == TRUE
