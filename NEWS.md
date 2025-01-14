@@ -1,3 +1,22 @@
+# mindthegap 2.0
+* Updated vignettes to include new plotting functions and a short section on `plot_connected_scatter` functionality [2024-10-24]
+* Renamed `base_plot` to `tab_95s` to better reflect it's purpose [2024-10-24]
+* Renamed `epi_plot` to `plot_epi_trends` to better reflect it's purpose and standardize plot function names [2024-10-24]
+* Enhanced plotting options with `plot_connected_scatter` -- a function to create a race to the bottom connected scatterplot [2024-10-24]
+* Add new vignette for developers on how to extract and process EDMS output [2024-10-07]
+* Update vignettes with the changed to the indicators and structure [2024-10-07]
+* Allow `base_plot` to provide achievement across different age/sex groups  [2024-10-03]
+* Updated `base_plot` to handle new data structure and reduce redundancy  [2024-10-03]
+* Add `publish_release` to standardize update to GH for developers [2024-10-03]
+* Deprecate `munge_unaids` as it will not be maintained (now using `munge_edms`) and may yeild incorrect results [2024-10-03]
+* Improve performance of `plot_epi` and force user to provide the dataframe [2024-10-02]
+* Include Incidence-Mortality Ration (IMR) to expected output from EDMS and used the IMR to calculate epi control [2024-10-01]
+* Excluded  Incidence 15-49 (INC%) from expected output from EDMS due to the data from EDMS being off by a decimal place from what exists on AIDInfo [2024-10-01]
+* Remove long depricated functions: `load_data()` and `unaids_hdrs` [2024-10-01]
+* Replace `tidyselect`, `glamr`, and `googlesheet4` references/Imports [2024-10-01]
+* Develop unit tests for `munge_edms` help ensures the code is performing as expected with annual updates and make updating/catching errors easier [2024-09-24]
+* Create `munge_edms` (and internal sub functions + data) for handing UNAIDS data directly out of the EDMS database [2024-09-23]
+
 # mindthegap 1.1
 * Added a [codebook output](https://github.com/USAID-OHA-SI/mindthegap/blob/update-2023/data-raw/dataReporter_UNAIDS_2024_Clean_Estimates.pdf) [2024-08-02]
 * Simplified the number of package dependencies [2024-08-02]

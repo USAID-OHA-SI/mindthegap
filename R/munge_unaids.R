@@ -1,9 +1,7 @@
-#' @title Cleaning UNAIDS Data
-#' @description
-#' (Updated July 2023)
+#' Cleaning UNAIDS Data
 #'
+#' Deprecated. This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 #'
-#' @description This function fetches and cleans UNAIDS Estimates/Test and Treat Data
 #' @param return_type Returns either 'HIV Estimates' or 'HIV Test & Treat' Data
 #' @param indicator_type Returns either 'Integer' or 'Percent' indicator values
 
@@ -17,6 +15,12 @@
 #'
 munge_unaids <- function(return_type, indicator_type) {
 
+  lifecycle::deprecate_warn("2.0.0", "munge_unaids()", "munge_edms()",
+                             details = "Data should be pulled from the UNAIDS EDMS Database rather than the Excel file posted to AIDSInfo. This function has stopped being maintained and may not provide valid results.")
+
+  if (!requireNamespace('googlesheets4', quietly = TRUE))
+    cli::cli_abort("{.pkg googlesheets4} needed for this function to work. Please install it.")
+
   # Google Sheet ID to original
   #sheet_id <- googledrive::as_id("1tkwP532mPL_yy7hJuHNAHaZ1_K_wd7zo_8AjeOe7fRs")
 
@@ -28,8 +32,8 @@ munge_unaids <- function(return_type, indicator_type) {
   #Munge
   gdrive_df_clean <-
     gdrive_df %>%
-    #dplyr::mutate(dplyr::across(tidyselect::contains("_"), ~gsub(" |<|>", "", .))) %>%
-    #dplyr::mutate(dplyr::across( tidyselect::contains("_"), as.numeric)) %>%
+    #dplyr::mutate(dplyr::across(dplyr::contains("_"), ~gsub(" |<|>", "", .))) %>%
+    #dplyr::mutate(dplyr::across( dplyr::contains("_"), as.numeric)) %>%
     dplyr::mutate(region = ifelse(country %in% regions, country, NA)) %>%
     tidyr::fill(region) %>% #get regions column
     tidyr::pivot_longer(-c(year, iso, country, region),
@@ -79,9 +83,8 @@ munge_unaids <- function(return_type, indicator_type) {
            upper_bound = high)
 
   #add PEPFAR grouping category
-  gdrive_df_clean <-  glamr::pepfar_country_list %>%
-    dplyr::select(country, iso = country_iso) %>%
-    dplyr::rename(countryname = country) %>%
+  gdrive_df_clean <-  pepfar %>%
+    dplyr::select(countryname = country_pepfar, iso = iso3) %>%
     dplyr::left_join(gdrive_df_clean, ., by = "iso") %>%
     dplyr::mutate(country = ifelse(is.na(countryname), country, countryname),
                   pepfar = ifelse(is.na(countryname), FALSE, TRUE)) %>%

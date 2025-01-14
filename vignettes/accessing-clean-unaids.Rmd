@@ -1,5 +1,5 @@
 ---
-title: "Accesing Clean UNAIDS Data"
+title: "Accessing Clean UNAIDS Data"
 output: rmarkdown::html_vignette
 description: |
   This vignette addresses how to pull the clean 2020 UNAIDS Estimates from Google Drive to R.
@@ -12,43 +12,33 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-   eval=T, 
-  echo=T
+   comment = "#>",
+      eval = TRUE, 
+      echo = TRUE
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
-```{r, include=FALSE}
-install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
-```
-
 ### Introduction
 
-This vignette covers how to access the clean and tidy annual UNAIDS Estimates from GitHub Releases. The MindTheGap package uses a cleaning function (`munge_unaids`) to process, munge, and tidy the UNAIDS HIV Estimates from AIDSInfo and `pull_unaids` to pull the cleaned data from Google Drive.
+This vignette covers how to access the clean and tidy annual UNAIDS Estimates from [GitHub Releases](https://github.com/USAID-OHA-SI/mindthegap/releases). The `mindthegap` package uses a cleaning function (`munge_edms`) (formerly `munge_unaids`) to process, munge, and tidy the UNAIDS HIV Estimates output from the [EDMS database](https://edms.unaids.org/) once new estimates are available annually (around July) and `load_unaids` to load this cleaned data into your session.
 
-Let's start by loading the MindTheGap package.
+Let's start by loading the `mindthegap` package.
 
 ```{r setup, message = FALSE}
 library(mindthegap)
-library(glamr) #install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
 library(knitr)
 ```
 
 ### Pull clean data from GitHub Releases
 
-With `munge_unaids`, the developer is left with a clean and tidy dataset that includes a `pepfar` flag to denote whether a country is a PEPFAR country or not and an `estimate_flag` to indicate estimates that are an approximation (previously contained a "\<"). In order to make this data accessible outside of R and cut down on the processing time, we uploaded the clean UNAIDS data to the [package releases](https://github.com/USAID-OHA-SI/mindthegap/releases) and wrote the function `pull_unaids` for users to easily access this data.
+When new data are released annually, our team extracts the data from the UNAIDS database and runs `munge_edms` on it to clean and tidy the dataset, including new variables such as a `pepfar` flag to denote whether a country is a PEPFAR country or not and an `estimate_flag` to indicate estimates that are an approximation (previously contained a "\<" or "\>"). In order to make this data accessible outside of R and cut down on the processing time, we uploaded the clean UNAIDS data to the [package releases](https://github.com/USAID-OHA-SI/mindthegap/releases);  users can easily access this data by running `load_unaids` with R or directly downloading the data file.
 
-To use `pull_unaids`, there are 2 parameters:
+To use `load_unaids`, the user just needed to specify whether they want to return all countries or just PEPFAR ones (`pepfar_only = TRUE`), the default.
 
-1.  `data_type`: This parameter returns one of the 2 datasets: "HIV Estimates" or "HIV Test & Treat". Please note that if you want to filter to a specific indicator type (i.e. Percent or Integer), you will have to add that filter to your code `filter(indic_type == "Integer")`.
-
-2.  `pepfar_only`: if TRUE, this parameter will return a dataset of only PEPFAR countries. If you do not specify this parameter, it will default to TRUE.
-
-In order to access the data from GitHub releases, be sure to load the `glamr` package to run the `pull_unaids` function.
 
 ```{r, message = FALSE}
-df_est <- pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)
+df_unaids <- load_unaids(pepfar_only = TRUE)
 
-kable(head(df_est), format = "html")
+kable(head(df_unaids), format = "html")
 ```

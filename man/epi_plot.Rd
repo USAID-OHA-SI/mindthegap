@@ -4,12 +4,12 @@
 \alias{epi_plot}
 \title{Epidemic Control Plot}
 \usage{
-epi_plot(sel_cntry = c("All PEPFAR"))
+epi_plot(df, sel_cntry = c("All PEPFAR"))
 }
 \arguments{
-\item{sel_cntry}{PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)}
+\item{df}{UNAIDS data frame loaded from \code{load_unaids()}}
 
-\item{df}{UNAIDS based data frame}
+\item{sel_cntry}{PEPFAR country to visualize ("ALL PEPFAR" as default or list OU names)}
 }
 \value{
 Epidemic control plot showing trends in new infections and total deaths to HIV population
@@ -17,12 +17,18 @@ Epidemic control plot showing trends in new infections and total deaths to HIV p
 \description{
 This function creates epidemic control curves for "ALL PEPFAR" or selected OU's
 }
+\details{
+Use \code{plot_epi_trends()} instead.
+}
 \examples{
  \dontrun{
-   epi_plot()
-   epi_plot(sel_cntry = "Lesotho")
-   epi_plot(sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
-   epi_plot(sel_cntry = "USA") #breaks with non-PEPFAR countries
+   df_unaids <- load_unaids(pepfar_only = FALSE)
+   epi_plot(df_unaids)
+   epi_plot(df_unaids, sel_cntry = "Lesotho")
+   epi_plot(df_unaids, sel_cntry = c("South Africa", "Zambia", "Kenya", "Malawi"))
 }
 
+}
+\seealso{
+\code{\link[=load_unaids]{load_unaids()}}
 }

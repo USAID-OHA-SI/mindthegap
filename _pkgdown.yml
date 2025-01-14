@@ -27,7 +27,7 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: Accesing Clean UNAIDS Data
+      - text: Accessing Clean UNAIDS Data
         href: articles/accessing-clean-unaids.html
       - text: Epidemic Control Plots
         href: articles/epi_control_plots.html
@@ -35,23 +35,36 @@ navbar:
         href: articles/relative-plhiv-base.html
       - text: Data Dictionary & Use Cases
         href: articles/unaids-data-dictionary.html
+      - text: Extracting and Processing Data from EDMS
+        href: articles/edms-pull.html
 reference:
 - title: Accessing Clean UNAIDS Estimates
   contents:
-  - pull_unaids
-  - pull_estimates
-  - pull_testtreat
+  - load_unaids
+  - prep_epi_data
 - title: Plotting UNAIDS Estimates
   contents:
-  - epi_plot
-  - base_plot
+  - adorn_annotation
+  - plot_connected_scatter
+  - plot_epi_trends
+  - tab_95s
   - source_note
 - title: Developer Tools
   contents:
-  - munge_unaids
-
+  - munge_edms
+  - publish_release
+- title: Developer Reference Data
+  contents:
+  - expected_ind
+  - indicator_map
+  - pepfar
+  - req_cols
 - title: Deprecated functions
   contents:
-  - load_data
-  - unaids_hdrs
+  - base_plot
+  - epi_plot
+  - munge_unaids
+  - pull_unaids
+  - pull_estimates
+  - pull_testtreat
 

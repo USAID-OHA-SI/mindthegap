@@ -17,25 +17,22 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
-```{r, include=FALSE}
-install.packages(c('glamr','glitr'), repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
-```
-
 ## Introduction
 
-In 2020, UNAIDS newly released the 95-95-95 targets which are set to be achieved by 2025, where 95% of PLHIV know their status, 95% of those who know their status are accessing treatment, and 95% of those who are accessing treatment are virally suppressed.
+In 2020, UNAIDS updated their Fast Track targets (90-90-90) for 2024 to become the 95-95-95 targets which are set to be achieved by 2030 - 95% of PLHIV know their status, 95% of those who know their status are accessing treatment, and 95% of those who are accessing treatment are virally suppressed.
 
 Importantly, there are two types of metrics to measure 95-95-95 target progress by: **the PLHIV base** and the **relative/conditional denominator** base. This vignette will outline the key differences between the two metrics, which UNAIDS indicators to use for each, and how to interpret the different parameters.
 
+### Load dependencies
+
+In addition to `mindthegap` make sure you have `glitr` installed. This does not need to be loaded into your session, but is needed to run the plots. Dependent packages are typically installed from CRAN, but since our packages are on rOpenSci, they are not installed.
+
+```{r glitr}
+install.packages('glitr', repos = c('https://usaid-oha-si.r-universe.dev', 'https://cran.r-project.org/'))
+```
+
 ```{r setup, message = FALSE}
 library(mindthegap)
-library(dplyr)
-library(tidyr)
-library(glue)
-library(gt)
-library(gtExtras)
-library(glamr) #install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
-library(glitr) #install.packages('glitr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))
 ```
 
 ### What's the difference between the relative base and the PLHIV base?
@@ -52,13 +49,7 @@ knitr::include_graphics("unaids-95s.png", dpi = 150, error = FALSE)
 
 ### How to use UNAIDS Data to Assess 95's Progress
 
-To assess progress to 95-95-95 targets, we will use the `"HIV Test & Treat"` data and filter for `"Percent"` indicators:
-
-```{r, message = FALSE}
-df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE) %>% 
-  dplyr::filter(indic_type == "Percent")
-
-```
+To assess progress to 95-95-95 targets, we can use the indicators available from EDMS.
 
 -   If you are using the **relative base** to track 95-95-95 progress, use the following indicators from the `"HIV Test & Treat"` data tab.
     -   **`Percent Known Status of PLHIV`**: Percent of PLHIV who known their HIV status
@@ -69,169 +60,102 @@ df_tt <- pull_unaids(data_type = "HIV Test & Treat", pepfar_only = TRUE) %>%
     -   **`Percent on ART of PLHIV`**: Among PLHVIV, percent on ART
     -   **`Percent VLS of PLHIV`**: Among PLHIV, percent virally suppressed
 
+The package has a built in function, `tab_95s`, to generate this as a datatable for you.
+
 Let's take a deep dive into Namibia's progress to the 95's using the PLHIV base.
 
-```{r, message = FALSE, warning = FALSE}
-goal <- 95
-
- #limit Test and Treat data
-  df_tt_plhiv <- df_tt %>% 
-    filter(year == max(year),
-           country == "Namibia",
-           indicator %in% c("Percent Known Status of PLHIV",
-                            "Percent on ART of PLHIV",
-                            "Percent VLS of PLHIV"), #Using the PLHIV base indicators
-           age == "All",
-           sex == "All") %>% 
-    mutate(set = recode(indicator, "Percent Known Status of PLHIV" = 1, 
-                        "Percent on ART of PLHIV" = 2,
-                        "Percent VLS of PLHIV" = 3),
-           goal_rate = round((goal/100)^set*100), 
-           achieved = estimate >= goal_rate) %>% #sets the moving goal rate for each 95 for PLHIV base
-    select(year, country, indicator, estimate, goal_rate, achieved)
-  
-  #create table 
-  year <- unique(df_tt_plhiv$year)
-  
-  gt(df_tt_plhiv) %>% 
-    cols_hide(c(year, country)) %>% 
-    fmt_percent(columns = c(estimate, goal_rate),
-	                  decimals = 0, scale_values = FALSE) %>% 
-	      cols_label(goal_rate = "goal") %>% 
-	      gtExtras::gt_theme_nytimes() %>% 
-	      tab_source_note(source_note = gt::md(glue(source_note))) %>% 
-	      tab_options(source_notes.font.size = px(8),
-	                  data_row.padding = px(1),
-	                  table.font.size = px(12)) %>% 
-	      gt_color_rows(achieved,
-	                    palette = c(glitr::burnt_sienna, glitr::scooter),
-	                    domain = c(0,1),
-	                    pal_type = "discrete") %>% 
-	      tab_header(title = glue("NAMIBIA'S {year} TREATMENT TARGET GOALS: PLHIV BASE")) 
-
+```{r, message = FALSE}
+df_unaids <- load_unaids()
 ```
 
-As we can see, using the PLHIV base, Namibia reached one of the 95's - 93% of PLHIV know their status, 89% of PLHIV are accessing treatment, and 87% of PLHIV are virally suppressed.
+```{r}
+v_plhiv <- tab_95s(df_unaids, "Namibia", denom = "PLHIV", grp = "All")
+v_plhiv
+```
+
+```{r, include=FALSE}
+d_plhiv <- v_plhiv$`_data`
+
+d_plhiv <- d_plhiv %>% 
+  dplyr::mutate(clean = stringr::str_extract(indicator, "Status|ART|VLS"),
+                text = dplyr::case_match(clean,
+                                                    "Status" ~ "know their status",
+                                                    "ART" ~ "are accessing treatment",
+                                                    "VLS" ~ "are virally suppressed"),
+                ind = stringr::str_glue("{estimate}% of PLHIV {text}")) 
+
+stats_plhiv <- d_plhiv%>% 
+  dplyr::pull() %>% 
+  paste(collapse = "; ")
+  
+  
+```
+
+As we can see, using the PLHIV base, Namibia reached one of the 95's - `r stats_plhiv`.
 
 What happens if we use the relative base?
 
-```{r, message = FALSE}
-goal <- 95
 
- #limit Test and Treat data
-  df_tt_rel <- df_tt %>% 
-    filter(year == max(year),
-           country == "Namibia",
-           indicator %in% c("Percent Known Status of PLHIV",
-                            "Percent on ART with Known Status",
-                            "Percent VLS on ART"), #using rel base indicators
-           age == "All",
-           sex == "All") %>%
-    mutate(goal_rate = goal, #use 95 as the goal metric for each indicator
-           achieved = estimate >= goal_rate) %>% 
-    select(year, country, indicator, estimate, goal_rate, achieved)
-
-
-#create table
-   year <- unique(df_tt_rel$year)
-   
-      gt(df_tt_rel) %>% 
-	      cols_hide(c(year, country)) %>% 
-	      fmt_percent(columns = c(estimate, goal_rate),
-	                  decimals = 0, scale_values = FALSE) %>% 
-	      cols_label(goal_rate = "goal") %>% 
-	      gtExtras::gt_theme_nytimes() %>% 
-	      tab_source_note(source_note = gt::md(glue(source_note))) %>% 
-	      tab_options(source_notes.font.size = px(8),
-	                  data_row.padding = px(1),
-	                  table.font.size = px(12)) %>% 
-	      tab_header(title =glue("NAMIBIA'S {year} TREATMENT TARGET GOALS: RELATIVE BASE")) %>% 
-      gt_color_rows(achieved,
-	                    palette = c(glitr::burnt_sienna, glitr::scooter),
-	                    domain = c(0,1),
-	                    pal_type = "discrete")
-
+```{r}
+v_relative <- tab_95s(df_unaids, "Namibia", denom = "Relative", grp = "All")
+v_relative
 ```
 
-Using the relative base, we can see that 93% of PLHIV in Namibia know their status, 95% of the 93% who know their status are on treatment, and 98% of the 95% who are on treatment are virally suppressed. As such, Namibia meets the 2nd and 3rd 95 with the relative base, but does not reach the 1st 95.
+```{r, include=FALSE}
+d_relative <- v_relative$`_data`
+
+df_plhiv_alt <- d_plhiv %>% 
+  dplyr::select(clean, est_plhiv = estimate) %>% 
+  dplyr::mutate(est_plhiv = stringr::str_glue("{est_plhiv}%"))
+
+stats_relative <- d_relative %>% 
+  dplyr::mutate(clean = stringr::str_extract(indicator, "Status|ART|VLS"),
+                text = dplyr::case_match(clean,
+                                                    "Status" ~ "of PLHIV know their status",
+                                                    "ART" ~ "**who know their status** are accessing treatment",
+                                                    "VLS" ~ "**who are on treatment** are virally suppressed")) %>% 
+  dplyr::select(clean, text, estimate) %>% 
+  # dplyr::left_join(df_plhiv_alt, by = "clean") %>% 
+  # dplyr::mutate(rel_base_val = lag(est_plhiv)) %>% 
+  dplyr::mutate(ind = stringr::str_glue("{estimate}% {text}")) %>% 
+  dplyr::pull() %>% 
+  paste(collapse = "; ")
+```
+
+Using the relative base, we can see - `r stats_relative`. As such, Namibia meets the 2nd and 3rd 95 with the relative base, but does not reach the 1st 95.
 
 As a result of these differences between the 2 metrics, the number of PEPFAR countries that have reached all of the 95's can vary depending on the denominator.
 
-With the PLHIV base, 7 countries have reached all 3 95's: **Botswana, Eswatini, Kenya, Malawi, Rwanda, Zambia, and Zimbabwe**.
+```{r, include=FALSE}
+cntry_epi_plhiv <- df_unaids %>% 
+  dplyr::filter(year == max(year),
+                age == "All",
+                sex == "All",
+                achv_95_plhiv == TRUE
+                ) %>% 
+  dplyr::distinct(country) %>% 
+  dplyr::arrange() %>% 
+  dplyr::pull()
 
-```{r, echo = FALSE, warning = FALSE}
-df_tt %>% 
-      filter(
-        year == max(year),
-        indicator %in% c("Percent Known Status of PLHIV",
-                         "Percent on ART of PLHIV",
-                         "Percent VLS of PLHIV"), #Using the PLHIV base indicators
-        age == "All", sex == "All",
-        achv_95_plhiv == TRUE) %>% 
-  mutate(set = recode(indicator, "Percent Known Status of PLHIV" = 1, 
-                          "Percent on ART of PLHIV" = 2,
-                          "Percent VLS of PLHIV" = 3),
-             goal_rate = round((goal/100)^set*100), 
-             achieved = estimate >= goal_rate
-             ) %>% #sets the moving goal rate for each 95 for PLHIV base
-      select(country, indicator, estimate, achieved) %>% 
-      pivot_wider(names_from = indicator,
-                 values_from = "estimate",
-                names_glue = "{indicator %>% stringr::str_extract_all('Status|ART|VLS') %>% tolower}"
-               ) %>% 
-  gt() %>% 
-   cols_hide(c(achieved)) %>% 
-        fmt_percent(columns = c(status, art, vls),
-                    decimals = 0, scale_values = FALSE) %>% 
-        cols_label(status = "Known Status",
-                   art = "On ART",
-                   vls = "VLS") %>% 
-        gtExtras::gt_theme_nytimes() %>% 
-        tab_source_note(source_note = gt::md(glue(source_note))) %>% 
-        tab_options(source_notes.font.size = px(8),
-                    data_row.padding = px(1),
-                    table.font.size = px(12)) %>% 
-        tab_header(title = "UNAIDS Treatment Target Goals",
-                   subtitle = md("*PLHIV goal rate: 95-90-86*"))
   
-  
-  
+
+cntry_epi_relative <- df_unaids %>% 
+  dplyr::filter(year == max(year),
+                age == "All",
+                sex == "All",
+                achv_95_relative == TRUE
+                ) %>% 
+  dplyr::distinct(country) %>% 
+  dplyr::arrange() %>% 
+  dplyr::pull()
+
+
+
 ```
 
-With the relative base, 7 countries have reached all 3 95's: **Botswana, Eswatini, Kenya, Malawi, Rwanda, Zambia, and Zimbabwe**.
 
-```{r, echo = FALSE, warning = FALSE}
+With the PLHIV base, `r length(cntry_epi_plhiv)` countries have reached all 3 95's: **`r paste(cntry_epi_plhiv, collapse = ", ")`**.
 
-df_tt %>% 
-      filter(
-        year == max(year),
-        indicator %in% c("Percent Known Status of PLHIV",
-                         "Percent on ART with Known Status",
-                         "Percent VLS on ART"), #using rel base indicators
-        age == "All", sex == "All",
-        achv_95_relative == TRUE) %>% 
-   mutate(
-          goal_rate = goal, #use 95 as the goal metric for each indicator
-          achieved = estimate >= goal_rate) %>% 
-        select(country, indicator, estimate, achieved) %>% 
-        pivot_wider(names_from = indicator,
-                    values_from = "estimate",
-                    names_glue = "{indicator %>% stringr::str_extract_all('PLHIV|with|VLS') %>% tolower}"
-                    ) %>% 
-  gt() %>%
-  cols_hide(c(achieved)) %>% 
-        fmt_percent(columns = c(plhiv, with, vls),
-                    decimals = 0, scale_values = FALSE) %>% 
-        cols_label(plhiv = "Known Status",
-                   with = "On ART",
-                   vls = "VLS") %>% 
-        gtExtras::gt_theme_nytimes() %>% 
-        tab_source_note(source_note = gt::md(glue(source_note))) %>% 
-        tab_options(source_notes.font.size = px(8),
-                    data_row.padding = px(1),
-                    table.font.size = px(12)) %>% 
-        #tab_spanner(label = "Goal: 95, 90, 86") %>% 
-        tab_header(title = "UNAIDS Treatment Target Goals",
-                   subtitle = md("*Relative goal rate: 95-95-95*"))
-  
-```
+
+With the relative base, `r length(cntry_epi_relative)` countries have reached all 3 95's: **`r paste(cntry_epi_relative, collapse = ", ")`**.
+
