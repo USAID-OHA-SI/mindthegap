@@ -83,7 +83,7 @@ The `plot_connected_scatter()` can also take multiple country arguments to make 
 
 ```{r, message = FALSE, warning=FALSE, fig.align="center"}
 plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzania")) +
-  labs(title = toupper("Zambia reached epidemic control in 2023"))
+  labs(title = toupper("Malawi reached epidemic control in 2023."))
 ```
 
 The race to the bottom plots can also be combined together if countries naturally fall into different classes. Below, countries are sorted into large and small groups to depict epidemic control conditioned on a country's progress to the 95s. 
