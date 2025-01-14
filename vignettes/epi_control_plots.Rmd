@@ -87,7 +87,7 @@ plot_connected_scatter(df_unaids, sel_cntry = c("Malawi", "Mozambique", "Tanzani
 ```
 
 The race to the bottom plots can also be combined together if countries naturally fall into different classes. Below, countries are sorted into large and small groups to depict epidemic control conditioned on a country's progress to the 95s. 
-```{r, message = FALSE, warning=FALSE, fig.align="center", include = FALSE}
+```{r, message = FALSE, warning=FALSE, fig.align="center", include = TRUE}
   
   # Lump countries into buckets of progress and size of epidemic
   near_95s_large <- c( "Zambia", "Kenya", "Zimbabwe", "Malawi")
