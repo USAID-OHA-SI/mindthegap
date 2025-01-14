@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Accesing Clean UNAIDS Data • mindthegap</title>
+<title>Accessing Clean UNAIDS Data • mindthegap</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -14,9 +14,9 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Accesing Clean UNAIDS Data">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Accessing Clean UNAIDS Data">
 <meta name="description" content="This vignette addresses how to pull the clean 2020 UNAIDS Estimates from Google Drive to R.
 ">
 <meta property="og:description" content="This vignette addresses how to pull the clean 2020 UNAIDS Estimates from Google Drive to R.
@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mindthegap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,10 +45,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accesing Clean UNAIDS Data</a></li>
+<li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accessing Clean UNAIDS Data</a></li>
     <li><a class="dropdown-item" href="../articles/epi_control_plots.html">Epidemic Control Plots</a></li>
     <li><a class="dropdown-item" href="../articles/relative-plhiv-base.html">95-95-95 Target Progress: Relative Base vs. PLHIV Base</a></li>
     <li><a class="dropdown-item" href="../articles/unaids-data-dictionary.html">Data Dictionary &amp; Use Cases</a></li>
+    <li><a class="dropdown-item" href="../articles/edms-pull.html">Extracting and Processing Data from EDMS</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -67,10 +68,10 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Accesing Clean UNAIDS Data</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Accessing Clean UNAIDS Data</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USAID-OHA-SI/mindthegap/blob/v2024.10.03/vignettes/accessing-clean-unaids.Rmd" class="external-link"><code>vignettes/accessing-clean-unaids.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/USAID-OHA-SI/mindthegap/blob/main/vignettes/accessing-clean-unaids.Rmd" class="external-link"><code>vignettes/accessing-clean-unaids.Rmd</code></a></small>
       <div class="d-none name"><code>accessing-clean-unaids.Rmd</code></div>
     </div>
 
@@ -80,46 +81,38 @@
 <h3 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h3>
 <p>This vignette covers how to access the clean and tidy annual UNAIDS
-Estimates from GitHub Releases. The MindTheGap package uses a cleaning
-function (<code>munge_unaids</code>) to process, munge, and tidy the
-UNAIDS HIV Estimates from AIDSInfo and <code>pull_unaids</code> to pull
-the cleaned data from Google Drive.</p>
-<p>Let’s start by loading the MindTheGap package.</p>
+Estimates from <a href="https://github.com/USAID-OHA-SI/mindthegap/releases" class="external-link">GitHub
+Releases</a>. The <code>mindthegap</code> package uses a cleaning
+function (<code>munge_edms</code>) (formerly <code>munge_unaids</code>)
+to process, munge, and tidy the UNAIDS HIV Estimates output from the <a href="https://edms.unaids.org/" class="external-link">EDMS database</a> once new estimates are
+available annually (around July) and <code>load_unaids</code> to load
+this cleaned data into your session.</p>
+<p>Let’s start by loading the <code>mindthegap</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/mindthegap" class="external-link">mindthegap</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/glamr" class="external-link">glamr</a></span><span class="op">)</span> <span class="co">#install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="pull-clean-data-from-github-releases">Pull clean data from GitHub Releases<a class="anchor" aria-label="anchor" href="#pull-clean-data-from-github-releases"></a>
 </h3>
-<p>With <code>munge_unaids</code>, the developer is left with a clean
-and tidy dataset that includes a <code>pepfar</code> flag to denote
-whether a country is a PEPFAR country or not and an
+<p>When new data are released annually, our team extracts the data from
+the UNAIDS database and runs <code>munge_edms</code> on it to clean and
+tidy the dataset, including new variables such as a <code>pepfar</code>
+flag to denote whether a country is a PEPFAR country or not and an
 <code>estimate_flag</code> to indicate estimates that are an
-approximation (previously contained a “&lt;”). In order to make this
-data accessible outside of R and cut down on the processing time, we
-uploaded the clean UNAIDS data to the <a href="https://github.com/USAID-OHA-SI/mindthegap/releases" class="external-link">package
-releases</a> and wrote the function <code>pull_unaids</code> for users
-to easily access this data.</p>
-<p>To use <code>pull_unaids</code>, there are 2 parameters:</p>
-<ol style="list-style-type: decimal">
-<li><p><code>data_type</code>: This parameter returns one of the 2
-datasets: “HIV Estimates” or “HIV Test &amp; Treat”. Please note that if
-you want to filter to a specific indicator type (i.e. Percent or
-Integer), you will have to add that filter to your code
-<code>filter(indic_type == "Integer")</code>.</p></li>
-<li><p><code>pepfar_only</code>: if TRUE, this parameter will return a
-dataset of only PEPFAR countries. If you do not specify this parameter,
-it will default to TRUE.</p></li>
-</ol>
-<p>In order to access the data from GitHub releases, be sure to load the
-<code>glamr</code> package to run the <code>pull_unaids</code>
-function.</p>
+approximation (previously contained a “&lt;” or “&gt;”). In order to
+make this data accessible outside of R and cut down on the processing
+time, we uploaded the clean UNAIDS data to the <a href="https://github.com/USAID-OHA-SI/mindthegap/releases" class="external-link">package
+releases</a>; users can easily access this data by running
+<code>load_unaids</code> with R or directly downloading the data
+file.</p>
+<p>To use <code>load_unaids</code>, the user just needed to specify
+whether they want to return all countries or just PEPFAR ones
+(<code>pepfar_only = TRUE</code>), the default.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Estimates"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">df_unaids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_unaids.html">load_unaids</a></span><span class="op">(</span>pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_est</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"html"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_unaids</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"html"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr>
 <th style="text-align:right;">
@@ -132,10 +125,16 @@ iso
 country
 </th>
 <th style="text-align:left;">
+pepfar
+</th>
+<th style="text-align:left;">
 region
 </th>
 <th style="text-align:left;">
 indicator
+</th>
+<th style="text-align:left;">
+indicator_type
 </th>
 <th style="text-align:left;">
 age
@@ -156,25 +155,13 @@ upper_bound
 estimate_flag
 </th>
 <th style="text-align:left;">
-sheet
-</th>
-<th style="text-align:left;">
-indic_type
-</th>
-<th style="text-align:left;">
-pepfar
-</th>
-<th style="text-align:left;">
 achv_95_plhiv
 </th>
 <th style="text-align:left;">
 achv_95_relative
 </th>
-<th style="text-align:right;">
-epi_ratio_2023
-</th>
 <th style="text-align:left;">
-epi_control
+achv_epi_control
 </th>
 </tr></thead>
 <tbody>
@@ -183,55 +170,49 @@ epi_control
 1990
 </td>
 <td style="text-align:left;">
-KHM
+AGO
 </td>
 <td style="text-align:left;">
-Cambodia
+Angola
 </td>
 <td style="text-align:left;">
-Asia and the Pacific
+TRUE
 </td>
 <td style="text-align:left;">
-Number AIDS Related Deaths
+Eastern and southern Africa
+</td>
+<td style="text-align:left;">
+Prevalence
+</td>
+<td style="text-align:left;">
+Rate
+</td>
+<td style="text-align:left;">
+15-49
 </td>
 <td style="text-align:left;">
 All
 </td>
-<td style="text-align:left;">
-All
+<td style="text-align:right;">
+0.8
 </td>
 <td style="text-align:right;">
-100
+0.5
 </td>
 <td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
+1.0
 </td>
 <td style="text-align:left;">
-TRUE
+NA
 </td>
 <td style="text-align:left;">
-HIV Estimates
+NA
 </td>
 <td style="text-align:left;">
-Integer
+NA
 </td>
 <td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
+NA
 </td>
 </tr>
 <tr>
@@ -239,223 +220,49 @@ TRUE
 1990
 </td>
 <td style="text-align:left;">
-KHM
+AGO
 </td>
 <td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
+Angola
 </td>
 <td style="text-align:left;">
 TRUE
 </td>
 <td style="text-align:left;">
-HIV Estimates
+Eastern and southern Africa
 </td>
 <td style="text-align:left;">
-Integer
+Prevalence
 </td>
 <td style="text-align:left;">
-TRUE
+Rate
 </td>
 <td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-15+
+15-24
 </td>
 <td style="text-align:left;">
 Female
 </td>
 <td style="text-align:right;">
-200
+0.7
 </td>
 <td style="text-align:right;">
-200
+0.3
 </td>
 <td style="text-align:right;">
-200
+1.2
 </td>
 <td style="text-align:left;">
-TRUE
+NA
 </td>
 <td style="text-align:left;">
-HIV Estimates
+NA
 </td>
 <td style="text-align:left;">
-Integer
+NA
 </td>
 <td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
+NA
 </td>
 </tr>
 <tr>
@@ -463,16 +270,172 @@ TRUE
 1990
 </td>
 <td style="text-align:left;">
-KHM
+AGO
 </td>
 <td style="text-align:left;">
-Cambodia
+Angola
 </td>
 <td style="text-align:left;">
-Asia and the Pacific
+TRUE
 </td>
 <td style="text-align:left;">
-Number PLHIV
+Eastern and southern Africa
+</td>
+<td style="text-align:left;">
+Prevalence
+</td>
+<td style="text-align:left;">
+Rate
+</td>
+<td style="text-align:left;">
+15-24
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:right;">
+0.3
+</td>
+<td style="text-align:right;">
+0.1
+</td>
+<td style="text-align:right;">
+0.5
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1990
+</td>
+<td style="text-align:left;">
+AGO
+</td>
+<td style="text-align:left;">
+Angola
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+Eastern and southern Africa
+</td>
+<td style="text-align:left;">
+Number AIDS Related Deaths
+</td>
+<td style="text-align:left;">
+Integer
+</td>
+<td style="text-align:left;">
+All
+</td>
+<td style="text-align:left;">
+All
+</td>
+<td style="text-align:right;">
+2800.0
+</td>
+<td style="text-align:right;">
+1600.0
+</td>
+<td style="text-align:right;">
+3800.0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1990
+</td>
+<td style="text-align:left;">
+AGO
+</td>
+<td style="text-align:left;">
+Angola
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+Eastern and southern Africa
+</td>
+<td style="text-align:left;">
+Number AIDS Related Deaths
+</td>
+<td style="text-align:left;">
+Integer
+</td>
+<td style="text-align:left;">
+0-14
+</td>
+<td style="text-align:left;">
+All
+</td>
+<td style="text-align:right;">
+1200.0
+</td>
+<td style="text-align:right;">
+700.0
+</td>
+<td style="text-align:right;">
+1500.0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1990
+</td>
+<td style="text-align:left;">
+AGO
+</td>
+<td style="text-align:left;">
+Angola
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+Eastern and southern Africa
+</td>
+<td style="text-align:left;">
+Number AIDS Related Deaths
+</td>
+<td style="text-align:left;">
+Integer
 </td>
 <td style="text-align:left;">
 15+
@@ -481,25 +444,16 @@ Number PLHIV
 All
 </td>
 <td style="text-align:right;">
-500
+1600.0
 </td>
 <td style="text-align:right;">
-500
+910.0
 </td>
 <td style="text-align:right;">
-500
+2300.0
 </td>
 <td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
+NA
 </td>
 <td style="text-align:left;">
 FALSE
@@ -507,11 +461,8 @@ FALSE
 <td style="text-align:left;">
 FALSE
 </td>
-<td style="text-align:right;">
-0.7608939
-</td>
 <td style="text-align:left;">
-TRUE
+NA
 </td>
 </tr>
 </tbody>

@@ -3,10 +3,11 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   accessing-clean-unaids: accessing-clean-unaids.html
+  emds_pull: emds_pull.html
   epi_control_plots: epi_control_plots.html
   relative-plhiv-base: relative-plhiv-base.html
   unaids-data-dictionary: unaids-data-dictionary.html
-last_built: 2024-10-03T20:01Z
+last_built: 2025-01-14T19:50Z
 urls:
   reference: https://usaid-oha-si.github.io/mindthegap/reference
   article: https://usaid-oha-si.github.io/mindthegap/articles

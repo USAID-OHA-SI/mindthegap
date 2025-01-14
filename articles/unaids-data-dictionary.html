@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data Dictionary &amp; Use Cases">
 </head>
 <body>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mindthegap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,10 +40,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accesing Clean UNAIDS Data</a></li>
+<li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accessing Clean UNAIDS Data</a></li>
     <li><a class="dropdown-item" href="../articles/epi_control_plots.html">Epidemic Control Plots</a></li>
     <li><a class="dropdown-item" href="../articles/relative-plhiv-base.html">95-95-95 Target Progress: Relative Base vs. PLHIV Base</a></li>
     <li><a class="dropdown-item" href="../articles/unaids-data-dictionary.html">Data Dictionary &amp; Use Cases</a></li>
+    <li><a class="dropdown-item" href="../articles/edms-pull.html">Extracting and Processing Data from EDMS</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -65,7 +66,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Data Dictionary &amp; Use Cases</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USAID-OHA-SI/mindthegap/blob/v2024.10.03/vignettes/unaids-data-dictionary.Rmd" class="external-link"><code>vignettes/unaids-data-dictionary.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/USAID-OHA-SI/mindthegap/blob/main/vignettes/unaids-data-dictionary.Rmd" class="external-link"><code>vignettes/unaids-data-dictionary.Rmd</code></a></small>
       <div class="d-none name"><code>unaids-data-dictionary.Rmd</code></div>
     </div>
 
@@ -74,834 +75,70 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This vignette serves as a data dictionary for the UNAIDS 2022
-Estimates Data. It will cover the data structure and variables, as well
-as provide an overview of the indicators across the
-<code>"HIV Estimates"</code> tab and the
-<code>"HIV Test &amp; Treat"</code> tab. Finally, it will touch briefly
-on common use cases and which data tab to access for those
-analytics.</p>
+<p>This vignette serves as a data dictionary for the UNAIDS Estimates
+Data pulled from the <a href="https://edms.unaids.org/" class="external-link">EDMS</a>. It
+will cover the data structure and variables, as well as provide an
+overview of the indicators included. Finally, it will touch briefly on
+common use cases and which data tab to access for those analytics.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/mindthegap" class="external-link">mindthegap</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/glamr" class="external-link">glamr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="unaids-clean-data-structure">UNAIDS Clean Data Structure<a class="anchor" aria-label="anchor" href="#unaids-clean-data-structure"></a>
 </h2>
-<p>Let’s first take a look at the data structure, using the
-<code>HIV Estimates</code> tab as an example.</p>
+<p>Let’s first take a look at the data structure.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_pct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Estimates"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_pct</span>, n <span class="op">=</span> <span class="fl">6L</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"html"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr>
-<th style="text-align:right;">
-year
-</th>
-<th style="text-align:left;">
-iso
-</th>
-<th style="text-align:left;">
-country
-</th>
-<th style="text-align:left;">
-region
-</th>
-<th style="text-align:left;">
-indicator
-</th>
-<th style="text-align:left;">
-age
-</th>
-<th style="text-align:left;">
-sex
-</th>
-<th style="text-align:right;">
-estimate
-</th>
-<th style="text-align:right;">
-lower_bound
-</th>
-<th style="text-align:right;">
-upper_bound
-</th>
-<th style="text-align:left;">
-estimate_flag
-</th>
-<th style="text-align:left;">
-sheet
-</th>
-<th style="text-align:left;">
-indic_type
-</th>
-<th style="text-align:left;">
-pepfar
-</th>
-<th style="text-align:left;">
-achv_95_plhiv
-</th>
-<th style="text-align:left;">
-achv_95_relative
-</th>
-<th style="text-align:right;">
-epi_ratio_2023
-</th>
-<th style="text-align:left;">
-epi_control
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-Female
-</td>
-<td style="text-align:right;">
-200
-</td>
-<td style="text-align:right;">
-200
-</td>
-<td style="text-align:right;">
-200
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1990
-</td>
-<td style="text-align:left;">
-KHM
-</td>
-<td style="text-align:left;">
-Cambodia
-</td>
-<td style="text-align:left;">
-Asia and the Pacific
-</td>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-500
-</td>
-<td style="text-align:right;">
-500
-</td>
-<td style="text-align:right;">
-500
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-HIV Estimates
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-0.7608939
-</td>
-<td style="text-align:left;">
-TRUE
-</td>
-</tr>
-</tbody>
-</table>
-<p>Within each of the UNAIDS datasets, there are disaggregates by
-<code>age</code>, <code>sex</code>, and <code>indic_type</code>. Let’s
-take a look at the disaggregates in the <code>"HIV Estimates"</code>
-tab.</p>
-<table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
-<caption>
-Indic_type/Age/Sex Count Table from the <code>HIV Estimates</code> tab
-</caption>
-<thead><tr>
-<th style="text-align:left;">
-indicator
-</th>
-<th style="text-align:left;">
-indic_type
-</th>
-<th style="text-align:left;">
-age
-</th>
-<th style="text-align:left;">
-sex
-</th>
-<th style="text-align:right;">
-n
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Deaths averted by ART
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1732
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Infections averted by PMTCT
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1596
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number AIDS Related Deaths
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number New HIV Infections
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number New HIV Infections
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number New HIV Infections
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-0-14
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-15+
-</td>
-<td style="text-align:left;">
-Female
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number PLHIV
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Number PMTCT Needing ART
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-Female
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Percent Incidence
-</td>
-<td style="text-align:left;">
-Percent
-</td>
-<td style="text-align:left;">
-15-49
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Percent Incidence
-</td>
-<td style="text-align:left;">
-Percent
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Percent Prevalence
-</td>
-<td style="text-align:left;">
-Percent
-</td>
-<td style="text-align:left;">
-15-24
-</td>
-<td style="text-align:left;">
-Female
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Percent Prevalence
-</td>
-<td style="text-align:left;">
-Percent
-</td>
-<td style="text-align:left;">
-15-24
-</td>
-<td style="text-align:left;">
-Male
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Percent Prevalence
-</td>
-<td style="text-align:left;">
-Percent
-</td>
-<td style="text-align:left;">
-15-49
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1870
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Total deaths to HIV Population
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:right;">
-1732
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Total deaths to HIV Population
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-Female
-</td>
-<td style="text-align:right;">
-1732
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Total deaths to HIV Population
-</td>
-<td style="text-align:left;">
-Integer
-</td>
-<td style="text-align:left;">
-All
-</td>
-<td style="text-align:left;">
-Male
-</td>
-<td style="text-align:right;">
-1732
-</td>
-</tr>
-</tbody>
-</table>
-<p>As you can see, there are multiple different disaggregates,
-especially across indicators. For instance, if you were looking at
-Percent Incidence (a percent indicator), there are age disaggregates for
-ages 15-49 and all ages, but no disaggregates for sex. If you were
-looking at Percent Prevalence, there are sex disaggregates for young
-adults (15-24), but no sex disaggregates for the age group 15-49.</p>
-<p>As such, it is important to filter for the age/sex/indicator type
-disaggregates that are you interested in before diving further into your
-analytics.</p>
-</div>
-<div class="section level2">
-<h2 id="hiv-estimates-indicators-and-use-cases">HIV Estimates Indicators and Use Cases<a class="anchor" aria-label="anchor" href="#hiv-estimates-indicators-and-use-cases"></a>
-</h2>
-<p>The <code>HIV Estimates</code> data covers epidemiological
-indicators, such as HIV prevalence/incidence, new infections,
-AIDS-related death, etc. There are 2 percent indicators (Percent
-Prevalence and Percent Incidence) and 7 integer indicators (Number
-PLHIV, AIDS Related Deaths, Total Deaths to HIV Population, Number PMTCT
-Needing ART, Number New HIV Infections, Deaths averted by ART, and
-Infections averted by PMTCT).</p>
-<p>To pull the HIV Estimates indicators for PEPFAR countries, use
-<code>pull_unaids(data_type = "HIV Estimates", pepfar_only = TRUE)</code>.</p>
+<code class="sourceCode R"><span><span class="va">df_unaids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_unaids.html">load_unaids</a></span><span class="op">(</span>pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">df_unaids</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: 67,868</span></span>
+<span><span class="co">#&gt; Columns: 16</span></span>
+<span><span class="co">#&gt; $ year             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1990, 1990, 1990, 1990, 1990, 1990, 1990, 1990, 1990,…</span></span>
+<span><span class="co">#&gt; $ iso              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "AGO", "AGO", "AGO", "AGO", "AGO", "AGO", "AGO", "AGO…</span></span>
+<span><span class="co">#&gt; $ country          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Angola", "Angola", "Angola", "Angola", "Angola", "An…</span></span>
+<span><span class="co">#&gt; $ pepfar           <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span></span>
+<span><span class="co">#&gt; $ region           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Eastern and southern Africa", "Eastern and southern …</span></span>
+<span><span class="co">#&gt; $ indicator        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Prevalence", "Prevalence", "Prevalence", "Number AID…</span></span>
+<span><span class="co">#&gt; $ indicator_type   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Rate", "Rate", "Rate", "Integer", "Integer", "Intege…</span></span>
+<span><span class="co">#&gt; $ age              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "15-49", "15-24", "15-24", "All", "0-14", "15+", "All…</span></span>
+<span><span class="co">#&gt; $ sex              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "All", "Female", "Male", "All", "All", "All", "All", …</span></span>
+<span><span class="co">#&gt; $ estimate         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 8.0e-01, 7.0e-01, 3.0e-01, 2.8e+03, 1.2e+03, 1.6e+03,…</span></span>
+<span><span class="co">#&gt; $ lower_bound      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 5.0e-01, 3.0e-01, 1.0e-01, 1.6e+03, 7.0e+02, 9.1e+02,…</span></span>
+<span><span class="co">#&gt; $ upper_bound      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1.0, 1.2, 0.5, 3800.0, 1500.0, 2300.0, 100.0, 6600.0,…</span></span>
+<span><span class="co">#&gt; $ estimate_flag    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, "less than", <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, …</span></span>
+<span><span class="co">#&gt; $ achv_95_plhiv    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…</span></span>
+<span><span class="co">#&gt; $ achv_95_relative <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…</span></span>
+<span><span class="co">#&gt; $ achv_epi_control <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">NA</span>, <span style="color: #BB0000;">N</span>…</span></span></code></pre></div>
+<p>The data are a panel dataset of countries from 1990 to 2023 reporting
+on 19 different indicators. Each of those indicators may be
+disaggregated by some combination of <code>age</code> and
+<code>sex</code> as seen in the table below. Its also important to
+mention that the values are provided as estimates, which have lower and
+upper bounds.</p>
+<p>Estimates may be been reported with character values, e.g. “&lt;100”
+or “&gt;98”. In order to analyze and plot this data, we have removed the
+character values and noted them in the <code>estimate_flag</code>
+column.</p>
+<p>We have also provided a few additional columns to the dataset:</p>
+<ul>
+<li>
+<code>pepfar</code>: a logical value that notes whether the country
+is a PEPFAR country or not</li>
+<li>
+<code>indicator_type</code>: a character value that tells you
+whether the estimate is an integer, percentage, rate, or ratio</li>
+<li>
+<code>achv_95_plhiv</code> and <code>achv_95_relative</code>: a
+logical value that identifies whether the country in a given year has
+achieved all three 95 goals (with PLHIV or relative base, see ) with the
+point estimate. This achievement is broken down by each age and sex
+group (All, 0-15, 15+, Female/15+ Male/15+)</li>
+<li>
+<code>achv_epi_control</code>: a logical value that identifies
+whether a country in a given year has achieved all three requirements
+for epidemic control (IMR less than 1 and both new infections and deaths
+declining, see ).</li>
+</ul>
 <table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:left;">
@@ -910,38 +147,9 @@ Infections averted by PMTCT).</p>
 </th>
 </tr></thead>
 <tbody>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>Percent Indicators</strong>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent Prevalence</code>
-</td>
-<td style="text-align:left;">
-HIV Prevalence
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent Incidence</code>
-</td>
-<td style="text-align:left;">
-HIV Incidence (per 1,000 uninfected population)
-</td>
-</tr>
-<tr grouplength="7">
+<tr grouplength="11">
 <td colspan="2" style="border-bottom: 1px solid;">
 <strong>Integer Indicators</strong>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number PLHIV</code>
-</td>
-<td style="text-align:left;">
-Estimated number people living with HIV
 </td>
 </tr>
 <tr>
@@ -949,273 +157,23 @@ Estimated number people living with HIV
 <code>Number AIDS Related Deaths</code>
 </td>
 <td style="text-align:left;">
-AIDS Related Deaths
+All, 0-14, 15+
 </td>
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Total deaths to HIV Population</code>
+<code>Number Deaths Averted by ART</code>
 </td>
 <td style="text-align:left;">
-Estimated number of deaths from all causes among people living with HIV
+All
 </td>
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number PMTCT Needing ART</code>
+<code>Number Infections Averted by PMTCT</code>
 </td>
 <td style="text-align:left;">
-Pregnant women needing antiretrovirals for preventing mother-to-child
-transmission
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number New HIV Infections</code>
-</td>
-<td style="text-align:left;">
-New HIV Infections
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Deaths averted by ART</code>
-</td>
-<td style="text-align:left;">
-Deaths averted by antiretroviral treatment
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Infections averted by PMTCT</code>
-</td>
-<td style="text-align:left;">
-Infections averted by preventing mother-to-child transmission
-</td>
-</tr>
-</tbody>
-</table>
-<div class="section level3">
-<h3 id="use-case-1-epidemic-control-curves">Use Case #1: Epidemic Control Curves<a class="anchor" aria-label="anchor" href="#use-case-1-epidemic-control-curves"></a>
-</h3>
-<p>PEPFAR defines HIV epidemic control as the “point at which the total
-number of new HIV infections falls below the total number of deaths from
-all causes among HIV-infected individuals, with both declining.” The
-integer indicators in the HIV Estimates data can be used to analyze and
-plot these trends.</p>
-<p>To assess progress towards this definition of epidemic control, we
-will use the <code>"HIV Estimates"</code> data:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Estimates"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
-<thead><tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-</th>
-</tr></thead>
-<tbody>
-<tr grouplength="7">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>Integer Indicators</strong>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>PLHIV</code>
-</td>
-<td style="text-align:left;">
-Estimated people living with HIV
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number AIDS Related Deaths</code>
-</td>
-<td style="text-align:left;">
-AIDS Related Deaths
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Total deaths to HIV Population</code>
-</td>
-<td style="text-align:left;">
-Estimated number of deaths from all causes among people living with HIV
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number PMTCT Needing ART</code>
-</td>
-<td style="text-align:left;">
-Pregnant women needing antiretrovirals for preventing mother-to-child
-transmission
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number New HIV Infections</code>
-</td>
-<td style="text-align:left;">
-New HIV Infections
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Deaths averted by ART</code>
-</td>
-<td style="text-align:left;">
-Deaths averted by antiretroviral treatment
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Infections averted by PMTCT</code>
-</td>
-<td style="text-align:left;">
-Infections averted by preventing mother-to-child transmission
-</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>To create the epidemic control curves, you will need 2 indicators
-from the <code>HIV Estimates</code> dataset:
-<ul>
-<li><strong><code>Number New HIV Infections</code></strong></li>
-<li><strong><code>Total deaths to HIV Population</code></strong></li>
-</ul>
-</li>
-</ul>
-<p>For more information on how to create these plots, see the article
-<code>Epidemic Control Plots.</code></p>
-</div>
-<div class="section level3">
-<h3 id="use-case-2-incidenceprevalence-curves">Use Case #2: Incidence/Prevalence Curves<a class="anchor" aria-label="anchor" href="#use-case-2-incidenceprevalence-curves"></a>
-</h3>
-<p>To plot HIV Incidence and Prevalence curves with confidence
-intervals, we will use the percent indicators in the
-<code>"HIV Estimates"</code> data:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_est</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Estimates"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">indic_type</span> <span class="op">==</span> <span class="st">"Percent"</span><span class="op">)</span></span></code></pre></div>
-<table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
-<thead><tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-</th>
-</tr></thead>
-<tbody>
-<tr grouplength="2">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>Percent Indicators</strong>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent Prevalence</code>
-</td>
-<td style="text-align:left;">
-HIV Prevalence
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent Incidence</code>
-</td>
-<td style="text-align:left;">
-HIV Incidence (per 1,000 uninfected population)
-</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>To create the incidence/prevalence curves, you will need 2 percent
-indicators from the <code>HIV Estimates</code> tab:
-<ul>
-<li><strong><code>Percent Prevalence</code></strong></li>
-<li><strong><code>Percent Incidence</code></strong></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<div class="section level2">
-<h2 id="hiv-test-treat-indicators-use-cases">HIV Test &amp; Treat Indicators &amp; Use Cases<a class="anchor" aria-label="anchor" href="#hiv-test-treat-indicators-use-cases"></a>
-</h2>
-<p>The <code>HIV Test &amp; Treat</code> Data covers indicators in the
-clinical cascade, that can be used to track progress to the UNAIDS
-95-95-95 targets. There are 6 percent indicators and 5 integer
-indicators.</p>
-<p>To pull the HIV Test &amp; Treat indicators for PEPFAR countries, use
-<code>pull_unaids(data_type = "HIV Test &amp; Treat", pepfar_only = TRUE)</code>.</p>
-<table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
-<thead><tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-</th>
-</tr></thead>
-<tbody>
-<tr grouplength="6">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>Percent Indicators</strong>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent Known Status of PLHIV</code>
-</td>
-<td style="text-align:left;">
-<strong>Among PLHIV</strong>, Percent who known their HIV status
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent on ART of PLHIV</code>
-</td>
-<td style="text-align:left;">
-<strong>Among PLHIV</strong>, Percent on ART
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent on ART with Known Status</code>
-</td>
-<td style="text-align:left;">
-<strong>Among people who know their HIV status</strong>, Percent of ART
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent VLS of PLHIV</code>
-</td>
-<td style="text-align:left;">
-<strong>Among PLHIV</strong>, Percent with Suppressed Viral Load
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent VLS on ART</code>
-</td>
-<td style="text-align:left;">
-<strong>Among people on ART</strong>, Percent with Suppressed Viral Load
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent PMTCT on ART</code>
-</td>
-<td style="text-align:left;">
-Estimated Percentage of Women Living with HIV on ART for preventing
-mother-to-child transmission
-</td>
-</tr>
-<tr grouplength="5">
-<td colspan="2" style="border-bottom: 1px solid;">
-<strong>Integer Indicators</strong>
+0-14
 </td>
 </tr>
 <tr>
@@ -1223,23 +181,23 @@ mother-to-child transmission
 <code>Number Known Status of PLHIV</code>
 </td>
 <td style="text-align:left;">
-Number who know their HIV status
+All, 0-14, 15+, Female/15+, Male/15+
 </td>
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number on ART of PLHIV</code>
+<code>Number New HIV Infections</code>
 </td>
 <td style="text-align:left;">
-Number on ART
+All, 0-14, 15+
 </td>
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number VLS of PLHIV</code>
+<code>Number PLHIV</code>
 </td>
 <td style="text-align:left;">
-Number with Suppressed Viral Load
+All, 0-14, 15+, Female/15+
 </td>
 </tr>
 <tr>
@@ -1247,45 +205,42 @@ Number with Suppressed Viral Load
 <code>Number PMTCT Needing ART</code>
 </td>
 <td style="text-align:left;">
-Number of Pregnant women needing antiretrovirals for preventing
-mother-to-child transmission
+Female/15-49
 </td>
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Number PMTCT on ART</code>
+<code>Number PMTCT Receiving ART</code>
 </td>
 <td style="text-align:left;">
-Estimated Number of Women Living with HIV on ART for preventing
-mother-to-child transmission
+Female/15-49
 </td>
 </tr>
-</tbody>
-</table>
-<div class="section level3">
-<h3 id="use-case-3-progress-to-95-95-95-targets">Use Case #3: Progress to 95-95-95 Targets<a class="anchor" aria-label="anchor" href="#use-case-3-progress-to-95-95-95-targets"></a>
-</h3>
-<p>The percent indicators in the <code>HIV Test &amp; Treat</code> data
-can be used to assess progress to the UNAIDS 95-95-95 targets that are
-set to be achieved by 2030, where 95% of PLHIV know their status, 95% of
-those who know their status are accessing treatment, and 95% of those
-who are accessing treatment are virally suppressed. These can also be
-used to assess progress to the 90-90-90 goals, which were set to be
-achieved in 2020.</p>
-<p>To assess progress to 95-95-95 targets, we will use the percent
-indicators in the <code>"HIV Test &amp; Treat"</code> data:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Test &amp; Treat"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">indic_type</span> <span class="op">==</span> <span class="st">"Percent"</span><span class="op">)</span></span></code></pre></div>
-<table class="table table table-hover" style="margin-left: auto; margin-right: auto;">
-<thead><tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-</th>
-</tr></thead>
-<tbody>
-<tr grouplength="6">
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Number Total Deaths to HIV Population</code>
+</td>
+<td style="text-align:left;">
+All, Female, Male
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Number VLS of PLHIV</code>
+</td>
+<td style="text-align:left;">
+All, 0-14, 15+, Female/15+, Male/15+
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Number on ART of PLHIV</code>
+</td>
+<td style="text-align:left;">
+All, 0-14, 15+, Female/15+, Male/15+
+</td>
+</tr>
+<tr grouplength="5">
 <td colspan="2" style="border-bottom: 1px solid;">
 <strong>Percent Indicators</strong>
 </td>
@@ -1295,23 +250,7 @@ indicators in the <code>"HIV Test &amp; Treat"</code> data:</p>
 <code>Percent Known Status of PLHIV</code>
 </td>
 <td style="text-align:left;">
-<strong>Among PLHIV</strong>, Percent who known their HIV status
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent on ART of PLHIV</code>
-</td>
-<td style="text-align:left;">
-<strong>Among PLHIV</strong>, Percent on ART
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent on ART with Known Status</code>
-</td>
-<td style="text-align:left;">
-<strong>Among people who know their HIV status</strong>, Percent of ART
+All, 0-14, 15+, Female/15+, Male/15+
 </td>
 </tr>
 <tr>
@@ -1319,7 +258,7 @@ indicators in the <code>"HIV Test &amp; Treat"</code> data:</p>
 <code>Percent VLS of PLHIV</code>
 </td>
 <td style="text-align:left;">
-<strong>Among PLHIV</strong>, Percent with Suppressed Viral Load
+All, 0-14, 15+, Female/15+, Male/15+
 </td>
 </tr>
 <tr>
@@ -1327,61 +266,68 @@ indicators in the <code>"HIV Test &amp; Treat"</code> data:</p>
 <code>Percent VLS on ART</code>
 </td>
 <td style="text-align:left;">
-<strong>Among people on ART</strong>, Percent with Suppressed Viral Load
+All, 0-14, 15+, Female/15+, Male/15+
 </td>
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-<code>Percent PMTCT on ART</code>
+<code>Percent on ART of PLHIV</code>
 </td>
 <td style="text-align:left;">
-Estimated Percentage of Women Living with HIV on ART for preventing
-mother-to-child transmission
+All, 0-14, 15+, Female/15+, Male/15+
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Percent on ART with Known Status</code>
+</td>
+<td style="text-align:left;">
+All, 0-14, 15+, Female/15+, Male/15+
+</td>
+</tr>
+<tr grouplength="2">
+<td colspan="2" style="border-bottom: 1px solid;">
+<strong>Rate Indicators</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Incidence (per 1,000)</code>
+</td>
+<td style="text-align:left;">
+All
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Prevalence</code>
+</td>
+<td style="text-align:left;">
+15-49, Female/15-24, Male/15-24
+</td>
+</tr>
+<tr grouplength="1">
+<td colspan="2" style="border-bottom: 1px solid;">
+<strong>Ratio Indicators</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+<code>Incidence mortality ratio (IMR)</code>
+</td>
+<td style="text-align:left;">
+All
 </td>
 </tr>
 </tbody>
 </table>
-<p>As you may notice, there are multiple test &amp; treat percent
-indicators for the clinical cascade. This is because there are 2 types
-of metrics that can be used to calculate progress to 95-95-95 targets -
-the <strong>relative base/conditional denominator</strong> or the
-<strong>PLHIV base/denominator</strong>.</p>
-<ul>
-<li>If you are using the <strong>relative base</strong> to track
-95-95-95 progress, use the following percent indicators from the
-<code>"HIV Test &amp; Treat"</code> data tab.
-<ul>
-<li>
-<strong><code>Percent Known Status of PLHIV</code></strong>: Percent
-of PLHIV who known their HIV status</li>
-<li>
-<strong><code>Percent on ART with Known Status</code></strong>:
-Among those who know their status, percent on ART</li>
-<li>
-<strong><code>Percent VLS on ART</code></strong>: Among those who
-are on ART, percent virally suppressed</li>
-</ul>
-</li>
-<li>If you are using the <strong>PLHIV base</strong>, use the following
-percent indicators from the <code>"HIV Test &amp; Treat"</code> data
-tab.
-<ul>
-<li>
-<strong><code>Percent Known Status of PLHIV</code></strong>: Percent
-of PLHIV who known their HIV status</li>
-<li>
-<strong><code>Percent on ART of PLHIV</code></strong>: Among PLHVIV,
-percent on ART</li>
-<li>
-<strong><code>Percent VLS of PLHIV</code></strong>: Among PLHIV,
-percent virally suppressed</li>
-</ul>
-</li>
-</ul>
-<p>For more information about the distinction between relative/PLHIV
-base and how to assess 95-95-95 progress, see the article
-<code>95-95-95 Target Progress: Relative Base vs. PLHIV Base</code>.</p>
-</div>
+<p>As you can see, there are multiple different disaggregates,
+especially across indicators. For instance, if you were looking at
+<strong>“Number AIDS Related Deaths”</strong>, there is total and age
+disaggregates for 0-14 and 15+, but its not broken down by sex.</p>
+<p>As such, it is important to filter for the age/sex/indicator type
+disaggregates that are you interested in before diving further into your
+analytics to avoid any potential double counting.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

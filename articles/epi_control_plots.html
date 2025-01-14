@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Epidemic Control Plots">
 </head>
 <body>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mindthegap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,10 +40,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accesing Clean UNAIDS Data</a></li>
+<li><a class="dropdown-item" href="../articles/accessing-clean-unaids.html">Accessing Clean UNAIDS Data</a></li>
     <li><a class="dropdown-item" href="../articles/epi_control_plots.html">Epidemic Control Plots</a></li>
     <li><a class="dropdown-item" href="../articles/relative-plhiv-base.html">95-95-95 Target Progress: Relative Base vs. PLHIV Base</a></li>
     <li><a class="dropdown-item" href="../articles/unaids-data-dictionary.html">Data Dictionary &amp; Use Cases</a></li>
+    <li><a class="dropdown-item" href="../articles/edms-pull.html">Extracting and Processing Data from EDMS</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -65,7 +66,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Epidemic Control Plots</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/USAID-OHA-SI/mindthegap/blob/v2024.10.03/vignettes/epi_control_plots.Rmd" class="external-link"><code>vignettes/epi_control_plots.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/USAID-OHA-SI/mindthegap/blob/main/vignettes/epi_control_plots.Rmd" class="external-link"><code>vignettes/epi_control_plots.Rmd</code></a></small>
       <div class="d-none name"><code>epi_control_plots.Rmd</code></div>
     </div>
 
@@ -76,376 +77,109 @@
 </h2>
 <p>PEPFAR defines HIV epidemic control as the “point at which the total
 number of new HIV infections falls below the total number of deaths from
-all causes among HIV-infected individuals, with both declining.” The
-integer indicators in the HIV Estimates data can be used to analyze and
-plot these trends.</p>
-<p>To assess progress towards this definition of epidemic control, we
-can use the <code>"HIV Estimates"</code> tab of the UNAIDS data. This
-vignette will walk through how to use the <code>epi_plot</code> function
-in the MindTheGap package to generate plots.</p>
+all causes among HIV-infected individuals, with both declining.” UNAIDS
+estimates this point using the Incidence-Mortality Ration (IMR).
+Epidemic control indicators are all available from the data available in
+<code>load_unaids</code>, which also includes a column called
+<code>achv_epi_control</code> which is a logical variable about whether
+the country had met these three epidemic control criteria in a given
+year (for all age and sex). This information can be plotted with a built
+in function, <code>plot_epi_trends</code>, which we will demonstrate
+below.</p>
 <div class="section level3">
 <h3 id="load-dependencies">Load dependencies<a class="anchor" aria-label="anchor" href="#load-dependencies"></a>
 </h3>
+<p>In addition to <code>mindthegap</code> make sure you have
+<code>glitr</code> installed. This does not need to be loaded into your
+session, but is needed to run the plots. Dependent packages are
+typically installed from CRAN, but since our packages are on rOpenSci,
+they are not installed.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'glitr'</span>, <span class="st">'patchwork'</span><span class="op">)</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://usaid-oha-si.r-universe.dev'</span>, <span class="st">'https://cran.r-project.org/'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/mindthegap" class="external-link">mindthegap</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/glamr" class="external-link">glamr</a></span><span class="op">)</span> <span class="co">#install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USAID-OHA-SI/glitr" class="external-link">glitr</a></span><span class="op">)</span>  <span class="co">#install.packages('glamr', repos = c('https://usaid-oha-si.r-universe.dev', getOption("repos")))</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/systemfonts" class="external-link">systemfonts</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/ggtext/" class="external-link">ggtext</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="epidemic-control-plotting-function">Epidemic Control Plotting Function<a class="anchor" aria-label="anchor" href="#epidemic-control-plotting-function"></a>
 </h3>
-<p>First, let’s take a look at the <code>epi_plot</code> function in
-action: to use this function, first load the <code>mindthegap</code>
-package and specify your PEPFAR country of interest in the
-<code>sel_cntry</code> parameter of the <code>epi_plot</code>
-function.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/epi_plot.html">epi_plot</a></span><span class="op">(</span>sel_cntry <span class="op">=</span> <span class="st">"Kenya"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-3-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>In case you want to compare epidemic control across countries, the
-<code>epi_plot</code> function allows for you to list several countries
-of interest in the <code>sel_cntry</code> parameter as well.</p>
+<p>First, let’s take a look at the <code>plot_epi_trends</code> function
+in action: to use this function, first load the estimates data from the
+<code>mindthegap</code> package and specify your PEPFAR country of
+interest in the <code>sel_cntry</code> parameter of the
+<code>plot_epi_trends</code> function.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/epi_plot.html">epi_plot</a></span><span class="op">(</span>sel_cntry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Kenya"</span>,<span class="st">"Tanzania"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="va">df_unaids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_unaids.html">load_unaids</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_epi_trends.html">plot_epi_trends</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="st">"Kenya"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-2-1.png" width="720" style="display: block; margin: auto;">
+The subtitle includes the epi control information for a given year - the
+direction of total death and new infections, both of which should be
+declining, and the IMR, which should be below 1.</p>
+<p>In case you want to compare epidemic control across countries, the
+<code>plot_epi_trends</code> function allows for you to list several
+countries of interest in the <code>sel_cntry</code> parameter as
+well.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_epi_trends.html">plot_epi_trends</a></span><span class="op">(</span><span class="va">df_unaids</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Kenya"</span>,<span class="st">"Tanzania"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-3-1.png" width="720" style="display: block; margin: auto;"></p>
 <p>In addition to looking at epidemic control at the country level, we
 can also see trends across all of PEPFAR by just using the
-<code><a href="../reference/epi_plot.html">epi_plot()</a></code> function, as “ALL PEPFAR” is the default country
-in the <code>sel_cntry</code> parameter.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/epi_plot.html">epi_plot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>This function makes it really easy to generate plots on your own for
+<code><a href="../reference/plot_epi_trends.html">plot_epi_trends()</a></code> function, as “ALL PEPFAR” is the default
+country in the <code>sel_cntry</code> parameter. Be aware that we are
+summing up point estimates across all PEPFAR countries and these data
+points have not be estimated and released by UNAIDS.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_epi_trends.html">plot_epi_trends</a></span><span class="op">(</span><span class="va">df_unaids</span><span class="op">)</span></span></code></pre></div>
+<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-4-1.png" width="720" style="display: block; margin: auto;"></p>
+<p>This function makes it easy to generate plots on your own for
 countries of interest. Let’s peek under the hood and see how the
 function works to munge the data and create the plots.</p>
 </div>
 <div class="section level3">
-<h3 id="reshaping-epidemic-control-data">Reshaping epidemic control data<a class="anchor" aria-label="anchor" href="#reshaping-epidemic-control-data"></a>
+<h3 id="race-to-the-bottom">Race to the bottom<a class="anchor" aria-label="anchor" href="#race-to-the-bottom"></a>
 </h3>
-<p>First, let’s load all the other libraries that we need to generate
-these plots and load the <code>HIV Estimates</code> data.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">df_epi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_unaids.html">pull_unaids</a></span><span class="op">(</span>data_type <span class="op">=</span> <span class="st">"HIV Estimates"</span>, pepfar_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span> </span></code></pre></div>
-<ul>
-<li>To create the epidemic control curves, you will need 2 indicators
-from the <code>HIV Estimates</code> tab:
-<ul>
-<li><strong><code>Number New HIV Infections</code></strong></li>
-<li><strong><code>Total deaths to HIV Population</code></strong></li>
-</ul>
-</li>
-</ul>
-<p>Let’s first filter the 2 datasets down to the indicators that we
-need, and filter for all sexes and all ages.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Filter down to the estimate and all ages, and the indicators you need</span></span>
-<span></span>
-<span><span class="co">#Pull indicators </span></span>
-<span><span class="va">df_epi_pepfar</span> <span class="op">&lt;-</span> <span class="va">df_epi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">==</span> <span class="st">"All"</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"All"</span>,</span>
-<span>                <span class="va">indicator</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Total deaths to HIV Population"</span>, <span class="st">"Number New HIV Infections"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co">#grab indicators </span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">country</span>,<span class="va">indicator</span>, <span class="va">estimate</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">country</span>, <span class="va">indicator</span>, <span class="va">year</span><span class="op">)</span> <span class="co">#order rows by these variables </span></span>
-<span></span>
-<span><span class="va">df_epi_pepfar</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,602 × 4</span></span></span>
-<span><span class="co">#&gt;     year country indicator                 estimate</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">1</span>990 Angola  Number New HIV Infections    <span style="text-decoration: underline;">11</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">1</span>991 Angola  Number New HIV Infections    <span style="text-decoration: underline;">12</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">1</span>992 Angola  Number New HIV Infections    <span style="text-decoration: underline;">13</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">1</span>993 Angola  Number New HIV Infections    <span style="text-decoration: underline;">13</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">1</span>994 Angola  Number New HIV Infections    <span style="text-decoration: underline;">14</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">1</span>995 Angola  Number New HIV Infections    <span style="text-decoration: underline;">15</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">1</span>996 Angola  Number New HIV Infections    <span style="text-decoration: underline;">16</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">1</span>997 Angola  Number New HIV Infections    <span style="text-decoration: underline;">17</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">1</span>998 Angola  Number New HIV Infections    <span style="text-decoration: underline;">18</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">1</span>999 Angola  Number New HIV Infections    <span style="text-decoration: underline;">19</span>000</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3,592 more rows</span></span></span></code></pre></div>
-<ul>
-<li>Let’s now merge the datasets and perform some munging to easily
-identify some metrics that we care about for the PEPFAR definition of
-epidemic control.
-<ul>
-<li>
-<strong>Declining deaths</strong>: use <code><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">dplyr::lag()</a></code>
-function to create a <code>value = TRUE</code> if deaths are
-declining</li>
-<li>
-<strong>Infections below deaths</strong>: <code>TRUE</code> wherever
-infections &lt; deaths</li>
-<li><strong>Ratio of infections / deaths</strong></li>
-<li>
-<strong>Epi_control</strong>: <code>TRUE</code> if declining deaths
-and infections below deaths are both true</li>
-</ul>
-</li>
-</ul>
+<p>While time-series data is often presented linearly, with time on the
+x-axis, we can also use a connected scatterplot to illustrate a
+country’s journey toward epidemic control. A connected scatterplot
+combines elements of both scatterplots and line charts, providing a
+dynamic view of the relationship between two variables over time.</p>
+<p>In the context of epidemic control, each data point represents a
+combination of total deaths (x-axis) and new HIV infections (y-axis) for
+a given year. These points are connected chronologically to show how the
+relationship between deaths and new infections evolves over time.</p>
+<p>The goal of epidemic control can be visualized as a 45-degree line,
+indicating balance between the two indicators. When the trend line moves
+closer to zero on both axes, it suggests progress toward fewer deaths
+and fewer new infections. If the connected line trends towards zero, it
+indicates that the country is moving in a positive direction—toward
+reduced mortality and reduced spread of HIV.</p>
+<p>Points that fall closer to the total deaths axis indicate periods
+when epidemic control is being approached or maintained. Let’s take an
+example from Zambia to see this relationship in action. Using the
+<code><a href="../reference/plot_connected_scatter.html">plot_connected_scatter()</a></code> we can visualize Zambia’s progress
+towards epi control.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Create the merged data frame  </span></span>
-<span></span>
-<span><span class="co">#Perform necessary munging</span></span>
-<span><span class="va">df_epi_pepfar</span> <span class="op">&lt;-</span> <span class="va">df_epi_pepfar</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="st">"indicator"</span>, </span>
-<span>                     values_from <span class="op">=</span> <span class="st">"estimate"</span>, <span class="co">#pivots data wide into infections column</span></span>
-<span>                     names_glue <span class="op">=</span> <span class="st">"{indicator %&gt;% stringr::str_extract_all('deaths|Infections') %&gt;% tolower}"</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="co">#Add in ALL PEPFAR data</span></span>
-<span><span class="va">df_epi_pepfar</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">df_epi_pepfar</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>                     <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"All PEPFAR"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>                     <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">country</span>, <span class="va">year</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>                     <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html" class="external-link">where</a></span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span>, \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span>,na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span><span class="op">)</span> <span class="co">#sums PEPFAR country estimates </span></span>
-<span></span>
-<span><span class="co">#Create epi control flag</span></span>
-<span><span class="va">df_epi_pepfar</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">df_epi_pepfar</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>declining_deaths <span class="op">=</span> <span class="va">deaths</span> <span class="op">-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">deaths</span>, order_by <span class="op">=</span> <span class="va">year</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">0</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">country</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co">#TRUE/FALSE declining </span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>infections_below_deaths <span class="op">=</span> <span class="va">infections</span> <span class="op">&lt;</span> <span class="va">deaths</span>,</span>
-<span>                ratio <span class="op">=</span> <span class="va">infections</span> <span class="op">/</span> <span class="va">deaths</span>,</span>
-<span>                direction_streak <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sequence.html" class="external-link">sequence</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rle.html" class="external-link">rle</a></span><span class="op">(</span><span class="va">declining_deaths</span><span class="op">)</span><span class="op">$</span><span class="va">lengths</span><span class="op">)</span>,</span>
-<span>                epi_control <span class="op">=</span> <span class="va">declining_deaths</span> <span class="op">==</span> <span class="cn">TRUE</span> <span class="op">&amp;</span> <span class="va">infections_below_deaths</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co">#epi control definition </span></span>
-<span></span>
-<span></span>
-<span><span class="va">df_epi_pepfar</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,904 × 10</span></span></span>
-<span><span class="co">#&gt;     year country infections deaths declining_deaths by    infections_below_dea…¹</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">1</span>990 Angola       <span style="text-decoration: underline;">11</span>000  <span style="text-decoration: underline;">3</span>595. <span style="color: #BB0000;">NA</span>               Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">1</span>991 Angola       <span style="text-decoration: underline;">12</span>000  <span style="text-decoration: underline;">4</span>213. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">1</span>992 Angola       <span style="text-decoration: underline;">13</span>000  <span style="text-decoration: underline;">5</span>003. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">1</span>993 Angola       <span style="text-decoration: underline;">13</span>000  <span style="text-decoration: underline;">5</span>821. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">1</span>994 Angola       <span style="text-decoration: underline;">14</span>000  <span style="text-decoration: underline;">6</span>551. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">1</span>995 Angola       <span style="text-decoration: underline;">15</span>000  <span style="text-decoration: underline;">7</span>201. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">1</span>996 Angola       <span style="text-decoration: underline;">16</span>000  <span style="text-decoration: underline;">8</span>050. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">1</span>997 Angola       <span style="text-decoration: underline;">17</span>000  <span style="text-decoration: underline;">8</span>922. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">1</span>998 Angola       <span style="text-decoration: underline;">18</span>000  <span style="text-decoration: underline;">9</span>913. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">1</span>999 Angola       <span style="text-decoration: underline;">19</span>000 <span style="text-decoration: underline;">10</span>844. TRUE             Ango… FALSE                 </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1,894 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ abbreviated name: ¹​infections_below_deaths</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: ratio &lt;dbl&gt;, direction_streak &lt;int&gt;, epi_control &lt;lgl&gt;</span></span></span></code></pre></div>
-<p>Now that we have a workable data frame, we can start to add color and
-style elements. Using <code><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse()</a></code> statements, we can create
-the <code>fill_color</code> variable to indicate the colors of each
-indicator (drawing color inspiration from OHA’s <a href="(https://usaid-oha-si.github.io/styleguide/)" class="external-link">Data Visualization
-Style Guide</a>). We can also create the <code>val_mod</code> variable
-to add negative values for total deaths in order to create the
-dual-axis.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_connected_scatter.html">plot_connected_scatter</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="st">"Zambia"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="st">"Zambia reached epidemic control in 2023"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-5-1.png" width="720" style="display: block; margin: auto;">
+The <code><a href="../reference/plot_connected_scatter.html">plot_connected_scatter()</a></code> can also take multiple country
+arguments to make comparison plots. While the function will
+automatically scale the axes for you, it is recommended comparing
+countries with similar mangitude of epidemic control metrics. Comparing
+South Africa to Rwanda will result in a graphic that is dominated by the
+sheer size of the epidemic in South Africa. Below, we show the progress
+of Mozambique, Tanzania and Malawi. Coincidentally, each country appears
+to be on similar paths, but at different points in time.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Add colors to indicators and flip axis</span></span>
-<span><span class="va">df_epi_pepfar</span> <span class="op">&lt;-</span> <span class="va">df_epi_pepfar</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">infections</span>, <span class="va">deaths</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"indicator"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co">#put back indicators in column</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">country</span>, <span class="va">indicator</span>, <span class="va">year</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>val_mod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">indicator</span> <span class="op">==</span> <span class="st">"deaths"</span>, <span class="op">-</span><span class="va">value</span>, <span class="va">value</span><span class="op">)</span>, <span class="co">#create dual-axis</span></span>
-<span>                fill_color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">indicator</span> <span class="op">==</span> <span class="st">"deaths"</span>, <span class="fu">glitr</span><span class="fu">::</span><span class="va"><a href="https://usaid-oha-si.github.io/glitr/reference/old_rose.html" class="external-link">old_rose</a></span>, <span class="fu">glitr</span><span class="fu">::</span><span class="va"><a href="https://usaid-oha-si.github.io/glitr/reference/denim.html" class="external-link">denim</a></span><span class="op">)</span><span class="op">)</span> <span class="co">#add colors to indicate flip axis</span></span>
-<span></span>
-<span><span class="va">df_epi_pepfar</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,808 × 12</span></span></span>
-<span><span class="co">#&gt;     year country    declining_deaths by         infections_below_deaths ratio</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">1</span>990 All PEPFAR FALSE            All PEPFAR FALSE                    4.94</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">1</span>991 All PEPFAR FALSE            All PEPFAR FALSE                    4.35</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">1</span>992 All PEPFAR FALSE            All PEPFAR FALSE                    3.79</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">1</span>993 All PEPFAR FALSE            All PEPFAR FALSE                    3.23</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">1</span>994 All PEPFAR FALSE            All PEPFAR FALSE                    2.74</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">1</span>995 All PEPFAR FALSE            All PEPFAR FALSE                    2.44</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">1</span>996 All PEPFAR FALSE            All PEPFAR FALSE                    2.16</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">1</span>997 All PEPFAR FALSE            All PEPFAR FALSE                    1.92</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">1</span>998 All PEPFAR FALSE            All PEPFAR FALSE                    1.74</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">1</span>999 All PEPFAR FALSE            All PEPFAR FALSE                    1.58</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3,798 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: direction_streak &lt;int&gt;, epi_control &lt;lgl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indicator &lt;chr&gt;, value &lt;dbl&gt;, val_mod &lt;dbl&gt;, fill_color &lt;chr&gt;</span></span></span></code></pre></div>
-<p>Let’s filter our country down to Kenya now for a country-level
-epidemic control curve.</p>
-<ul>
-<li>We are also going to specify a couple more style elements to call on
-when we create our plot:
-<ul>
-<li>
-<code>val_lab</code>: adding a value label for the most recent year
-of data. We can use the <code><a href="https://scales.r-lib.org/reference/number.html" class="external-link">scales::number()</a></code> function to
-standardize the number format.</li>
-<li>
-<code>max_plot_pt</code> &amp; <code>min_plot_pt</code>: define a
-max and min for the dual-axis</li>
-<li>
-<code>lab_pt</code>: add a point at the most recent year’s
-value</li>
-<li>
-<code>new_hiv_label</code> &amp; <code>tot_death_label</code>:
-create labels for the indicators and place them at the max/min y-axis
-point</li>
-</ul>
-</li>
-</ul>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#COUNTRY</span></span>
-<span><span class="va">df_viz_cntry</span> <span class="op">&lt;-</span> <span class="va">df_epi_pepfar</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Kenya"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>val_lab <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">~</span> </span>
-<span>                                             <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">number</a></span><span class="op">(</span><span class="va">value</span>, <span class="fl">1</span>, scale <span class="op">=</span> <span class="fl">1e-3</span>, suffix <span class="op">=</span> <span class="st">"k"</span><span class="op">)</span><span class="op">)</span>, <span class="co">#standardize number format</span></span>
-<span>                max_plot_pt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>,</span>
-<span>                min_plot_pt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">val_mod</span><span class="op">)</span>,</span>
-<span>                lab_pt <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">~</span> <span class="va">val_mod</span><span class="op">)</span>,</span>
-<span>                indicator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">indicator</span> <span class="op">==</span> <span class="st">"deaths"</span>, <span class="st">"Total Deaths to HIV Population"</span>, <span class="st">"New HIV Infections"</span><span class="op">)</span>, <span class="co">#creating labels</span></span>
-<span>                new_hiv_label <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">value</span> <span class="op">==</span> <span class="va">max_plot_pt</span> <span class="op">~</span> <span class="va">indicator</span><span class="op">)</span>,  <span class="co">#assigning label location to min/max</span></span>
-<span>                tot_death_label <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">val_mod</span> <span class="op">==</span> <span class="va">min_plot_pt</span> <span class="op">~</span> <span class="va">indicator</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cntry_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">value</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">country</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>country <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="va">country</span>, <span class="va">cntry_order</span>, .desc <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
-<span>    </span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="plotting-the-epidemic-control-curves">Plotting the epidemic control curves<a class="anchor" aria-label="anchor" href="#plotting-the-epidemic-control-curves"></a>
-</h3>
-<ul>
-<li>Our data frame is ready to go! Let’s get started with the viz. We’ll
-start by getting our framework down:
-<ul>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code>: to define our aesthetics (x =
-<code>year</code>, y = <code>val_mod</code>, group by the indicator, and
-add fill and color as <code>fill_color</code>)</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_blank.html" class="external-link">geom_blank()</a></code>: defines a max point on the y-axis</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area()</a></code>: creates the area graph</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line()</a></code>: creates the line border on the area
-graph</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline()</a></code>: adds a horizontal line at the x-axis</li>
-</ul>
-</li>
-</ul>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_viz_cntry</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">val_mod</span>, group <span class="op">=</span> <span class="va">indicator</span>, fill <span class="op">=</span> <span class="va">fill_color</span>, color <span class="op">=</span> <span class="va">fill_color</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_blank.html" class="external-link">geom_blank</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">max_plot_pt</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#sets max y-axis above</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_blank.html" class="external-link">geom_blank</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="op">-</span><span class="va">max_plot_pt</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#sets max y-axis below </span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="fu">glitr</span><span class="fu">::</span><span class="va"><a href="https://usaid-oha-si.github.io/glitr/reference/grey80k.html" class="external-link">grey80k</a></span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
-<ul>
-<li>This is a good start. Let’s continue to add style elements, adjust
-the scales, and add annotations
-<ul>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point()</a></code>: adds a point at <code>lab_pt</code> that
-we specified earlier</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text()</a></code>: adds the annotation <code>val_lab</code>
-that we specified earlier</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous()</a></code>: cleans up the y-axis with
-<code><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">scales::label_number()</a></code>and <code>expand</code>
-</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous()</a></code>: takes the max and min year and
-breaks the x-axis year markings into 5 year increments.</li>
-</ul>
-</li>
-</ul>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_viz_cntry</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">val_mod</span>, group <span class="op">=</span> <span class="va">indicator</span>, fill <span class="op">=</span> <span class="va">fill_color</span>, color <span class="op">=</span> <span class="va">fill_color</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_blank.html" class="external-link">geom_blank</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">max_plot_pt</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#sets max y-axis above</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_blank.html" class="external-link">geom_blank</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="op">-</span><span class="va">max_plot_pt</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#sets max y-axis below </span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="fu">glitr</span><span class="fu">::</span><span class="va"><a href="https://usaid-oha-si.github.io/glitr/reference/grey80k.html" class="external-link">grey80k</a></span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">lab_pt</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, shape <span class="op">=</span> <span class="fl">21</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">val_lab</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>,</span>
-<span>            family <span class="op">=</span> <span class="st">"Source Sans Pro Light"</span><span class="op">)</span> <span class="op">+</span> <span class="co">#value label text</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="op">~</span> <span class="op">(</span><span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>scale_cut <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">cut_short_scale</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                     expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="co">#automatic x-axis min/max</span></span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<p>We’re almost there! Let’s tackle the issue of color - even though we
-specified the color of the indicators in our aesthetics earlier, it
-still doesn’t seem to be registering our <code>fill_color.</code> To
-solve this issue, we have to use the function
-<code><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html" class="external-link">scale_fill_identity()</a></code> to tell ggplot to use our
-pre-specified fill_color column as the color identity.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_viz_cntry</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">val_mod</span>, group <span class="op">=</span> <span class="va">indicator</span>, fill <span class="op">=</span> <span class="va">fill_color</span>, color <span class="op">=</span> <span class="va">fill_color</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="fu">glitr</span><span class="fu">::</span><span class="va"><a href="https://usaid-oha-si.github.io/glitr/reference/grey80k.html" class="external-link">grey80k</a></span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">lab_pt</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>             shape <span class="op">=</span> <span class="fl">21</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">val_lab</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>,</span>
-<span>            family <span class="op">=</span> <span class="st">"Source Sans Pro Light"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="op">~</span> <span class="op">(</span><span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>scale_cut <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">cut_short_scale</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                     expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>    </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html" class="external-link">scale_fill_identity</a></span><span class="op">(</span>aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fill"</span>, <span class="st">"color"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
-<ul>
-<li>Much better - we’re almost there! Let’s finish off our plot with
-some themes and styles.
-<ul>
-<li>
-<code>geom_text</code>: adds the annotation for the
-<code>new_hiv_label</code> and <code>tot_death_label</code> we created
-earlier</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs()</a></code>: By specifying x and y as <code>NULL</code>, we
-are removing the labels on the axis. Here is where you can add
-additional annotations such as titles, subtitles, captions, etc.</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian()</a></code>: changing cartesian plot and clipping
-preferences</li>
-<li>
-<code><a href="https://usaid-oha-si.github.io/glitr/reference/si_style_ygrid.html" class="external-link">glitr::si_style_ygrid()</a></code>: uses standard SI style format
-from the <code>glitr</code> package and <code>facet_space</code> adjusts
-the spacing of the y-axis grid</li>
-<li>
-<code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme()</a></code>: allows you to customize components of the plot
-with <code>axis.text.y</code> focusing on the y-axis text</li>
-</ul>
-</li>
-</ul>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_viz_cntry</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">val_mod</span>, group <span class="op">=</span> <span class="va">indicator</span>, fill <span class="op">=</span> <span class="va">fill_color</span>, color <span class="op">=</span> <span class="va">fill_color</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_area</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="fu">glitr</span><span class="fu">::</span><span class="va"><a href="https://usaid-oha-si.github.io/glitr/reference/grey80k.html" class="external-link">grey80k</a></span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">lab_pt</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>             shape <span class="op">=</span> <span class="fl">21</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">val_lab</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>,</span>
-<span>            family <span class="op">=</span> <span class="st">"Source Sans Pro Light"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="op">~</span> <span class="op">(</span><span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>scale_cut <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/number.html" class="external-link">cut_short_scale</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                     expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df_epi_pepfar</span><span class="op">$</span><span class="va">year</span><span class="op">)</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html" class="external-link">scale_fill_identity</a></span><span class="op">(</span>aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fill"</span>, <span class="st">"color"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">country</span><span class="op">)</span> <span class="op">+</span> <span class="co">#small multiples of countries</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">new_hiv_label</span>, x <span class="op">=</span> <span class="fl">2005</span>, y <span class="op">=</span> <span class="op">(</span><span class="va">max_plot_pt</span><span class="op">)</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>, family <span class="op">=</span> <span class="st">"Source Sans Pro Light"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">tot_death_label</span>, x <span class="op">=</span> <span class="fl">2005</span>, y <span class="op">=</span> <span class="op">(</span><span class="va">min_plot_pt</span><span class="op">)</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            hjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>, family <span class="op">=</span> <span class="st">"Source Sans Pro Light"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="cn">T</span>, clip <span class="op">=</span> <span class="st">"off"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">glitr</span><span class="fu">::</span><span class="fu"><a href="https://usaid-oha-si.github.io/glitr/reference/si_style_ygrid.html" class="external-link">si_style_ygrid</a></span><span class="op">(</span>facet_space <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span> <span class="co">#adjusted y-axis grid spacing </span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.y <span class="op">=</span> <span class="fu">ggtext</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/ggtext/reference/element_markdown.html" class="external-link">element_markdown</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="va">source_note</span><span class="op">)</span></span></code></pre></div>
-<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_connected_scatter.html">plot_connected_scatter</a></span><span class="op">(</span><span class="va">df_unaids</span>, sel_cntry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Malawi"</span>, <span class="st">"Mozambique"</span>, <span class="st">"Tanzania"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="st">"Zambia reached epidemic control in 2023"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="epi_control_plots_files/figure-html/unnamed-chunk-6-1.png" width="720" style="display: block; margin: auto;"></p>
+<p>The race to the bottom plots can also be combined together if
+countries naturally fall into different classes. Below, countries are
+sorted into large and small groups to depict epidemic control
+conditioned on a country’s progress to the 95s.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
