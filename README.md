@@ -30,6 +30,7 @@
 
 ## LIST TYPES OF STYLES INCLUDED WITH PACKAGE
   ls("package:mindthegap")
+  
 ```
 
 ## Example
