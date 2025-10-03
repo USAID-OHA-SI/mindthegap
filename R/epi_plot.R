@@ -283,9 +283,9 @@ viz_epi <- function(df){
       ggplot2::geom_point(ggplot2::aes(y = lab_pt), na.rm = TRUE,
                           shape = 21, color = "white", size = 3) +
       ggplot2::geom_text(ggplot2::aes(label = val_lab), na.rm = TRUE, #value label text
-                         hjust = -0.3, family = "Source Sans Pro Light") +
+                         hjust = -0.3, family = "Source Sans 3 Light") +
       geom_text(aes(label = ind_label, y = peak_val), na.rm = TRUE,
-                hjust = -0.3, family = "Source Sans Pro Light") +
+                hjust = -0.3, family = "Source Sans 3 Light") +
       ggplot2::facet_wrap(~cntry_lab) + #small multiples of countries
       ggplot2::labs(x = NULL, y = NULL, caption = source_note) +
       ggplot2::scale_y_continuous(labels = ~ (scales::label_number(scale_cut = scales::cut_short_scale())(abs(.))),
